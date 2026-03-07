@@ -27,7 +27,6 @@ export default function GameCanvas() {
     }
   }, []);
 
-  // Init
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
@@ -39,7 +38,6 @@ export default function GameCanvas() {
     return () => window.removeEventListener('resize', resize);
   }, [resize]);
 
-  // Game loop
   useEffect(() => {
     if (gameStatus !== 'playing') return;
 
@@ -60,13 +58,10 @@ export default function GameCanvas() {
     return () => cancelAnimationFrame(rafRef.current);
   }, [gameStatus]);
 
-  // Keyboard
   useEffect(() => {
     const onDown = (e: KeyboardEvent) => {
-      // Don't intercept keys when typing in an input/textarea
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
       if (['ArrowLeft', 'ArrowRight', 'ArrowUp', ' ', 'a', 'q', 'd', 'z', 'w'].includes(e.key)) {
         e.preventDefault();
       }
@@ -75,7 +70,6 @@ export default function GameCanvas() {
     const onUp = (e: KeyboardEvent) => {
       const tag = (e.target as HTMLElement)?.tagName;
       if (tag === 'INPUT' || tag === 'TEXTAREA') return;
-
       stateRef.current?.keys.delete(e.key);
     };
     window.addEventListener('keydown', onDown);
@@ -83,7 +77,6 @@ export default function GameCanvas() {
     return () => { window.removeEventListener('keydown', onDown); window.removeEventListener('keyup', onUp); };
   }, []);
 
-  // Touch controls
   const handleTouchStart = useCallback((e: React.TouchEvent) => {
     if (!stateRef.current) return;
     const canvas = canvasRef.current!;
@@ -133,49 +126,118 @@ export default function GameCanvas() {
         onTouchCancel={handleTouchEnd}
       />
 
-      {/* IDLE overlay — JOUER button */}
+      {/* IDLE overlay */}
       {gameStatus === 'idle' && (
         <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6"
-             style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(3px)' }}>
+             style={{ background: 'rgba(10,26,18,0.7)', backdropFilter: 'blur(3px)' }}>
           <div className="text-center">
-            <h1 className="text-4xl font-black tracking-tight text-white drop-shadow-lg md:text-5xl">
+            <h1 style={{
+              fontFamily: "'Oxanium', sans-serif",
+              fontSize: 'clamp(28px, 5vw, 48px)',
+              fontWeight: 900,
+              color: '#fff',
+              letterSpacing: '4px',
+              textShadow: '0 0 20px rgba(60,179,113,0.5)',
+            }}>
               GUIBUREAUCRACY
             </h1>
-            <p className="mt-2 text-sm text-[#94A3B8]">Survivez aux dossiers volants de l'open space</p>
+            <p style={{
+              fontFamily: "'Share Tech Mono', monospace",
+              fontSize: '10px',
+              color: '#3CB371',
+              letterSpacing: '3px',
+              marginTop: '8px',
+            }}>
+              SURVIVEZ AUX DOSSIERS VOLANTS DE L&apos;OPEN SPACE
+            </p>
           </div>
           <button
             onClick={handlePlay}
-            className="cursor-pointer rounded-xl px-12 py-4 text-xl font-black tracking-wide text-white shadow-xl transition-all hover:scale-105 active:scale-95"
+            className="cursor-pointer transition-all hover:brightness-110 active:scale-95"
             style={{
-              background: 'linear-gradient(to bottom, #27AE60, #1E8C4D)',
-              animation: 'pulse-gold 2s infinite',
+              fontFamily: "'Oxanium', sans-serif",
+              fontSize: '14px',
+              fontWeight: 700,
+              letterSpacing: '8px',
+              color: '#fff',
+              background: '#1A5C38',
+              border: '2px solid #3CB371',
+              padding: '16px 52px',
+              boxShadow: '0 0 30px rgba(46,139,87,0.3)',
             }}
           >
             JOUER
           </button>
-          <div className="mt-4 text-center text-xs text-[#64748B]">
-            <p>Fleches / ZQSD pour bouger — Espace pour tirer</p>
-            <p className="mt-1">Mobile : gauche/droite pour bouger, centre pour tirer</p>
+          <div className="text-center" style={{
+            fontFamily: "'Share Tech Mono', monospace",
+            fontSize: '9px',
+            color: '#607888',
+            letterSpacing: '1px',
+          }}>
+            <p>FLECHES / ZQSD POUR BOUGER — ESPACE POUR TIRER</p>
+            <p style={{ marginTop: '4px' }}>MOBILE : GAUCHE/DROITE POUR BOUGER, CENTRE POUR TIRER</p>
           </div>
         </div>
       )}
 
-      {/* Name modal */}
+      {/* Name modal — Excel style */}
       {showNameModal && (
         <div className="absolute inset-0 z-30 flex items-center justify-center"
-             style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-          <div className="w-[440px] max-w-[90vw] overflow-hidden rounded-xl shadow-2xl"
-               style={{ animation: 'slideUp 0.3s ease-out' }}>
-            <div className="flex items-center gap-3 bg-[#1A5C38] px-5 py-3">
-              <div className="flex gap-2">
-                <span className="block h-3.5 w-3.5 rounded-full" style={{ background: '#FF5F56' }} />
-                <span className="block h-3.5 w-3.5 rounded-full" style={{ background: '#FFBD2E' }} />
-                <span className="block h-3.5 w-3.5 rounded-full" style={{ background: '#27C93F' }} />
+             style={{ background: 'rgba(10,26,18,0.7)', backdropFilter: 'blur(4px)' }}>
+          <div className="w-[440px] max-w-[90vw] overflow-hidden shadow-2xl"
+               style={{
+                 animation: 'slideUp 0.3s ease-out',
+                 border: '2px solid #1A5C38',
+                 background: '#fff',
+               }}>
+            {/* Title bar */}
+            <div className="flex items-center justify-between px-3 py-2"
+                 style={{ background: '#1A5C38' }}>
+              <div className="flex items-center gap-2">
+                <div className="flex gap-1.5">
+                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FF5F56' }} />
+                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FFBD2E' }} />
+                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#27C93F' }} />
+                </div>
+                <span style={{
+                  fontFamily: "'Oxanium', sans-serif",
+                  fontSize: '11px',
+                  fontWeight: 700,
+                  color: '#fff',
+                  letterSpacing: '1px',
+                }}>
+                  GUIBOUR CORP. — EMBAUCHE
+                </span>
               </div>
-              <span className="text-sm font-bold text-white">Guibour Corp. — Embauche</span>
+              <div className="flex gap-2 text-white/60" style={{ fontSize: '10px' }}>
+                <span>—</span><span>□</span><span>✕</span>
+              </div>
             </div>
-            <div className="bg-[#F5F5F5] p-8">
-              <p className="mb-5 text-base text-[#475569]">Entrez votre nom d&apos;employe :</p>
+            {/* Formula bar */}
+            <div className="flex items-center border-b" style={{ borderColor: '#C0D0DE', background: '#FAFAFA' }}>
+              <div className="flex items-center justify-center border-r px-2 py-1" style={{ borderColor: '#C0D0DE', background: '#E8E8E8' }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#777' }}>fx</span>
+              </div>
+              <span style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '10px',
+                color: '#1A5C38',
+                padding: '4px 8px',
+              }}>
+                =EMBAUCHE(NOM_EMPLOYE)
+              </span>
+            </div>
+            {/* Body */}
+            <div className="p-6" style={{ background: '#F5F5F5' }}>
+              <p style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '11px',
+                color: '#607888',
+                letterSpacing: '1px',
+                marginBottom: '14px',
+              }}>
+                ENTREZ VOTRE NOM D&apos;EMPLOYE :
+              </p>
               <input
                 type="text"
                 maxLength={16}
@@ -184,14 +246,32 @@ export default function GameCanvas() {
                 onChange={e => setPlayerName(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && handleStart()}
                 placeholder="Nom..."
-                className="mb-5 w-full rounded-lg border border-[#CBD5E1] bg-white px-5 py-3.5 text-base text-[#1E293B] outline-none transition-all focus:border-[#1A5C38] focus:ring-2 focus:ring-[#1A5C38]/30"
+                style={{
+                  fontFamily: "'Share Tech Mono', monospace",
+                  fontSize: '14px',
+                  width: '100%',
+                  padding: '10px 12px',
+                  border: '1px solid #C8D8E8',
+                  background: '#fff',
+                  color: '#0A1A12',
+                  outline: 'none',
+                  marginBottom: '14px',
+                }}
               />
               <button
                 onClick={handleStart}
-                className="w-full cursor-pointer rounded-lg py-4 text-base font-bold text-white transition-all hover:brightness-110 active:scale-[0.98]"
-                style={{ background: 'linear-gradient(to bottom, #27AE60, #1E8C4D)' }}
+                className="w-full cursor-pointer py-3 transition-all hover:brightness-110 active:scale-[0.98]"
+                style={{
+                  fontFamily: "'Oxanium', sans-serif",
+                  fontSize: '12px',
+                  fontWeight: 700,
+                  letterSpacing: '4px',
+                  color: '#fff',
+                  background: '#1A5C38',
+                  border: '1px solid #0A1A12',
+                }}
               >
-                Commencer
+                COMMENCER
               </button>
             </div>
           </div>

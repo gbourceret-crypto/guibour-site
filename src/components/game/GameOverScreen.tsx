@@ -63,82 +63,189 @@ export default function GameOverScreen({ state, onRestart }: Props) {
 
   return (
     <div className="absolute inset-0 z-30 flex items-center justify-center"
-         style={{ background: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(4px)' }}>
-      <div className="w-[420px] max-w-[92vw] overflow-hidden rounded-lg shadow-2xl"
-           style={{ animation: 'slideUp 0.4s ease-out' }}>
-        {/* Title bar */}
-        <div className="flex items-center gap-2 px-3 py-2"
-             style={{ background: isVictory ? '#F0C830' : '#E85B5B' }}>
-          <div className="flex gap-1.5">
-            <span className="block h-3 w-3 rounded-full bg-[rgba(0,0,0,0.2)]" />
-            <span className="block h-3 w-3 rounded-full bg-[rgba(0,0,0,0.2)]" />
-            <span className="block h-3 w-3 rounded-full bg-[rgba(0,0,0,0.2)]" />
+         style={{ background: 'rgba(10,26,18,0.7)', backdropFilter: 'blur(4px)' }}>
+      <div className="w-[440px] max-w-[92vw] overflow-hidden shadow-2xl"
+           style={{
+             animation: 'slideUp 0.4s ease-out',
+             border: '2px solid #1A5C38',
+             background: '#fff',
+           }}>
+        {/* Excel-style title bar — always green corporate */}
+        <div className="flex items-center justify-between px-3 py-2"
+             style={{ background: '#1A5C38' }}>
+          <div className="flex items-center gap-2">
+            <div className="flex gap-1.5">
+              <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FF5F56' }} />
+              <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FFBD2E' }} />
+              <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#27C93F' }} />
+            </div>
+            <span style={{
+              fontFamily: "'Oxanium', sans-serif",
+              fontSize: '11px',
+              fontWeight: 700,
+              color: '#fff',
+              letterSpacing: '1px',
+            }}>
+              {isVictory ? 'GUIBOUR CORP. — PROMOTION' : 'GUIBOUR CORP. — FIN DE CONTRAT'}
+            </span>
           </div>
-          <span className="text-xs font-bold" style={{ color: isVictory ? '#4A2800' : '#FFF' }}>
-            {isVictory ? 'Guibour Corp. — Promotion !' : 'Guibour Corp. — Licenciement'}
+          {/* Window controls right side */}
+          <div className="flex gap-2 text-white/60" style={{ fontSize: '10px' }}>
+            <span>—</span><span>□</span><span>✕</span>
+          </div>
+        </div>
+
+        {/* Excel formula bar */}
+        <div className="flex items-center border-b" style={{ borderColor: '#C0D0DE', background: '#FAFAFA' }}>
+          <div className="flex items-center justify-center border-r px-2 py-1" style={{ borderColor: '#C0D0DE', background: '#E8E8E8' }}>
+            <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#777' }}>fx</span>
+          </div>
+          <span style={{
+            fontFamily: "'Share Tech Mono', monospace",
+            fontSize: '10px',
+            color: '#1A5C38',
+            padding: '4px 8px',
+          }}>
+            =BILAN(&quot;{player.name}&quot;, DUREE({durationText}), SALAIRE({formatSalary(player.score)}))
           </span>
         </div>
 
-        {/* Body */}
-        <div className="bg-[#F5F5F5] p-6 text-center">
-          <h2 className="mb-1 text-2xl font-bold text-[#1E293B]">
-            {isVictory ? 'Felicitations !' : 'Fin de contrat'}
+        {/* Body — Excel cell grid style */}
+        <div className="p-5 text-center" style={{ background: '#F5F5F5' }}>
+          <h2 style={{
+            fontFamily: "'Oxanium', sans-serif",
+            fontSize: '22px',
+            fontWeight: 800,
+            color: '#0A1A12',
+            marginBottom: '4px',
+            letterSpacing: '1px',
+          }}>
+            {isVictory ? 'PROMOTION ACCORDEE' : 'FIN DE CONTRAT'}
           </h2>
-          <p className="mb-2 text-sm text-[#64748B]">
+          <p style={{
+            fontFamily: "'Share Tech Mono', monospace",
+            fontSize: '11px',
+            color: '#607888',
+            marginBottom: '12px',
+          }}>
             {isVictory
               ? `${player.name}, vous etes promu(e) PDG de Guibour Corp.`
               : `${player.name}, votre CDD n'a pas ete renouvele.`}
           </p>
 
-          {/* Duration highlight */}
-          <p className="mb-4 text-base text-[#1E293B]">
-            J&apos;ai tenu <span className="text-xl font-bold text-[#1A5C38]">{durationText}</span> dans Guibour System
-          </p>
-
-          {/* Stats grid */}
-          <div className="mb-4 grid grid-cols-3 gap-3">
-            <div className="rounded-lg bg-white p-3 shadow-sm">
-              <div className="text-xs text-[#94A3B8]">Niveau</div>
-              <div className="text-xl font-bold text-[#1E293B]">{level}</div>
-            </div>
-            <div className="rounded-lg bg-white p-3 shadow-sm">
-              <div className="text-xs text-[#94A3B8]">Salaire</div>
-              <div className="text-xl font-bold text-[#1A5C38]">{formatSalary(player.score)}</div>
-            </div>
-            <div className="rounded-lg bg-white p-3 shadow-sm">
-              <div className="text-xs text-[#94A3B8]">Classement</div>
-              <div className="text-xl font-bold text-[#F0C830]">#{rank}</div>
+          {/* Duration — prominent */}
+          <div style={{
+            background: '#fff',
+            border: '1px solid #C8D8E8',
+            padding: '10px',
+            marginBottom: '12px',
+          }}>
+            <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '10px', color: '#607888' }}>
+              DUREE DANS LE SYSTEME
+            </span>
+            <div style={{
+              fontFamily: "'Oxanium', sans-serif",
+              fontSize: '32px',
+              fontWeight: 800,
+              color: '#1A5C38',
+              lineHeight: 1.2,
+            }}>
+              {durationText}
             </div>
           </div>
 
-          {/* Challenge message */}
-          <p className="mb-4 text-sm font-semibold text-[#1A5C38]">
-            Peux-tu battre mon score ?
+          {/* Stats — Excel cells */}
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr 1fr',
+            gap: '1px',
+            background: '#C8D8E8',
+            border: '1px solid #C8D8E8',
+            marginBottom: '12px',
+          }}>
+            {[
+              { label: 'NIVEAU', value: String(level), color: '#0A1A12' },
+              { label: 'SALAIRE', value: formatSalary(player.score), color: '#1A5C38' },
+              { label: 'CLASSEMENT', value: `#${rank}`, color: '#D4A020' },
+            ].map(cell => (
+              <div key={cell.label} style={{ background: '#fff', padding: '8px 6px', textAlign: 'center' }}>
+                <div style={{
+                  fontFamily: "'Share Tech Mono', monospace",
+                  fontSize: '8px',
+                  color: '#607888',
+                  letterSpacing: '2px',
+                  marginBottom: '2px',
+                }}>{cell.label}</div>
+                <div style={{
+                  fontFamily: "'Oxanium', sans-serif",
+                  fontSize: '18px',
+                  fontWeight: 700,
+                  color: cell.color,
+                }}>{cell.value}</div>
+              </div>
+            ))}
+          </div>
+
+          {/* Challenge */}
+          <p style={{
+            fontFamily: "'Share Tech Mono', monospace",
+            fontSize: '10px',
+            color: '#1A5C38',
+            letterSpacing: '2px',
+            marginBottom: '14px',
+          }}>
+            PEUX-TU BATTRE MON SCORE ?
           </p>
 
-          {/* Buttons */}
-          <div className="flex gap-3">
+          {/* Buttons — corporate style */}
+          <div className="flex gap-2">
             <button
               onClick={onRestart}
-              className="flex-1 cursor-pointer rounded-lg py-3 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-[0.98]"
-              style={{ background: 'linear-gradient(to bottom, #2E8B57, #1A5C38)' }}
+              className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]"
+              style={{
+                fontFamily: "'Oxanium', sans-serif",
+                background: '#1A5C38',
+                border: '1px solid #0A1A12',
+              }}
             >
-              Rejouer
+              REJOUER
             </button>
             <button
               onClick={handleChallenge}
-              className="flex-1 cursor-pointer rounded-lg py-3 text-sm font-bold text-white transition-all hover:brightness-110 active:scale-[0.98]"
-              style={{ background: 'linear-gradient(to bottom, #F0C830, #D4A020)' }}
+              className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]"
+              style={{
+                fontFamily: "'Oxanium', sans-serif",
+                background: '#2E8B57',
+                color: '#fff',
+                border: '1px solid #1A5C38',
+              }}
             >
-              {copied ? 'Copie !' : 'Defier un ami'}
+              {copied ? 'COPIE !' : 'DEFIER UN AMI'}
             </button>
             <button
               onClick={handleShare}
-              className="cursor-pointer rounded-lg border border-[#CBD5E1] bg-white px-4 py-3 text-sm font-bold text-[#1E293B] transition-all hover:bg-[#F8FAFC] active:scale-[0.98]"
+              className="cursor-pointer px-4 py-3 text-xs font-bold tracking-widest transition-all hover:bg-[#E8E8E8] active:scale-[0.98]"
+              style={{
+                fontFamily: "'Oxanium', sans-serif",
+                background: '#fff',
+                color: '#0A1A12',
+                border: '1px solid #C8D8E8',
+              }}
             >
-              Partager
+              PARTAGER
             </button>
           </div>
+        </div>
+
+        {/* Bottom status bar — Excel style */}
+        <div className="flex items-center justify-between px-3 py-1"
+             style={{ background: '#1A5C38', borderTop: '1px solid #0F3320' }}>
+          <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.6)' }}>
+            guibour.fr
+          </span>
+          <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.6)' }}>
+            #guibureaucracy
+          </span>
         </div>
       </div>
     </div>

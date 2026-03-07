@@ -23,11 +23,11 @@ const PLAYER_SPEED = 3;
 const PROJECTILE_SPEED = 5;
 
 const SIZE_CONFIG: Record<DossierSize, { radius: number; bounceVy: number; score: number }> = {
-  A: { radius: 40, bounceVy: -7.0, score: 100 },
-  B: { radius: 30, bounceVy: -6.5, score: 200 },
-  C: { radius: 22, bounceVy: -6.0, score: 300 },
-  D: { radius: 15, bounceVy: -5.5, score: 500 },
-  E: { radius: 10, bounceVy: -5.0, score: 1000 },
+  A: { radius: 40, bounceVy: -7.8, score: 100 },
+  B: { radius: 30, bounceVy: -7.3, score: 200 },
+  C: { radius: 22, bounceVy: -6.7, score: 300 },
+  D: { radius: 15, bounceVy: -6.2, score: 500 },
+  E: { radius: 10, bounceVy: -5.6, score: 1000 },
 };
 
 const SPLIT_MAP: Record<DossierSize, DossierSize | null> = {
@@ -870,8 +870,8 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const isMoving = player.direction !== 'idle';
     const sprite = isMoving ? spriteRun : spriteIdle;
 
-    // Sprite sizing: fit to player height (64px tall)
-    const drawH = 64;
+    // Sprite sizing: 90px tall for good visibility
+    const drawH = 90;
     const aspectRatio = sprite.naturalWidth / sprite.naturalHeight;
     const drawW = drawH * aspectRatio;
 
@@ -880,7 +880,8 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
       ctx.scale(-1, 1);
     }
 
-    ctx.drawImage(sprite, -drawW / 2, -drawH + 32, drawW, drawH);
+    // Draw so feet align with player anchor point
+    ctx.drawImage(sprite, -drawW / 2, -drawH + 30, drawW, drawH);
   } else {
     // Fallback: simple rectangle while sprites load
     if (player.direction === 'left') ctx.scale(-1, 1);
@@ -1205,12 +1206,17 @@ function drawLevelComplete(ctx: CanvasRenderingContext2D, state: GameState) {
   ctx.fillStyle = '#1A5C38';
   ctx.beginPath(); ctx.roundRect(bX, bY, bW, 28, [6, 6, 0, 0]); ctx.fill();
 
+  // Border
+  ctx.strokeStyle = '#1A5C38';
+  ctx.lineWidth = 2;
+  ctx.beginPath(); ctx.roundRect(bX, bY, bW, bH, 6); ctx.stroke();
+
   ctx.fillStyle = '#FFF';
   ctx.font = 'bold 11px "Segoe UI", sans-serif';
   ctx.textAlign = 'left';
-  ctx.fillText('Guibour Corp. \u2014 Notification', bX + 12, bY + 18);
+  ctx.fillText('GUIBOUR CORP. — NOTIFICATION', bX + 12, bY + 18);
 
-  ctx.fillStyle = '#1E293B';
+  ctx.fillStyle = '#0A1A12';
   ctx.font = 'bold 18px "Segoe UI", sans-serif';
   ctx.textAlign = 'center';
   ctx.fillText(`Niveau ${state.level} termine !`, w / 2, bY + 60);
@@ -1219,7 +1225,7 @@ function drawLevelComplete(ctx: CanvasRenderingContext2D, state: GameState) {
   ctx.font = 'bold 14px Consolas, monospace';
   ctx.fillText(`Prime: +${(state.level * 500).toLocaleString('fr-FR')} \u20AC`, w / 2, bY + 85);
 
-  ctx.fillStyle = '#9CA3AF';
+  ctx.fillStyle = '#607888';
   ctx.font = '11px "Segoe UI", sans-serif';
   ctx.fillText('Prochain niveau...', w / 2, bY + 115);
 
