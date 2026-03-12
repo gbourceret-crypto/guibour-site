@@ -38,6 +38,7 @@ const BONUS_DURATION: Partial<Record<BonusType, number>> = {
 
 const TIMER_BAR_H = 8;
 const SPIKE_H = 20;
+const GROUND_MARGIN = PLAYER_H; // ground line = bottom of canvas minus player height
 
 // ===== PARTICLES =====
 interface Particle {
@@ -88,7 +89,7 @@ export function createInitialState(cw: number, ch: number): GameState {
 function createPlayer(cw: number, ch: number, name: string): Player {
   return {
     x: cw / 2,
-    y: ch - PLAYER_H / 2,
+    y: ch - GROUND_MARGIN, // feet on the ground line
     width: PLAYER_W,
     height: PLAYER_H,
     speed: PLAYER_SPEED,
@@ -165,7 +166,7 @@ export function updateGame(state: GameState): GameState {
         state.activeEffects = [];
         state.cgtShield = false;
         state.player.x = state.canvasWidth / 2;
-        state.player.y = state.canvasHeight - PLAYER_H / 2;
+        state.player.y = state.canvasHeight - GROUND_MARGIN;
         state.player.invincible = 120;
       }
     }
@@ -190,7 +191,7 @@ export function updateGame(state: GameState): GameState {
       state.activeEffects = [];
       state.cgtShield = false;
       state.player.x = state.canvasWidth / 2;
-      state.player.y = state.canvasHeight - PLAYER_H / 2;
+      state.player.y = state.canvasHeight - GROUND_MARGIN;
       state.player.invincible = 0;
       state.status = 'playing';
     }
@@ -278,7 +279,7 @@ function updateProjectiles(state: GameState) {
 }
 
 function updateBubbles(state: GameState) {
-  const floorY = state.canvasHeight;
+  const floorY = state.canvasHeight - GROUND_MARGIN;
   const ceilingY = TIMER_BAR_H + (state.ceilingSpikes ? SPIKE_H : 0);
 
   for (const b of state.bubbles) {
@@ -318,13 +319,13 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight;
+  const floorY = state.canvasHeight - GROUND_MARGIN;
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
     b.y += b.vy;
-    if (b.y >= floorY - 15) {
-      b.y = floorY - 15;
+    if (b.y >= floorY) {
+      b.y = floorY;
       b.vy = 0;
     }
     // Disappear after 300 frames (5s)
