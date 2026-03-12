@@ -47,6 +47,7 @@ interface Particle {
 }
 
 let particles: Particle[] = [];
+let walkVideoPlaying = false;
 
 // ===== ASSETS (set from component) =====
 let assets: GameAssets | null = null;
@@ -58,6 +59,7 @@ export function setGameAssets(a: GameAssets) {
 // ===== INIT =====
 export function createInitialState(cw: number, ch: number): GameState {
   particles = [];
+  walkVideoPlaying = false;
   return {
     status: 'idle',
     level: 0,
@@ -682,25 +684,44 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   // Blinking when invincible
   if (player.invincible > 0 && state.frameCount % 8 < 4) return;
 
-  const sprite = player.direction === 'idle'
-    ? assets?.player.idle
-    : assets?.player.run;
+  const walkVideo = assets?.player.walkVideo;
+  const idleImg = assets?.player.idle;
+  const isMoving = player.direction === 'left' || player.direction === 'right';
 
-  if (sprite) {
-    ctx.save();
-    if (player.direction === 'left') {
+  // Manage video play/pause
+  if (walkVideo && walkVideo.readyState >= 2) {
+    if (isMoving && !walkVideoPlaying) {
+      walkVideo.play().catch(() => {});
+      walkVideoPlaying = true;
+    } else if (!isMoving && walkVideoPlaying) {
+      walkVideo.pause();
+      walkVideoPlaying = false;
+    }
+  }
+
+  ctx.save();
+
+  if (isMoving && walkVideo && walkVideo.readyState >= 2) {
+    // Draw video frame — video is natively facing left
+    // For right movement: flip horizontally
+    if (player.direction === 'right') {
       ctx.translate(player.x, player.y - player.height);
       ctx.scale(-1, 1);
-      ctx.drawImage(sprite, -player.width / 2, 0, player.width, player.height);
+      ctx.drawImage(walkVideo, -player.width / 2, 0, player.width, player.height);
     } else {
-      ctx.drawImage(sprite, player.x - player.width / 2, player.y - player.height, player.width, player.height);
+      // Left = native direction
+      ctx.drawImage(walkVideo, player.x - player.width / 2, player.y - player.height, player.width, player.height);
     }
-    ctx.restore();
+  } else if (idleImg) {
+    // Idle: draw static image
+    ctx.drawImage(idleImg, player.x - player.width / 2, player.y - player.height, player.width, player.height);
   } else {
     // Fallback rectangle
     ctx.fillStyle = '#3CB371';
     ctx.fillRect(player.x - player.width / 2, player.y - player.height, player.width, player.height);
   }
+
+  ctx.restore();
 }
 
 function drawCgtShield(ctx: CanvasRenderingContext2D, state: GameState) {

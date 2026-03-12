@@ -9,7 +9,10 @@ export interface GameAssets {
     bonusArgent: HTMLAudioElement;
     bonusCgt: HTMLAudioElement;
   };
-  player: { idle: HTMLImageElement; run: HTMLImageElement };
+  player: {
+    idle: HTMLImageElement;
+    walkVideo: HTMLVideoElement; // motion design walk (left direction)
+  };
 }
 
 function loadImage(src: string): Promise<HTMLImageElement> {
@@ -18,6 +21,20 @@ function loadImage(src: string): Promise<HTMLImageElement> {
     img.onload = () => resolve(img);
     img.onerror = () => reject(new Error(`Failed to load image: ${src}`));
     img.src = src;
+  });
+}
+
+function loadVideo(src: string): Promise<HTMLVideoElement> {
+  return new Promise((resolve, reject) => {
+    const video = document.createElement('video');
+    video.muted = true;
+    video.loop = true;
+    video.playsInline = true;
+    video.preload = 'auto';
+    video.oncanplaythrough = () => resolve(video);
+    video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+    video.src = src;
+    video.load();
   });
 }
 
@@ -35,9 +52,8 @@ export async function loadAllAssets(
   onProgress?: (loaded: number, total: number) => void
 ): Promise<GameAssets> {
   let loaded = 0;
-  // Priority sprites: 7 bubbles + 9 bonuses + 2 player + 1 tower = 19
-  // Backgrounds: 25 (lazy batched)
-  // Audio: 4
+  // 7 bubbles + 9 bonuses + 1 player idle + 1 player video + 1 tower = 19
+  // Backgrounds: 25, Audio: 4
   const total = 19 + 25 + 4;
 
   const tick = () => {
@@ -61,21 +77,21 @@ export async function loadAllAssets(
     loadImage(`/game/bonuses/${name}.png`).then(img => { bonusMap.set(name, img); tick(); })
   );
 
-  // Priority: player sprites
-  const playerPromises = [
-    loadImage('/guibour-idle.png').then(img => { tick(); return img; }),
-    loadImage('/guibour-run.png').then(img => { tick(); return img; }),
-  ];
+  // Priority: player idle image + walk video
+  const playerIdlePromise = loadImage('/game/player/guibour-idle.jpg').then(img => { tick(); return img; });
+  const playerWalkPromise = loadVideo('/game/player/guibour-walk-left.mp4').then(v => { tick(); return v; })
+    .catch(() => { tick(); return document.createElement('video'); });
 
   // Priority: tower
   const towerPromise = loadImage('/game/tower/tower.png').then(img => { tick(); return img; });
 
   // Wait for priority assets
   await Promise.all([...bubblePromises, ...bonusPromises]);
-  const [playerIdle, playerRun] = await Promise.all(playerPromises);
+  const playerIdle = await playerIdlePromise;
+  const walkVideo = await playerWalkPromise;
   const tower = await towerPromise;
 
-  // Audio (load in parallel, don't block rendering)
+  // Audio
   const audioPromises = [
     loadAudio('/game/audio/gameplay.mp3').then(a => { tick(); return a; }).catch(() => { tick(); return new Audio(); }),
     loadAudio('/game/audio/gameover.mp3').then(a => { tick(); return a; }).catch(() => { tick(); return new Audio(); }),
@@ -84,7 +100,7 @@ export async function loadAllAssets(
   ];
   const [gameplay, gameover, bonusArgent, bonusCgt] = await Promise.all(audioPromises);
 
-  // Backgrounds: load in batches of 5 to not block
+  // Backgrounds: load in batches of 5
   const backgrounds = new Map<number, HTMLImageElement>();
   for (let batch = 0; batch < 5; batch++) {
     const batchPromises = [];
@@ -93,7 +109,7 @@ export async function loadAllAssets(
       batchPromises.push(
         loadImage(`/game/backgrounds/bg-${String(idx).padStart(2, '0')}.png`)
           .then(img => { backgrounds.set(idx, img); tick(); })
-          .catch(() => { tick(); }) // graceful fallback
+          .catch(() => { tick(); })
       );
     }
     await Promise.all(batchPromises);
@@ -105,6 +121,6 @@ export async function loadAllAssets(
     bonuses: bonusMap,
     tower,
     audio: { gameplay, gameover, bonusArgent, bonusCgt },
-    player: { idle: playerIdle, run: playerRun },
+    player: { idle: playerIdle, walkVideo },
   };
 }
