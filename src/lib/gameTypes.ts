@@ -1,15 +1,15 @@
-export type DossierSize = 'A' | 'B' | 'C' | 'D' | 'E';
+// ===== BUBBLE SIZES (1=smallest, 7=largest) =====
+export type BubbleSize = 1 | 2 | 3 | 4 | 5 | 6 | 7;
 
-export interface Dossier {
+export interface Bubble {
   id: number;
   x: number;
   y: number;
   vx: number;
   vy: number;
-  size: DossierSize;
+  size: BubbleSize;
   radius: number;
-  color: string;
-  type: 'folder' | 'clock' | 'chart';
+  sprite: string; // path to PNG
 }
 
 export interface Projectile {
@@ -18,10 +18,11 @@ export interface Projectile {
   y: number;
   height: number;
   active: boolean;
-  type: 'email' | 'call';
+  piercing: boolean; // pilule bonus: goes through bubbles
 }
 
-export type BonusType = 'coffee' | 'salary' | 'rtt' | 'meeting' | 'speed' | 'alcohol';
+// ===== BONUS TYPES =====
+export type BonusType = 'cafe' | 'biere' | 'argent' | 'temps' | 'pilule' | 'stagiaire' | 'cgt' | 'rtt';
 
 export interface Bonus {
   id: number;
@@ -30,13 +31,22 @@ export interface Bonus {
   vy: number;
   type: BonusType;
   active: boolean;
+  sprite: string; // path to PNG
+  spawnTime: number; // frame when spawned (disappear after 5s = 300 frames)
 }
 
 export interface ActiveEffect {
   type: BonusType;
-  remaining: number;
+  remaining: number; // frames remaining
 }
 
+// ===== TIMER =====
+export interface RoundTimer {
+  total: number;    // seconds
+  remaining: number; // seconds (decremented per frame via dt)
+}
+
+// ===== PLAYER =====
 export interface Player {
   x: number;
   y: number;
@@ -44,31 +54,53 @@ export interface Player {
   height: number;
   speed: number;
   direction: 'left' | 'right' | 'idle';
-  lives: number;
+  lives: number; // RTT
   score: number;
   name: string;
-  invincible: number;
+  invincible: number; // frames of invincibility after hit
+}
+
+// ===== ELEVATOR ANIMATION =====
+export interface ElevatorAnim {
+  active: boolean;
+  progress: number;    // 0 to 1
+  fromLevel: number;
+  toLevel: number;
+}
+
+// ===== LEVEL CONFIG =====
+export interface BubbleConfig {
+  size: BubbleSize;
+  x: number;   // 0-1 fraction of canvas width
+  vx: number;  // initial horizontal velocity
 }
 
 export interface LevelConfig {
-  level: number;
-  dossiers: Array<{
-    size: DossierSize;
-    x: number;
-    vx: number;
-    type: 'folder' | 'clock' | 'chart';
-  }>;
-  bonusChance: number;
+  id: number;           // 0-24
+  name: string;         // "Etage 00 — Accueil" etc.
+  background: string;   // "/game/backgrounds/bg-00.png"
+  phrase: string;       // satirical phrase shown at start
+  bubbles: BubbleConfig[];
+  timeLimit: number;    // seconds
+  bonusWeights: Partial<Record<BonusType, number>>;
+  hasCeilingSpikes: boolean;
 }
 
+// ===== GAME STATE =====
 export interface GameState {
-  status: 'idle' | 'playing' | 'paused' | 'levelComplete' | 'gameOver' | 'victory';
-  level: number;
+  status: 'idle' | 'playing' | 'paused' | 'levelComplete' | 'gameOver' | 'victory' | 'burnout';
+  level: number;         // 0-24
   player: Player;
-  dossiers: Dossier[];
+  bubbles: Bubble[];
   projectiles: Projectile[];
   bonuses: Bonus[];
   activeEffects: ActiveEffect[];
+  timer: RoundTimer;
+  burnout: boolean;       // currently in burn out animation
+  burnoutTimer: number;   // frames remaining for burn out flash
+  ceilingSpikes: boolean; // active on current level
+  cgtShield: boolean;     // CGT shield active (absorbs next hit)
+  elevatorAnim: ElevatorAnim;
   nextId: number;
   canvasWidth: number;
   canvasHeight: number;
@@ -79,8 +111,10 @@ export interface GameState {
   levelTransitionTimer: number;
   startTime: number;
   endTime: number;
+  frameCount: number;
 }
 
+// ===== LEADERBOARD =====
 export interface LeaderboardEntry {
   name: string;
   score: number;

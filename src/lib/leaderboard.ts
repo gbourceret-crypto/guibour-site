@@ -37,5 +37,6 @@ export function formatDuration(ms: number): string {
 
 export function getShareText(name: string, level: number, score: number, durationMs?: number): string {
   const duration = durationMs ? formatDuration(durationMs) : '0:00';
-  return `guibour.fr\nGuibureaucracy\n\nJ'ai tenu ${duration} dans le systeme interne de Guibour Corp.\nSalaire atteint : ${formatSalary(score)}\nPeux-tu battre mon score ?\n\n#guibour #guibureaucracy`;
+  const etage = String(level).padStart(2, '0');
+  return `guibour.fr\nW.O.W — Work Or Window\n\nJ'ai atteint l'etage ${etage} en ${duration} chez Guibour Corp.\nSalaire : ${formatSalary(score)}\nPeux-tu battre mon score ?\n\n#WOW #guibour`;
 }
