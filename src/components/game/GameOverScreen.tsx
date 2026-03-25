@@ -66,7 +66,7 @@ export default function GameOverScreen({ state, onRestart }: Props) {
 
   return (
     <div className="absolute inset-0 z-30 flex flex-col items-center justify-center"
-         style={{ background: 'rgba(10,26,18,0.85)', backdropFilter: 'blur(4px)' }}>
+         style={{ background: 'rgba(10,21,32,0.85)', backdropFilter: 'blur(4px)' }}>
 
       {/* Big announcement text */}
       <div className="mb-8 text-center" style={{
@@ -258,7 +258,7 @@ export default function GameOverScreen({ state, onRestart }: Props) {
           </div>
 
           <div className="flex items-center justify-between px-3 py-1"
-               style={{ background: '#1A5C38', borderTop: '1px solid #0F3320' }}>
+               style={{ background: '#1A5C38', borderTop: '1px solid #0A1520' }}>
             <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '8px', color: 'rgba(255,255,255,0.6)' }}>
               guibour.fr
             </span>
