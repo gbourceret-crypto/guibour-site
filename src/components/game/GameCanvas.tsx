@@ -241,37 +241,44 @@ export default function GameCanvas() {
 
   return (
     <div className="flex h-full w-full" style={{ background: '#0A1A12' }}>
-      {/* Tower on LEFT */}
-      {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <TowerProgress
-          currentLevel={currentLevel}
-          totalLevels={25}
-          assets={assetsRef}
-        />
-      )}
-
       {/* Game area */}
       <div className="relative flex-1">
-        {/* HUD overlay */}
+        {/* HUD overlay — BOTTOM bar */}
         {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-          <div className="pointer-events-none absolute inset-x-0 top-2 z-10 flex items-start justify-between px-3"
+          <div className="pointer-events-none absolute inset-x-0 bottom-2 z-10 flex items-end justify-between px-3"
                style={{ fontFamily: "'Share Tech Mono', monospace" }}>
-            {/* Left: RTT/Lives */}
+            {/* Left: RTT badge icons */}
             <div style={{
-              background: 'rgba(10,26,18,0.7)',
-              padding: '4px 10px',
-              borderRadius: '4px',
-              fontSize: '11px',
-              color: '#FF5F56',
-              letterSpacing: '1px',
+              background: 'rgba(10,21,32,0.85)',
+              padding: '5px 10px',
+              border: '1px solid rgba(0,71,171,0.4)',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
             }}>
-              RTT: {hudInfo.lives}
+              <span style={{ fontSize: '8px', color: '#607888', letterSpacing: '2px', marginRight: '4px' }}>RTT</span>
+              {[1, 2, 3].map(i => (
+                <div key={i} style={{
+                  width: '22px',
+                  height: '22px',
+                  borderRadius: '50%',
+                  background: i <= hudInfo.lives ? '#0047AB' : 'rgba(0,71,171,0.15)',
+                  border: `2px solid ${i <= hudInfo.lives ? '#00A89D' : 'rgba(0,168,157,0.3)'}`,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: i <= hudInfo.lives ? '0 0 6px rgba(0,168,157,0.5)' : 'none',
+                  transition: 'all 0.3s ease',
+                }}>
+                  <span style={{ fontSize: '9px', color: i <= hudInfo.lives ? '#fff' : '#334' }}>★</span>
+                </div>
+              ))}
             </div>
 
             {/* Center: Level name + phrase */}
             <div className="text-center">
               <div style={{
-                background: 'rgba(10,26,18,0.7)',
+                background: 'rgba(10,21,32,0.7)',
                 padding: '4px 12px',
                 borderRadius: '4px',
                 fontSize: '11px',
@@ -282,7 +289,7 @@ export default function GameCanvas() {
               </div>
               {showPhrase && (
                 <div style={{
-                  background: 'rgba(10,26,18,0.7)',
+                  background: 'rgba(10,21,32,0.7)',
                   padding: '3px 10px',
                   borderRadius: '4px',
                   fontSize: '9px',
@@ -298,7 +305,7 @@ export default function GameCanvas() {
             {/* Right: Score + Mute */}
             <div className="flex items-center gap-2">
               <div style={{
-                background: 'rgba(10,26,18,0.7)',
+                background: 'rgba(10,21,32,0.7)',
                 padding: '4px 10px',
                 borderRadius: '4px',
                 fontSize: '11px',
@@ -311,7 +318,7 @@ export default function GameCanvas() {
                 onClick={handleToggleMute}
                 className="pointer-events-auto cursor-pointer"
                 style={{
-                  background: 'rgba(10,26,18,0.7)',
+                  background: 'rgba(10,21,32,0.7)',
                   padding: '4px 8px',
                   borderRadius: '4px',
                   fontSize: '12px',
@@ -370,7 +377,7 @@ export default function GameCanvas() {
         {/* IDLE overlay */}
         {gameStatus === 'idle' && (
           <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6"
-               style={{ background: 'rgba(10,26,18,0.7)', backdropFilter: 'blur(3px)' }}>
+               style={{ background: 'rgba(10,21,32,0.7)', backdropFilter: 'blur(3px)' }}>
             <div className="text-center">
               <h1 style={{
                 fontFamily: "'Oxanium', sans-serif",
@@ -378,7 +385,7 @@ export default function GameCanvas() {
                 fontWeight: 900,
                 color: '#fff',
                 letterSpacing: '4px',
-                textShadow: '0 0 20px rgba(60,179,113,0.5)',
+                textShadow: '0 0 20px rgba(0,168,157,0.5)',
               }}>
                 W.O.W
               </h1>
@@ -413,7 +420,7 @@ export default function GameCanvas() {
                 background: '#1A5C38',
                 border: '2px solid #3CB371',
                 padding: '16px 52px',
-                boxShadow: '0 0 30px rgba(46,139,87,0.3)',
+                boxShadow: '0 0 30px rgba(0,71,171,0.3)',
               }}
             >
               JOUER
@@ -433,7 +440,7 @@ export default function GameCanvas() {
         {/* Name modal */}
         {showNameModal && (
           <div className="absolute inset-0 z-30 flex items-center justify-center"
-               style={{ background: 'rgba(10,26,18,0.7)', backdropFilter: 'blur(4px)' }}>
+               style={{ background: 'rgba(10,21,32,0.7)', backdropFilter: 'blur(4px)' }}>
             <div className="w-[440px] max-w-[90vw] overflow-hidden shadow-2xl"
                  style={{
                    animation: 'slideUp 0.3s ease-out',
@@ -530,6 +537,15 @@ export default function GameCanvas() {
           <GameOverScreen state={stateRef.current} onRestart={handleRestart} />
         )}
       </div>
+
+      {/* Tower on RIGHT */}
+      {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
+        <TowerProgress
+          currentLevel={currentLevel}
+          totalLevels={25}
+          assets={assetsRef}
+        />
+      )}
     </div>
   );
 }
