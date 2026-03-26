@@ -277,10 +277,16 @@ export default function GameCanvas() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full" style={{ background: '#607888', gap: '3px', padding: '3px' }}>
+    <div className="flex flex-col h-full w-full" style={{
+      backgroundImage: "url('/steel-texture.png')",
+      backgroundSize: 'cover',
+      backgroundPosition: 'center',
+      gap: '0',
+      padding: '14px 10px',
+    }}>
 
       {/* ── TOP ROW: game canvas + tower ── */}
-      <div className="flex flex-1" style={{ gap: '3px', minHeight: 0 }}>
+      <div className="flex flex-1" style={{ gap: '3.6%', minHeight: 0 }}>
 
         {/* Game canvas area */}
         <div className="relative flex-1" style={{ background: '#0A1520', overflow: 'hidden' }}>
@@ -404,7 +410,7 @@ export default function GameCanvas() {
 
       {/* ── TIMER / FORMULA BAR ROW ── */}
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, background: '#EBF0F5', fontFamily: "'Share Tech Mono', monospace" }}>
+        <div style={{ flexShrink: 0, background: '#EBF0F5', fontFamily: "'Share Tech Mono', monospace", marginTop: '18px' }}>
           {/* Formula row */}
           <div style={{ display: 'flex', alignItems: 'center', height: '28px', borderBottom: '1px solid #C0D0DE' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '100%', borderRight: '1px solid #C0D0DE', background: '#E0E8F0', flexShrink: 0 }}>
@@ -424,7 +430,7 @@ export default function GameCanvas() {
 
       {/* ── HUD ROW: lives + level name + score + mute ── */}
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, height: '56px', background: '#0D1D2E', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', fontFamily: "'Share Tech Mono', monospace" }}>
+        <div style={{ flexShrink: 0, height: '56px', background: '#0D1D2E', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', fontFamily: "'Share Tech Mono', monospace", marginTop: '7px' }}>
 
           {/* Left: RTT lives */}
           <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>

@@ -92,7 +92,7 @@ export function createInitialState(cw: number, ch: number): GameState {
 function createPlayer(cw: number, ch: number, name: string): Player {
   return {
     x: cw / 2,
-    y: ch - GROUND_MARGIN, // feet on the ground line
+    y: ch, // feet on the ground line (canvas bottom)
     width: PLAYER_W,
     height: PLAYER_H,
     speed: PLAYER_SPEED,
@@ -169,7 +169,7 @@ export function updateGame(state: GameState): GameState {
         state.activeEffects = [];
         state.cgtShield = false;
         state.player.x = state.canvasWidth / 2;
-        state.player.y = state.canvasHeight - GROUND_MARGIN;
+        state.player.y = state.canvasHeight;
         state.player.invincible = 120;
       }
     }
@@ -194,7 +194,7 @@ export function updateGame(state: GameState): GameState {
       state.activeEffects = [];
       state.cgtShield = false;
       state.player.x = state.canvasWidth / 2;
-      state.player.y = state.canvasHeight - GROUND_MARGIN;
+      state.player.y = state.canvasHeight;
       state.player.invincible = 0;
       state.status = 'playing';
     }
@@ -282,7 +282,7 @@ function updateProjectiles(state: GameState) {
 }
 
 function updateBubbles(state: GameState) {
-  const floorY = state.canvasHeight - GROUND_MARGIN;
+  const floorY = state.canvasHeight; // bubbles land at canvas bottom, same as player feet
   const ceilingY = TIMER_BAR_H + (state.ceilingSpikes ? SPIKE_H : 0);
 
   for (const b of state.bubbles) {
@@ -322,7 +322,7 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight - GROUND_MARGIN;
+  const floorY = state.canvasHeight; // bonus items land at canvas bottom, same as player feet
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
