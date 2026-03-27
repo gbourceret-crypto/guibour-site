@@ -1,8 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import Logo, { GlobeSVG } from './Logo';
-import GuibourCharacter from './GuibourCharacter';
+import { GlobeSVG } from './Logo';
 
 interface LoadingScreenProps {
   onComplete: () => void;
@@ -74,69 +73,58 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       {/* Scanlines */}
       <div className="scanlines" style={{ position: 'absolute', inset: 0 }} />
 
-      {/* Logo top-left */}
-      <div style={{ position: 'absolute', top: 24, left: 28 }}>
-        <Logo variant="dark" size="sm" />
-      </div>
-
-      {/* Center content */}
+      {/* Center content — no white square, directly on dark background */}
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-        {/* White backdrop behind logo */}
-        <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '16px',
-          padding: '32px 48px',
-          boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
-          display: 'inline-block',
-          animation: 'logoPulse 3s ease-in-out infinite',
-        }}>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
-            <GlobeSVG size={90} color="#0047AB" accentColor="#00A89D" glowColor="#00A89D" />
-          </div>
-
-          <span style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '72px',
-            fontWeight: 800,
-            color: '#0A1520',
-            letterSpacing: '2px',
-            display: 'block',
-            lineHeight: 1,
-          }}>
-            GUIBOUR
-          </span>
-
-          {/* Separator */}
-          <div style={{
-            width: '320px',
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent, #0047AB, #00A89D, transparent)',
-            margin: '16px auto',
-            boxShadow: '0 0 8px #00A89D',
-          }} />
-
-          <span style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '14px',
-            fontWeight: 300,
-            color: '#0047AB',
-            letterSpacing: '18px',
-            display: 'block',
-          }}>
-            SYSTEM
-          </span>
+        {/* Globe icon */}
+        <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 24 }}>
+          <GlobeSVG size={100} color="#0047AB" accentColor="#00A89D" glowColor="#00A89D" />
         </div>
+
+        {/* W.O.W title — game name, simple mono font */}
+        <span style={{
+          fontFamily: "'Share Tech Mono', monospace",
+          fontSize: '56px',
+          fontWeight: 400,
+          color: '#fff',
+          letterSpacing: '12px',
+          display: 'block',
+          lineHeight: 1,
+          textShadow: '0 0 20px rgba(0,168,157,0.6), 0 0 60px rgba(0,168,157,0.2)',
+        }}>
+          W.O.W
+        </span>
+
+        {/* Subtitle */}
+        <span style={{
+          fontFamily: "'Share Tech Mono', monospace",
+          fontSize: '11px',
+          color: '#00A89D',
+          letterSpacing: '6px',
+          display: 'block',
+          marginTop: '10px',
+        }}>
+          WORK OR WINDOW
+        </span>
+
+        {/* Separator */}
+        <div style={{
+          width: '280px',
+          height: '1px',
+          background: 'linear-gradient(90deg, transparent, #0047AB, #00A89D, transparent)',
+          margin: '24px auto',
+          boxShadow: '0 0 8px #00A89D',
+        }} />
 
         {/* Progress bar */}
         <div style={{
           width: '320px',
-          margin: '40px auto 0',
+          margin: '0 auto',
           background: 'rgba(0,71,171,0.15)',
           border: '1px solid #0047AB',
           padding: '4px',
         }}>
           <div style={{
-            height: '10px',
+            height: '12px',
             width: `${progress}%`,
             background: 'linear-gradient(90deg, #0047AB, #00A89D)',
             boxShadow: '0 0 8px #00A89D',
@@ -145,27 +133,14 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         </div>
         <span style={{
           fontFamily: "'Share Tech Mono', monospace",
-          fontSize: '9px',
+          fontSize: '11px',
           color: '#00A89D',
           letterSpacing: '3px',
-          marginTop: '8px',
+          marginTop: '10px',
           display: 'block',
         }}>
           INITIALISATION... {progress}%
         </span>
-      </div>
-
-      {/* Walking character */}
-      <div style={{
-        position: 'absolute',
-        bottom: 80,
-        left: 0,
-        right: 0,
-        overflow: 'hidden',
-        height: '100px',
-        zIndex: 10,
-      }}>
-        <GuibourCharacter size={80} animate={true} />
       </div>
 
       {/* Terminal boot text - bottom left */}

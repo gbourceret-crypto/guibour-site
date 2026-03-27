@@ -9,13 +9,17 @@ import { audioManager } from '@/lib/audioManager';
 import TowerProgress from './TowerProgress';
 import GameOverScreen from './GameOverScreen';
 
-export default function GameCanvas() {
+interface GameCanvasProps {
+  characterName?: string;
+}
+
+export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState | null>(null);
   const rafRef = useRef<number>(0);
   const [gameStatus, setGameStatus] = useState<GameState['status']>('idle');
   const [showNameModal, setShowNameModal] = useState(false);
-  const [playerName, setPlayerName] = useState('');
+  const [playerName, setPlayerName] = useState(characterName);
   const [assetsRef, setAssetsRef] = useState<GameAssets | null>(null);
   const [loadProgress, setLoadProgress] = useState(0);
   const [assetsLoaded, setAssetsLoaded] = useState(false);
@@ -71,8 +75,14 @@ export default function GameCanvas() {
     stateRef.current = createInitialState(canvas.width, canvas.height);
     const ctx = canvas.getContext('2d')!;
     renderGame(ctx, stateRef.current);
+    // Use ResizeObserver for accurate size tracking (handles flex layout settling)
+    const ro = new ResizeObserver(() => resize());
+    ro.observe(canvas.parentElement!);
     window.addEventListener('resize', resize);
-    return () => window.removeEventListener('resize', resize);
+    return () => {
+      ro.disconnect();
+      window.removeEventListener('resize', resize);
+    };
   }, [resize, assetsLoaded]);
 
   // Game loop
@@ -192,7 +202,19 @@ export default function GameCanvas() {
     stateRef.current.touchShoot = false;
   }, []);
 
-  const handlePlay = () => setShowNameModal(true);
+  const handlePlay = () => {
+    if (characterName) {
+      // Character already selected from selection screen — start immediately
+      const canvas = canvasRef.current!;
+      const newState = createInitialState(canvas.width, canvas.height);
+      stateRef.current = startGame(newState, characterName);
+      setCurrentLevel(0);
+      setGameStatus('playing');
+      audioManager.play('gameplay');
+    } else {
+      setShowNameModal(true);
+    }
+  };
 
   const handleStart = () => {
     if (!playerName.trim()) return;
@@ -232,45 +254,59 @@ export default function GameCanvas() {
   // Loading screen
   if (!assetsLoaded) {
     return (
-      <div className="flex h-full w-full flex-col items-center justify-center gap-4"
+      <div className="flex h-full w-full flex-col items-center justify-center gap-6"
            style={{ background: '#0A1520' }}>
         <h2 style={{
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: '24px',
-          fontWeight: 800,
-          color: '#00A89D',
-          letterSpacing: '4px',
+          fontFamily: "'Share Tech Mono', monospace",
+          fontSize: 'clamp(48px, 10vw, 80px)',
+          fontWeight: 400,
+          color: '#fff',
+          letterSpacing: '12px',
+          textShadow: '0 0 30px rgba(0,168,157,0.7), 0 0 80px rgba(0,168,157,0.3)',
+          lineHeight: 1,
         }}>
           W.O.W
         </h2>
         <p style={{
           fontFamily: "'Share Tech Mono', monospace",
-          fontSize: '10px',
-          color: '#607888',
-          letterSpacing: '2px',
+          fontSize: 'clamp(13px, 2vw, 18px)',
+          color: '#00A89D',
+          letterSpacing: '6px',
         }}>
           WORK OR WINDOW
         </p>
+        <p style={{
+          fontFamily: "'Share Tech Mono', monospace",
+          fontSize: 'clamp(11px, 1.5vw, 14px)',
+          color: '#607888',
+          letterSpacing: '2px',
+          marginTop: '-8px',
+        }}>
+          25 ÉTAGES — SURVIVEZ À GUIBOUR CORP.
+        </p>
         <div style={{
-          width: '200px',
-          height: '6px',
-          background: '#1A3A6A',
-          borderRadius: '3px',
-          overflow: 'hidden',
+          width: 'clamp(240px, 40vw, 400px)',
+          height: '16px',
+          background: 'rgba(0,71,171,0.2)',
+          border: '1px solid #0047AB',
+          padding: '3px',
+          marginTop: '8px',
         }}>
           <div style={{
             width: `${loadProgress}%`,
             height: '100%',
-            background: '#00A89D',
+            background: 'linear-gradient(90deg, #0047AB, #00A89D)',
+            boxShadow: '0 0 10px rgba(0,168,157,0.6)',
             transition: 'width 0.2s ease',
           }} />
         </div>
         <p style={{
           fontFamily: "'Share Tech Mono', monospace",
-          fontSize: '9px',
-          color: '#607888',
+          fontSize: 'clamp(12px, 1.8vw, 16px)',
+          color: '#00A89D',
+          letterSpacing: '3px',
         }}>
-          {loadProgress}%
+          CHARGEMENT... {loadProgress}%
         </p>
       </div>
     );

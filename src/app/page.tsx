@@ -6,7 +6,7 @@ import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import Logo from '@/components/ui/Logo';
-import GuibourCharacter from '@/components/ui/GuibourCharacter';
+import CharacterSelect, { CharacterData } from '@/components/ui/CharacterSelect';
 
 const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
   ssr: false,
@@ -137,27 +137,16 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
       >
         JOUER
       </button>
-
-      {/* Walking character at the bottom */}
-      <div style={{
-        position: 'absolute',
-        bottom: 20,
-        left: 0,
-        right: 0,
-        overflow: 'hidden',
-        height: '100px',
-        zIndex: 1,
-      }}>
-        <GuibourCharacter size={80} animate={true} />
-      </div>
     </div>
   );
 }
 
 export default function Home() {
   const [showLoading, setShowLoading] = useState(false);
+  const [showCharacterSelect, setShowCharacterSelect] = useState(false);
   const [showGame, setShowGame] = useState(false);
   const [loadingDone, setLoadingDone] = useState(false);
+  const [selectedCharacter, setSelectedCharacter] = useState<CharacterData | null>(null);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -177,19 +166,39 @@ export default function Home() {
   }, []);
 
   const handlePlay = useCallback(() => {
+    setShowCharacterSelect(true);
+  }, []);
+
+  const handleCharacterSelect = useCallback((character: CharacterData) => {
+    setSelectedCharacter(character);
+    setShowCharacterSelect(false);
     setShowGame(true);
+  }, []);
+
+  const handleCharacterBack = useCallback(() => {
+    setShowCharacterSelect(false);
   }, []);
 
   if (showLoading) {
     return <LoadingScreen onComplete={handleLoadingComplete} />;
   }
 
+  if (showCharacterSelect) {
+    return <CharacterSelect onSelect={handleCharacterSelect} onBack={handleCharacterBack} />;
+  }
+
   if (showGame) {
     return (
-      <div className="flex h-screen flex-col overflow-hidden" style={{ background: '#0A1520' }}>
+      <div
+        className="flex flex-col overflow-hidden"
+        style={{ background: '#0A1520', height: '100dvh' }}
+      >
         <ExcelNav />
-        <main className="flex-1">
-          <GameCanvas />
+        <main
+          className="flex-1"
+          style={{ minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
+        >
+          <GameCanvas characterName={selectedCharacter?.name ?? ''} />
         </main>
       </div>
     );
@@ -198,7 +207,7 @@ export default function Home() {
   return (
     <div className="min-h-screen">
       <ExcelNav />
-      <ExcelChrome formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2025") → WELCOME_TO_THE_SYSTEM'>
+      <ExcelChrome formulaText='=LAUNCH_GAME("W.O.W","SINGLE_2025") → WELCOME_TO_THE_SYSTEM'>
         <HeroContent onPlay={handlePlay} />
       </ExcelChrome>
     </div>
