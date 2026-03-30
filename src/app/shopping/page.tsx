@@ -46,9 +46,9 @@ function ProductSVG({ type }: { type: string }) {
       <div style={style}>
         <svg width="80" height="80" viewBox="0 0 80 80">
           <path d="M20 15 L10 25 L18 30 L18 65 L62 65 L62 30 L70 25 L60 15 L50 22 C47 25 33 25 30 22 Z"
-            fill="none" stroke="#0047AB" strokeWidth="2" />
-          <path d="M50 22 C47 25 33 25 30 22" fill="none" stroke="#0047AB" strokeWidth="1.5" />
-          <text x="40" y="48" textAnchor="middle" fontFamily="Orbitron" fontSize="8" fontWeight="800" fill="#0047AB" letterSpacing="1">GS</text>
+            fill="none" stroke="#7AEC7A" strokeWidth="2" />
+          <path d="M50 22 C47 25 33 25 30 22" fill="none" stroke="#7AEC7A" strokeWidth="1.5" />
+          <text x="40" y="48" textAnchor="middle" fontFamily="Share Tech Mono" fontSize="8" fontWeight="800" fill="#FFE033" letterSpacing="1">GS</text>
         </svg>
       </div>
     );
@@ -57,11 +57,11 @@ function ProductSVG({ type }: { type: string }) {
     return (
       <div style={style}>
         <svg width="80" height="80" viewBox="0 0 80 80">
-          <rect x="18" y="25" width="34" height="38" rx="2" fill="none" stroke="#0047AB" strokeWidth="2" />
-          <path d="M52 32 C60 32 62 38 62 42 C62 46 60 52 52 52" fill="none" stroke="#0047AB" strokeWidth="2" />
-          <path d="M28 22 C28 18 32 16 35 19" fill="none" stroke="#00A89D" strokeWidth="1.5" opacity="0.6" />
-          <path d="M35 20 C35 16 39 14 42 17" fill="none" stroke="#00A89D" strokeWidth="1.5" opacity="0.6" />
-          <text x="35" y="48" textAnchor="middle" fontFamily="Orbitron" fontSize="6" fontWeight="700" fill="#0047AB">CORP.</text>
+          <rect x="18" y="25" width="34" height="38" rx="2" fill="none" stroke="#7AEC7A" strokeWidth="2" />
+          <path d="M52 32 C60 32 62 38 62 42 C62 46 60 52 52 52" fill="none" stroke="#7AEC7A" strokeWidth="2" />
+          <path d="M28 22 C28 18 32 16 35 19" fill="none" stroke="#6ED47A" strokeWidth="1.5" opacity="0.6" />
+          <path d="M35 20 C35 16 39 14 42 17" fill="none" stroke="#6ED47A" strokeWidth="1.5" opacity="0.6" />
+          <text x="35" y="48" textAnchor="middle" fontFamily="Share Tech Mono" fontSize="6" fontWeight="700" fill="#FFE033">CORP.</text>
         </svg>
       </div>
     );
@@ -70,10 +70,10 @@ function ProductSVG({ type }: { type: string }) {
     return (
       <div style={style}>
         <svg width="80" height="80" viewBox="0 0 80 80">
-          <path d="M35 10 L45 10 L43 20 L48 22 L40 70 L32 22 L37 20 Z" fill="none" stroke="#0047AB" strokeWidth="2" />
-          <line x1="37" y1="30" x2="43" y2="30" stroke="#00A89D" strokeWidth="1" />
-          <line x1="37.5" y1="38" x2="42.5" y2="38" stroke="#00A89D" strokeWidth="1" />
-          <line x1="38" y1="46" x2="42" y2="46" stroke="#00A89D" strokeWidth="1" />
+          <path d="M35 10 L45 10 L43 20 L48 22 L40 70 L32 22 L37 20 Z" fill="none" stroke="#7AEC7A" strokeWidth="2" />
+          <line x1="37" y1="30" x2="43" y2="30" stroke="#FFE033" strokeWidth="1" />
+          <line x1="37.5" y1="38" x2="42.5" y2="38" stroke="#FFE033" strokeWidth="1" />
+          <line x1="38" y1="46" x2="42" y2="46" stroke="#FFE033" strokeWidth="1" />
         </svg>
       </div>
     );
@@ -82,12 +82,12 @@ function ProductSVG({ type }: { type: string }) {
   return (
     <div style={style}>
       <svg width="80" height="80" viewBox="0 0 80 80">
-        <rect x="25" y="20" width="30" height="44" rx="3" fill="none" stroke="#0047AB" strokeWidth="2" />
-        <rect x="30" y="12" width="20" height="10" rx="1" fill="none" stroke="#0047AB" strokeWidth="1.5" />
-        <rect x="34" y="14" width="4" height="6" fill="#00A89D" />
-        <rect x="42" y="14" width="4" height="6" fill="#00A89D" />
-        <text x="40" y="42" textAnchor="middle" fontFamily="Orbitron" fontSize="5" fontWeight="700" fill="#0047AB">GUIBOUR</text>
-        <text x="40" y="50" textAnchor="middle" fontFamily="Share Tech Mono" fontSize="5" fill="#607888">8GB</text>
+        <rect x="25" y="20" width="30" height="44" rx="3" fill="none" stroke="#7AEC7A" strokeWidth="2" />
+        <rect x="30" y="12" width="20" height="10" rx="1" fill="none" stroke="#7AEC7A" strokeWidth="1.5" />
+        <rect x="34" y="14" width="4" height="6" fill="#FFE033" />
+        <rect x="42" y="14" width="4" height="6" fill="#FFE033" />
+        <text x="40" y="42" textAnchor="middle" fontFamily="Share Tech Mono" fontSize="5" fontWeight="700" fill="#6ED47A">GUIBOUR</text>
+        <text x="40" y="50" textAnchor="middle" fontFamily="Share Tech Mono" fontSize="5" fill="#3A8040">8GB</text>
       </svg>
     </div>
   );
@@ -95,23 +95,24 @@ function ProductSVG({ type }: { type: string }) {
 
 export default function ShoppingPage() {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen" style={{ background: '#0E1A0E' }}>
       <ExcelNav />
       <ExcelChrome formulaText='=CATALOGUE(MERCH,"GUIBOUR") // ARTICLES: 4'>
         <div style={{ maxWidth: '1000px', margin: '0 auto', padding: '24px 24px' }}>
-          {/* Sub-bar path */}
+
+          {/* Breadcrumb */}
           <div style={{
             display: 'flex',
             justifyContent: 'space-between',
             alignItems: 'center',
             padding: '10px 0',
-            borderBottom: '1px solid #C8D8E8',
+            borderBottom: '1px solid #2A6040',
             marginBottom: '32px',
           }}>
             <span style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: '8px',
-              color: '#607888',
+              color: '#3A8040',
               letterSpacing: '2px',
             }}>
               GUIBOUR.FR / CATALOGUE / TOUS LES ARTICLES
@@ -123,39 +124,43 @@ export default function ShoppingPage() {
             <span style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: '8px',
-              color: '#00A89D',
+              color: '#3A8040',
               letterSpacing: '6px',
             }}>02 / BOUTIQUE</span>
             <h1 style={{
-              fontFamily: "'Orbitron', sans-serif",
-              fontSize: '28px',
-              fontWeight: 800,
-              color: '#1A2530',
-              letterSpacing: '2px',
-              marginTop: '8px',
+              fontFamily: "'Lilita One', cursive",
+              fontSize: '36px',
+              color: '#7AEC7A',
+              letterSpacing: '4px',
+              marginTop: '6px',
+              textShadow: '0 0 20px rgba(122,236,122,.35)',
             }}>MERCH</h1>
             <div style={{
               width: '60px',
               height: '2px',
-              background: 'linear-gradient(90deg, #00A89D, transparent)',
-              marginTop: '8px',
+              background: 'linear-gradient(90deg, #7AEC7A, transparent)',
+              marginTop: '6px',
             }} />
           </div>
 
-          {/* Products grid - 4 columns */}
+          {/* Products grid */}
           <div style={{
             display: 'grid',
             gridTemplateColumns: 'repeat(4, 1fr)',
             gap: '1px',
-            background: '#C8D8E8',
-            border: '1px solid #C8D8E8',
+            background: '#2A6040',
+            border: '1px solid #2A6040',
           }}>
             {products.map(p => (
               <div key={p.ref} style={{
-                background: 'white',
+                background: '#1A3018',
                 padding: '20px',
                 position: 'relative',
-              }}>
+                transition: 'background 0.2s ease',
+              }}
+              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = '#213820'; }}
+              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = '#1A3018'; }}
+              >
                 {/* Cell reference */}
                 <span style={{
                   position: 'absolute',
@@ -163,7 +168,7 @@ export default function ShoppingPage() {
                   right: '8px',
                   fontFamily: "'Share Tech Mono', monospace",
                   fontSize: '7px',
-                  color: '#C0D0DE',
+                  color: '#2A6040',
                   letterSpacing: '1px',
                 }}>
                   {p.cell}
@@ -175,8 +180,8 @@ export default function ShoppingPage() {
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  background: '#F4F8FB',
-                  border: '1px solid #C8D8E8',
+                  background: '#131E08',
+                  border: '1px solid #2A6040',
                   marginBottom: '16px',
                 }}>
                   <ProductSVG type={p.svgType} />
@@ -184,12 +189,12 @@ export default function ShoppingPage() {
 
                 {/* Product name */}
                 <h3 style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  fontSize: '10px',
-                  fontWeight: 700,
-                  color: '#1A2530',
+                  fontFamily: "'Lilita One', cursive",
+                  fontSize: '14px',
+                  color: '#7AEC7A',
                   letterSpacing: '2px',
                   textTransform: 'uppercase',
+                  marginBottom: '4px',
                 }}>
                   {p.name}
                 </h3>
@@ -198,43 +203,56 @@ export default function ShoppingPage() {
                 <span style={{
                   fontFamily: "'Share Tech Mono', monospace",
                   fontSize: '7px',
-                  color: '#607888',
+                  color: '#3A8040',
                   display: 'block',
                   marginTop: '4px',
+                  letterSpacing: '1px',
                 }}>
                   REF: {p.ref} / {p.desc}
                 </span>
 
                 {/* Price */}
                 <span style={{
-                  fontFamily: "'Orbitron', sans-serif",
-                  fontSize: '16px',
-                  fontWeight: 800,
-                  color: '#00A89D',
+                  fontFamily: "'Luckiest Guy', cursive",
+                  fontSize: '20px',
+                  color: '#FFE033',
                   display: 'block',
                   marginTop: '12px',
+                  textShadow: '1px 1px 0 rgba(160,128,13,.55)',
                 }}>
                   {p.price}&euro;
                 </span>
 
-                {/* Add to cart button */}
+                {/* Button */}
                 <button style={{
                   marginTop: '12px',
                   width: '100%',
                   fontFamily: "'Share Tech Mono', monospace",
                   fontSize: '8px',
                   letterSpacing: '2px',
-                  color: '#00A89D',
-                  background: '#080D14',
-                  border: '1px solid #00A89D',
+                  color: '#fff',
+                  background: '#2A6040',
+                  border: '1px solid #7AEC7A',
                   padding: '8px',
                   cursor: 'pointer',
-                  boxShadow: '0 0 10px rgba(0,168,157,0.1)',
+                  boxShadow: '0 0 10px rgba(122,236,122,.12)',
+                  transition: 'all 0.2s ease',
                 }}>
                   AJOUTER AU PANIER
                 </button>
               </div>
             ))}
+          </div>
+
+          {/* Footer */}
+          <div style={{
+            marginTop: '16px',
+            fontFamily: "'Share Tech Mono', monospace",
+            fontSize: '7px',
+            color: '#2A6040',
+            letterSpacing: '2px',
+          }}>
+            =CATALOGUE() // DISPONIBLE SUR COMMANDE — LIVRAISON GUIBOUR CORP. EXPRESS
           </div>
         </div>
       </ExcelChrome>

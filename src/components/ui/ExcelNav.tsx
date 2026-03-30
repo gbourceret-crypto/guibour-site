@@ -5,10 +5,10 @@ import { usePathname } from 'next/navigation';
 import Sphere from './Sphere';
 
 const tabs = [
-  { href: '/', label: 'JOUER', icon: '▶' },
-  { href: '/resultats', label: 'CLASSEMENT', icon: '📊' },
-  { href: '/shopping', label: 'MERCH', icon: '🛒' },
-  { href: '/contact', label: 'CONTACT', icon: '✉' },
+  { href: '/', label: 'JOUER' },
+  { href: '/resultats', label: 'CLASSEMENT' },
+  { href: '/shopping', label: 'MERCH' },
+  { href: '/contact', label: 'CONTACT' },
 ];
 
 export default function ExcelNav() {
@@ -75,10 +75,9 @@ export default function ExcelNav() {
               style={{
                 display: 'flex',
                 alignItems: 'center',
-                gap: '12px',
                 padding: '12px 14px',
-                fontFamily: "'Share Tech Mono', monospace",
-                fontSize: '11px',
+                fontFamily: "'Lilita One', cursive",
+                fontSize: '13px',
                 letterSpacing: '2px',
                 color: active ? '#7AEC7A' : '#3A8040',
                 textDecoration: 'none',
@@ -87,22 +86,24 @@ export default function ExcelNav() {
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
+                textShadow: active ? '0 0 10px rgba(122,236,122,.5)' : 'none',
               }}
               onMouseEnter={e => {
                 if (!active) {
                   e.currentTarget.style.color = '#7AEC7A';
                   e.currentTarget.style.background = 'rgba(58,128,64,0.12)';
+                  e.currentTarget.style.textShadow = '0 0 8px rgba(122,236,122,.35)';
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
                   e.currentTarget.style.color = '#3A8040';
                   e.currentTarget.style.background = 'transparent';
+                  e.currentTarget.style.textShadow = 'none';
                 }
               }}
             >
-              <span style={{ fontSize: '16px', flexShrink: 0, width: '20px', textAlign: 'center' }}>{tab.icon}</span>
-              <span>{tab.label}</span>
+              {tab.label}
             </Link>
           );
         })}
@@ -142,8 +143,7 @@ export default function ExcelNav() {
             e.currentTarget.style.boxShadow = '0 0 14px rgba(122,236,122,.18)';
           }}
         >
-          <span style={{ fontSize: '14px', flexShrink: 0 }}>🎮</span>
-          <span>JOUER</span>
+          <span style={{ fontFamily: "'Lilita One', cursive", fontSize: '15px', letterSpacing: '4px' }}>JOUER</span>
         </Link>
       </div>
     </nav>
