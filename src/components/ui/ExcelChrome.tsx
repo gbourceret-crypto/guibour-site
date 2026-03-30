@@ -13,9 +13,9 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
       position: 'relative',
       minHeight: '100vh',
       paddingLeft: '48px', // leave room for sidebar nav
-      backgroundColor: '#131E08',
+      backgroundColor: '#0A1628',
       backgroundImage:
-        'linear-gradient(rgba(61,128,64,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(61,128,64,.11) 1px, transparent 1px)',
+        'linear-gradient(rgba(0,72,171,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(0,72,171,.09) 1px, transparent 1px)',
       backgroundSize: '56px 34px',
       backgroundPosition: '0px 48px',
     }}>
@@ -26,8 +26,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         zIndex: 20,
         display: 'flex',
         height: '28px',
-        background: '#0D1A0D',
-        borderBottom: '1px solid #2A6040',
+        background: '#1B3A6B',
+        borderBottom: '1px solid #2B5090',
       }}>
         {COLUMNS.map(col => (
           <div key={col} style={{
@@ -38,8 +38,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
             justifyContent: 'center',
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: '9px',
-            color: '#3A8040',
-            borderRight: '1px solid #2A6040',
+            color: '#5B9BD5',
+            borderRight: '1px solid rgba(43,80,144,.4)',
           }}>
             {col}
           </div>
@@ -54,22 +54,22 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         display: 'flex',
         alignItems: 'center',
         height: '24px',
-        background: '#060E00',
-        borderBottom: '2px solid #2A6040',
+        background: '#0D2B5E',
+        borderBottom: '2px solid #1B3A6B',
         paddingLeft: '8px',
         gap: '12px',
       }}>
         <span style={{
           fontFamily: "'Share Tech Mono', monospace",
           fontSize: '11px',
-          color: '#7AEC7A',
+          color: '#00D4CC',
           fontWeight: 700,
           paddingLeft: '8px',
         }}>fx</span>
         <span style={{
           fontFamily: "'Share Tech Mono', monospace",
           fontSize: '9px',
-          color: '#6ED47A',
+          color: '#5B9BD5',
           letterSpacing: '1px',
         }}>{formulaText}</span>
       </div>

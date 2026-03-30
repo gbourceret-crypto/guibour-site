@@ -25,19 +25,19 @@ export default function ExcelNav() {
         width: '48px',
         overflow: 'hidden',
         transition: 'width 0.25s ease',
-        background: '#0D1A0D',
-        borderRight: '2px solid #2A6040',
+        background: '#0D2B5E',
+        borderRight: '2px solid #1B3A6B',
         display: 'flex',
         flexDirection: 'column',
-        boxShadow: '2px 0 14px rgba(0,0,0,0.5)',
+        boxShadow: '2px 0 16px rgba(0,0,0,0.5)',
       }}
       onMouseEnter={e => { e.currentTarget.style.width = '200px'; }}
       onMouseLeave={e => { e.currentTarget.style.width = '48px'; }}
     >
-      {/* Logo area — sphère + texte */}
+      {/* Logo area */}
       <div style={{
         padding: '12px 0',
-        borderBottom: '1px solid #2A6040',
+        borderBottom: '1px solid #1B3A6B',
         display: 'flex',
         alignItems: 'center',
         gap: '10px',
@@ -51,14 +51,14 @@ export default function ExcelNav() {
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: '13px',
-            color: '#7AEC7A',
+            color: '#A8D8FF',
             letterSpacing: '2px',
             lineHeight: 1.1,
           }}>GUIBOUR</div>
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: '9px',
-            color: '#FFE033',
+            color: '#00D4CC',
             letterSpacing: '3px',
           }}>SYSTEM</div>
         </div>
@@ -79,25 +79,25 @@ export default function ExcelNav() {
                 fontFamily: "'Lilita One', cursive",
                 fontSize: '13px',
                 letterSpacing: '2px',
-                color: active ? '#7AEC7A' : '#3A8040',
+                color: active ? '#A8D8FF' : '#3C5A7A',
                 textDecoration: 'none',
-                borderLeft: active ? '3px solid #7AEC7A' : '3px solid transparent',
-                background: active ? 'rgba(58,128,64,0.2)' : 'transparent',
+                borderLeft: active ? '3px solid #0047AB' : '3px solid transparent',
+                background: active ? 'rgba(0,71,171,0.22)' : 'transparent',
                 transition: 'all 0.15s ease',
                 whiteSpace: 'nowrap',
                 overflow: 'hidden',
-                textShadow: active ? '0 0 10px rgba(122,236,122,.5)' : 'none',
+                textShadow: active ? '0 0 10px rgba(168,216,255,.45)' : 'none',
               }}
               onMouseEnter={e => {
                 if (!active) {
-                  e.currentTarget.style.color = '#7AEC7A';
-                  e.currentTarget.style.background = 'rgba(58,128,64,0.12)';
-                  e.currentTarget.style.textShadow = '0 0 8px rgba(122,236,122,.35)';
+                  e.currentTarget.style.color = '#A8D8FF';
+                  e.currentTarget.style.background = 'rgba(0,71,171,0.12)';
+                  e.currentTarget.style.textShadow = '0 0 8px rgba(168,216,255,.3)';
                 }
               }}
               onMouseLeave={e => {
                 if (!active) {
-                  e.currentTarget.style.color = '#3A8040';
+                  e.currentTarget.style.color = '#3C5A7A';
                   e.currentTarget.style.background = 'transparent';
                   e.currentTarget.style.textShadow = 'none';
                 }
@@ -111,7 +111,7 @@ export default function ExcelNav() {
 
       {/* Bottom JOUER button */}
       <div style={{
-        borderTop: '1px solid #2A6040',
+        borderTop: '1px solid #1B3A6B',
         padding: '12px 10px',
         flexShrink: 0,
         overflow: 'hidden',
@@ -122,28 +122,28 @@ export default function ExcelNav() {
           style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '10px',
-            fontFamily: "'Bangers', cursive",
+            justifyContent: 'center',
+            fontFamily: "'Lilita One', cursive",
             fontSize: '15px',
             letterSpacing: '4px',
             color: '#fff',
             textDecoration: 'none',
-            background: '#2A6040',
-            border: '1px solid #7AEC7A',
+            background: 'linear-gradient(135deg, #0047AB, #007B8A)',
+            border: '1px solid #5B9BD5',
             padding: '10px 12px',
-            boxShadow: '0 0 14px rgba(122,236,122,.18)',
+            boxShadow: '0 0 14px rgba(0,71,171,.25)',
             transition: 'all 0.2s ease',
           }}
           onMouseEnter={e => {
-            e.currentTarget.style.background = '#3A8040';
-            e.currentTarget.style.boxShadow = '0 0 22px rgba(122,236,122,.35)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #1B5EBB, #008B9A)';
+            e.currentTarget.style.boxShadow = '0 0 22px rgba(0,71,171,.45)';
           }}
           onMouseLeave={e => {
-            e.currentTarget.style.background = '#2A6040';
-            e.currentTarget.style.boxShadow = '0 0 14px rgba(122,236,122,.18)';
+            e.currentTarget.style.background = 'linear-gradient(135deg, #0047AB, #007B8A)';
+            e.currentTarget.style.boxShadow = '0 0 14px rgba(0,71,171,.25)';
           }}
         >
-          <span style={{ fontFamily: "'Lilita One', cursive", fontSize: '15px', letterSpacing: '4px' }}>JOUER</span>
+          JOUER
         </Link>
       </div>
     </nav>

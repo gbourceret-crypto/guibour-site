@@ -8,11 +8,11 @@ interface LoadingScreenProps {
 }
 
 const BOOT_LINES = [
-  { text: 'C:\\GUIBOUR\\SYSTEM> init.exe', color: '#2A6040', delay: 400 },
-  { text: '✓ Chargement des dossiers administratifs...', color: '#6ED47A', delay: 800 },
-  { text: '✓ Module RTT initialisé — 3 unités disponibles', color: '#6ED47A', delay: 1400 },
-  { text: '✓ Connexion Guibour Corp. établie', color: '#6ED47A', delay: 2000 },
-  { text: '▶ Préparation de l\'espace de travail...', color: '#3A8040', delay: 2600, cursor: true },
+  { text: 'C:\\GUIBOUR\\SYSTEM> init.exe', color: '#2B5090', delay: 400 },
+  { text: '✓ Chargement des dossiers administratifs...', color: '#5B9BD5', delay: 800 },
+  { text: '✓ Module RTT initialisé — 3 unités disponibles', color: '#5B9BD5', delay: 1400 },
+  { text: '✓ Connexion Guibour Corp. établie', color: '#5B9BD5', delay: 2000 },
+  { text: '▶ Préparation de l\'espace de travail...', color: '#3A78C9', delay: 2600, cursor: true },
 ];
 
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
@@ -47,7 +47,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       position: 'fixed',
       inset: 0,
       zIndex: 9999,
-      background: '#0D1A0D',
+      background: '#0A1628',
       display: 'flex',
       flexDirection: 'column',
       alignItems: 'center',
@@ -56,12 +56,12 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
       transition: 'opacity 0.5s ease-out',
       overflow: 'hidden',
     }}>
-      {/* Green grid background — V7 plus visible */}
+      {/* Blue grid background */}
       <div style={{
         position: 'absolute',
         inset: 0,
         backgroundImage:
-          'linear-gradient(rgba(61,128,64,.11) 1px, transparent 1px), linear-gradient(90deg, rgba(61,128,64,.11) 1px, transparent 1px)',
+          'linear-gradient(rgba(0,72,171,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(0,72,171,.09) 1px, transparent 1px)',
         backgroundSize: '52px 32px',
         pointerEvents: 'none',
       }} />
@@ -71,11 +71,11 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
       {/* Center content */}
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center', animation: 'slideUp 1s ease' }}>
-        {/* Employee ID tag */}
+        {/* Employee ID */}
         <div style={{
           fontFamily: "'Share Tech Mono', monospace",
           fontSize: '11px',
-          color: '#6ED47A',
+          color: '#5B9BD5',
           letterSpacing: '4px',
           marginBottom: '28px',
         }}>
@@ -97,11 +97,11 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div style={{
               fontFamily: "'Lilita One', cursive",
               fontSize: 'clamp(48px, 9vw, 76px)',
-              color: '#7AEC7A',
+              color: '#A8D8FF',
               letterSpacing: '5px',
               lineHeight: 1,
-              textShadow: '3px 3px 0 #2A6040, 0 0 40px rgba(122,236,122,.4)',
-              animation: 'glowGreen 3s ease-in-out infinite',
+              textShadow: '3px 3px 0 #0D2B5E, 0 0 40px rgba(90,160,255,.4)',
+              animation: 'glowBlue 3s ease-in-out infinite',
             }}>
               GUIBOUR
             </div>
@@ -110,9 +110,9 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div style={{
               fontFamily: "'Lilita One', cursive",
               fontSize: 'clamp(26px, 4.5vw, 40px)',
-              color: '#FFE033',
+              color: '#00D4CC',
               letterSpacing: '10px',
-              textShadow: '2px 2px 0 rgba(160,128,13,.55), 0 0 20px rgba(255,224,51,.25)',
+              textShadow: '2px 2px 0 rgba(0,80,80,.55), 0 0 20px rgba(0,212,204,.25)',
               marginTop: '-4px',
             }}>
               SYSTEM
@@ -122,7 +122,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: '12px',
-              color: '#6ED47A',
+              color: '#5B9BD5',
               letterSpacing: '7px',
               marginTop: '8px',
             }}>
@@ -134,8 +134,8 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         {/* Progress bar — fx Excel style */}
         <div style={{ width: '340px', margin: '28px auto 0' }}>
           <div style={{
-            background: '#131E08',
-            border: '1px solid #2A6040',
+            background: '#0D2B5E',
+            border: '1px solid #1B3A6B',
             padding: '6px 12px',
             display: 'flex',
             alignItems: 'center',
@@ -145,13 +145,13 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <span style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: '13px',
-              color: '#7AEC7A',
+              color: '#00D4CC',
               fontWeight: 700,
             }}>fx</span>
             <div style={{
               flex: 1,
-              background: '#1A3018',
-              border: '1px solid #2A6040',
+              background: '#12274A',
+              border: '1px solid #1E3F6E',
               height: '13px',
               borderRadius: '3px',
               overflow: 'hidden',
@@ -159,9 +159,9 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
               <div style={{
                 height: '100%',
                 width: `${progress}%`,
-                background: 'linear-gradient(90deg, #7AEC7A, #3A8040)',
+                background: 'linear-gradient(90deg, #0047AB, #00A89D)',
                 borderRadius: '3px',
-                boxShadow: '0 0 8px rgba(122,236,122,.5)',
+                boxShadow: '0 0 8px rgba(0,71,171,.5)',
                 transition: 'width 0.1s linear',
               }} />
             </div>
@@ -169,7 +169,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <div style={{
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: '10px',
-            color: '#3A8040',
+            color: '#2B5090',
             textAlign: 'center',
             marginTop: '6px',
             letterSpacing: '2px',
@@ -179,7 +179,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         </div>
       </div>
 
-      {/* Badge employé — pendule bottom right, sphère dans le badge */}
+      {/* Badge employé — pendule bottom right */}
       <div style={{
         position: 'absolute',
         right: '36px',
@@ -189,14 +189,14 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         flexDirection: 'column',
         alignItems: 'center',
       }}>
-        <div style={{ width: '2px', height: '20px', background: '#3A8040' }} />
+        <div style={{ width: '2px', height: '20px', background: '#1B3A6B' }} />
         <div style={{
           width: '60px',
           height: '80px',
-          background: 'linear-gradient(135deg, #fff, #eee)',
+          background: 'linear-gradient(135deg, #fff, #E8EEF4)',
           borderRadius: '7px',
-          border: '3px solid #7AEC7A',
-          boxShadow: '0 4px 16px rgba(0,0,0,.5), 0 0 12px rgba(122,236,122,.18)',
+          border: '3px solid #0047AB',
+          boxShadow: '0 4px 16px rgba(0,0,0,.5), 0 0 12px rgba(0,71,171,.25)',
           animation: 'swing 3s ease-in-out infinite',
           transformOrigin: 'top center',
           display: 'flex',
@@ -209,13 +209,13 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
           <div style={{
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: '6px',
-            color: '#1A3A1A',
+            color: '#0D2B5E',
             letterSpacing: '1px',
           }}>GUIBOUR</div>
           <div style={{
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: '5px',
-            color: '#888',
+            color: '#607888',
           }}>GS-4891</div>
         </div>
       </div>
@@ -238,7 +238,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             {line.text}
             {line.cursor && (
               <span style={{
-                color: '#7AEC7A',
+                color: '#A8D8FF',
                 animation: 'cursorBlink 1s infinite',
                 marginLeft: '4px',
               }}>█</span>

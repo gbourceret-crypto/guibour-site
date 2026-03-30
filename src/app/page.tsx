@@ -29,7 +29,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
       <div style={{
         fontFamily: "'Share Tech Mono', monospace",
         fontSize: '10px',
-        color: '#6ED47A',
+        color: '#5B9BD5',
         letterSpacing: '4px',
         marginBottom: '28px',
         position: 'relative',
@@ -51,26 +51,26 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         <Sphere size={80} />
 
         <div style={{ textAlign: 'left' }}>
-          {/* GUIBOUR — Lilita One green glow */}
+          {/* GUIBOUR — Lilita One bleu ciel */}
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: 'clamp(48px, 9vw, 82px)',
-            color: '#7AEC7A',
+            color: '#A8D8FF',
             letterSpacing: '5px',
             lineHeight: 1,
-            textShadow: '3px 3px 0 #2A6040, 0 0 30px rgba(122,236,122,.4)',
-            animation: 'glowGreen 3s ease-in-out infinite',
+            textShadow: '3px 3px 0 #0D2B5E, 0 0 30px rgba(90,160,255,.4)',
+            animation: 'glowBlue 3s ease-in-out infinite',
           }}>
             GUIBOUR
           </div>
 
-          {/* SYSTEM — Lilita One yellow */}
+          {/* SYSTEM — Lilita One cyan */}
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: 'clamp(26px, 4.5vw, 44px)',
-            color: '#FFE033',
+            color: '#00D4CC',
             letterSpacing: '8px',
-            textShadow: '2px 2px 0 rgba(160,128,13,.55)',
+            textShadow: '2px 2px 0 rgba(0,80,80,.55)',
             marginTop: '-4px',
           }}>
             SYSTEM
@@ -82,7 +82,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
       <div style={{
         fontFamily: "'Share Tech Mono', monospace",
         fontSize: '11px',
-        color: '#6ED47A',
+        color: '#5B9BD5',
         letterSpacing: '3px',
         marginTop: '14px',
         position: 'relative',
@@ -96,8 +96,8 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         display: 'flex',
         gap: '1px',
         marginTop: '24px',
-        background: '#2A6040',
-        border: '1px solid #3A8040',
+        background: '#1E3F6E',
+        border: '1px solid #2B5090',
         position: 'relative',
         zIndex: 2,
       }}>
@@ -108,21 +108,21 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
           { label: 'FORMULE', value: '=SUM(AMBITION)', gold: true },
         ].map(cell => (
           <div key={cell.label} style={{
-            background: '#1A3018',
+            background: '#12274A',
             padding: '8px 18px',
             textAlign: 'center',
           }}>
             <div style={{
               fontFamily: "'Share Tech Mono', monospace",
               fontSize: '7px',
-              color: '#6ED47A',
+              color: '#5B9BD5',
               letterSpacing: '2px',
               marginBottom: '3px',
             }}>{cell.label}</div>
             <div style={{
               fontFamily: "'Luckiest Guy', cursive",
               fontSize: '14px',
-              color: cell.gold ? '#FFE033' : '#7AEC7A',
+              color: cell.gold ? '#00D4CC' : '#A8D8FF',
             }}>{cell.value}</div>
           </div>
         ))}
@@ -137,24 +137,24 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
           fontSize: '24px',
           letterSpacing: '10px',
           color: '#fff',
-          background: '#2A6040',
-          border: '2px solid #7AEC7A',
+          background: 'linear-gradient(135deg, #0047AB, #007B8A)',
+          border: '2px solid #5B9BD5',
           padding: '14px 56px',
           cursor: 'pointer',
-          boxShadow: '0 0 18px rgba(122,236,122,.25)',
+          boxShadow: '0 0 18px rgba(0,71,171,.3)',
           position: 'relative',
           overflow: 'hidden',
           zIndex: 2,
           transition: 'all 0.2s ease',
-          textShadow: '0 0 10px rgba(122,236,122,.4)',
+          textShadow: '0 0 10px rgba(168,216,255,.35)',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.background = '#3A8040';
-          e.currentTarget.style.boxShadow = '0 0 32px rgba(122,236,122,.45)';
+          e.currentTarget.style.background = 'linear-gradient(135deg, #1B5EBB, #008B9A)';
+          e.currentTarget.style.boxShadow = '0 0 32px rgba(0,71,171,.5)';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.background = '#2A6040';
-          e.currentTarget.style.boxShadow = '0 0 18px rgba(122,236,122,.25)';
+          e.currentTarget.style.background = 'linear-gradient(135deg, #0047AB, #007B8A)';
+          e.currentTarget.style.boxShadow = '0 0 18px rgba(0,71,171,.3)';
         }}
       >
         <span style={{ position: 'relative', zIndex: 1 }}>JOUER</span>
@@ -219,7 +219,7 @@ export default function Home() {
     return (
       <div
         className="flex flex-col overflow-hidden"
-        style={{ background: '#0E1A0E', height: '100dvh', paddingLeft: '48px' }}
+        style={{ background: '#0A1628', height: '100dvh', paddingLeft: '48px' }}
       >
         <main
           className="flex-1"
@@ -233,7 +233,7 @@ export default function Home() {
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#0E1A0E' }}>
+    <div className="min-h-screen" style={{ background: '#0A1628' }}>
       <ExcelNav />
       <ExcelChrome formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2026") → WELCOME_TO_THE_SYSTEM'>
         <HeroContent onPlay={handlePlay} />

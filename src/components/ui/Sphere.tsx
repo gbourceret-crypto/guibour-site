@@ -1,6 +1,6 @@
 /**
  * Sphere — composant logo sphère CSS 3D
- * Simule un globe avec dégradé radial + reflet spéculaire
+ * V8 — Corporate 90s — bleu navy
  */
 
 interface SphereProps {
@@ -21,16 +21,16 @@ export default function Sphere({ size = 44, animated = true, style }: SphereProp
         ...style,
       }}
     >
-      {/* Corps de la sphère */}
+      {/* Corps de la sphère — bleu navy vers cyan */}
       <div
         style={{
           width: '100%',
           height: '100%',
           borderRadius: '50%',
           background:
-            'radial-gradient(circle at 38% 32%, #C8FFC8 0%, #7AEC7A 22%, #3A8040 52%, #1B5E20 76%, #0A2E0C 100%)',
+            'radial-gradient(circle at 38% 32%, #A8D8FF 0%, #5B9BD5 22%, #0047AB 52%, #0D2B5E 76%, #060F20 100%)',
           boxShadow:
-            'inset -5px -5px 12px rgba(0,0,0,.38), inset 3px 3px 7px rgba(255,255,255,.22), 0 0 18px rgba(122,236,122,.32)',
+            'inset -5px -5px 12px rgba(0,0,0,.40), inset 3px 3px 7px rgba(255,255,255,.22), 0 0 18px rgba(0,71,171,.32)',
           animation: animated ? 'sphereGlow 4s ease-in-out infinite' : undefined,
         }}
       />
