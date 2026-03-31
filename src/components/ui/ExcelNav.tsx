@@ -56,16 +56,18 @@ export default function ExcelNav() {
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: '13px',
-            color: '#5CDB5C',
+            color: '#3DCA3D',
             letterSpacing: '2px',
             lineHeight: 1.1,
+            textShadow: '0 0 8px rgba(61,202,61,.6)',
           }}>GUIBOUR</div>
           <div style={{
-            fontFamily: "'Lilita One', cursive",
-            fontSize: '8px',
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: '7px',
+            fontWeight: 400,
             color: '#00D4CC',
             letterSpacing: '3px',
-            marginTop: '-2px',
+            marginTop: '-1px',
           }}>SYSTEM</div>
         </div>
       </Link>

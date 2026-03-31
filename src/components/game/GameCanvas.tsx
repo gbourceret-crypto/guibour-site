@@ -256,53 +256,55 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
     return (
       <div className="flex h-full w-full flex-col items-center justify-center gap-5"
            style={{
-             background: '#080F08',
-             backgroundImage: 'linear-gradient(rgba(44,95,46,.08) 1px, transparent 1px), linear-gradient(90deg, rgba(44,95,46,.08) 1px, transparent 1px)',
+             background: '#0A1628',
+             backgroundImage: 'linear-gradient(rgba(0,72,171,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(0,72,171,.09) 1px, transparent 1px)',
              backgroundSize: '52px 32px',
            }}>
         <div style={{
           fontFamily: "'Lilita One', cursive",
           fontSize: 'clamp(52px, 10vw, 80px)',
-          color: '#5CDB5C',
+          color: '#3DCA3D',
           letterSpacing: '6px',
           lineHeight: 1,
-          textShadow: '3px 3px 0 #1B4332, 0 0 40px rgba(92,219,92,.4)',
+          animation: 'glowGreen 3s ease-in-out infinite',
         }}>
           W.O.W
         </div>
         <div style={{
-          fontFamily: "'Share Tech Mono', monospace",
-          fontSize: 'clamp(12px, 2vw, 16px)',
-          color: '#FFE033',
-          letterSpacing: '6px',
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: 'clamp(11px, 1.8vw, 16px)',
+          color: '#00D4CC',
+          letterSpacing: '8px',
+          fontWeight: 400,
+          textShadow: '0 0 10px rgba(0,212,204,.4)',
         }}>
           WORK OR WINDOW
         </div>
         <div style={{
           fontFamily: "'Share Tech Mono', monospace",
           fontSize: 'clamp(10px, 1.5vw, 13px)',
-          color: '#4CAF50',
+          color: '#5B9BD5',
           letterSpacing: '2px',
           marginTop: '-4px',
         }}>
-          25 ÉTAGES — SURVIVEZ AUX 25 ÉTAGES
+          25 ÉTAGES — SURVIVEZ AUX DOSSIERS VOLANTS
         </div>
         {/* fx progress bar */}
         <div style={{ width: 'clamp(280px, 40vw, 420px)', marginTop: '8px' }}>
           <div style={{
-            background: '#060E00',
-            border: '1px solid #1B4332',
+            background: '#0D2B5E',
+            border: '1px solid #1B3A6B',
             padding: '5px 10px',
             display: 'flex',
             alignItems: 'center',
             gap: '10px',
             borderRadius: '3px',
           }}>
-            <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '13px', color: '#5CDB5C', fontWeight: 700 }}>fx</span>
+            <span style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '13px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
             <div style={{
               flex: 1,
-              background: '#0D2B0D',
-              border: '1px solid #1B4332',
+              background: '#12274A',
+              border: '1px solid #1E3F6E',
               height: '14px',
               borderRadius: '2px',
               overflow: 'hidden',
@@ -310,9 +312,9 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
               <div style={{
                 height: '100%',
                 width: `${loadProgress}%`,
-                background: 'linear-gradient(90deg, #5CDB5C, #2C5F2E)',
+                background: 'linear-gradient(90deg, #0047AB, #00A89D)',
                 borderRadius: '2px',
-                boxShadow: '0 0 8px rgba(92,219,92,.5)',
+                boxShadow: '0 0 8px rgba(0,71,171,.5)',
                 transition: 'width 0.2s ease',
               }} />
             </div>
@@ -320,7 +322,7 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
           <div style={{
             fontFamily: "'Share Tech Mono', monospace",
             fontSize: '11px',
-            color: '#2C5F2E',
+            color: '#2B5090',
             textAlign: 'center',
             marginTop: '5px',
             letterSpacing: '2px',

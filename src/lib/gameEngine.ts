@@ -233,7 +233,7 @@ export function updateGame(state: GameState): GameState {
 }
 
 function updatePlayer(state: GameState) {
-  const { player, keys, canvasWidth } = state;
+  const { player, keys, canvasWidth, canvasHeight } = state;
   const cafeActive = state.activeEffects.some(e => e.type === 'cafe');
   const biereActive = state.activeEffects.some(e => e.type === 'biere');
 
@@ -249,6 +249,8 @@ function updatePlayer(state: GameState) {
   else { player.direction = 'idle'; }
 
   player.x = Math.max(player.width / 2, Math.min(canvasWidth - player.width / 2, player.x));
+  // Always keep player feet on the floor — handles canvas resize mid-game
+  player.y = canvasHeight;
 
   const wantsShoot = keys.has(' ') || keys.has('ArrowUp') || keys.has('z') || keys.has('w') || state.touchShoot;
   const activeProjectiles = state.projectiles.filter(p => p.active);

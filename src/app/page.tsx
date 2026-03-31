@@ -62,27 +62,27 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         <Sphere size={80} />
 
         <div style={{ textAlign: 'center' }}>
-          {/* GUIBOUR — vert lime comme W.O.W */}
+          {/* GUIBOUR — vert néon intense */}
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: 'clamp(48px, 9vw, 82px)',
-            color: '#5CDB5C',
+            color: '#3DCA3D',
             letterSpacing: '5px',
             lineHeight: 1,
-            textShadow: '3px 3px 0 #1B4332, 0 0 30px rgba(92,219,92,.4)',
-            animation: 'glowBlue 3s ease-in-out infinite',
+            animation: 'glowGreen 3s ease-in-out infinite',
           }}>
             GUIBOUR
           </div>
 
-          {/* SYSTEM — cyan, plus petit */}
+          {/* SYSTEM — Orbitron, cyan, plus petit */}
           <div style={{
-            fontFamily: "'Lilita One', cursive",
-            fontSize: 'clamp(16px, 2.8vw, 26px)',
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: 'clamp(13px, 2.2vw, 22px)',
             color: '#00D4CC',
-            letterSpacing: '8px',
-            textShadow: '1px 1px 0 rgba(0,80,80,.55)',
-            marginTop: '-12px',
+            letterSpacing: '10px',
+            fontWeight: 400,
+            textShadow: '0 0 12px rgba(0,212,204,.45)',
+            marginTop: '-8px',
           }}>
             SYSTEM
           </div>
