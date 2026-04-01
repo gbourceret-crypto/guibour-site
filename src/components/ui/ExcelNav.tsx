@@ -56,7 +56,7 @@ export default function ExcelNav() {
           <div style={{
             fontFamily: "'Lilita One', cursive",
             fontSize: '13px',
-            color: '#00C8BE',
+            color: '#FFFFFF',
             letterSpacing: '2px',
             lineHeight: 1.1,
             textShadow: '0 0 10px rgba(0,200,190,.7)',

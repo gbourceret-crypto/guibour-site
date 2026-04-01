@@ -23,8 +23,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="fr">
       <head>
+        {/* Preconnect pour Google Fonts — réduit la latence initiale */}
+        <link rel="preconnect" href="https://fonts.googleapis.com" />
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
+        {/* Uniquement les 3 familles réellement utilisées (suppression Share Tech Mono / Bangers / Space Grotesk) */}
         <link
-          href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Luckiest+Guy&family=Bangers&family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600;700&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Luckiest+Guy&family=Orbitron:wght@400;700;900&display=swap"
           rel="stylesheet"
         />
       </head>

@@ -276,10 +276,10 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
         <div style={{
           fontFamily: "'Lilita One', cursive",
           fontSize: 'clamp(52px, 10vw, 80px)',
-          color: '#00C8BE',
+          color: '#FFFFFF',
           letterSpacing: '6px',
           lineHeight: 1,
-          animation: 'glowTurquoise 3s ease-in-out infinite',
+          animation: 'glowWhite 3s ease-in-out infinite',
         }}>
           W.O.W
         </div>
@@ -386,7 +386,7 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6"
                  style={{ background: 'rgba(4,12,24,0.82)', backdropFilter: 'blur(3px)' }}>
               <div className="text-center">
-                <div style={{ fontFamily: "'Lilita One', cursive", fontSize: 'clamp(40px, 8vw, 72px)', color: '#00C8BE', letterSpacing: '8px', animation: 'glowTurquoise 3s ease-in-out infinite', lineHeight: 1 }}>
+                <div style={{ fontFamily: "'Lilita One', cursive", fontSize: 'clamp(40px, 8vw, 72px)', color: '#FFFFFF', letterSpacing: '8px', animation: 'glowWhite 3s ease-in-out infinite', lineHeight: 1 }}>
                   W.O.W
                 </div>
                 <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '14px', color: '#A8D8FF', letterSpacing: '6px', marginTop: '6px' }}>

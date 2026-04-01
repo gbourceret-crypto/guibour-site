@@ -97,10 +97,10 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             <div style={{
               fontFamily: "'Lilita One', cursive",
               fontSize: 'clamp(48px, 9vw, 76px)',
-              color: '#00C8BE',
+              color: '#FFFFFF',
               letterSpacing: '5px',
               lineHeight: 1,
-              animation: 'glowTurquoise 3s ease-in-out infinite',
+              animation: 'glowWhite 3s ease-in-out infinite',
             }}>
               GUIBOUR
             </div>

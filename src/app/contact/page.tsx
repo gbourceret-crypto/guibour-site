@@ -63,7 +63,7 @@ export default function ContactPage() {
                 <div style={{ display:'flex', flexDirection:'column', alignItems:'center', gap:'12px', paddingBottom:'24px', borderBottom:'1px solid rgba(255,255,255,.08)' }}>
                   <Sphere size={64} />
                   <div style={{ textAlign:'center' }}>
-                    <div style={{ fontFamily:"'Lilita One', cursive", fontSize:'22px', color:'#00C8BE', letterSpacing:'3px', animation:'glowTurquoise 3s ease-in-out infinite' }}>GUIBOUR</div>
+                    <div style={{ fontFamily:"'Lilita One', cursive", fontSize:'22px', color:'#FFFFFF', letterSpacing:'3px', animation:'glowWhite 3s ease-in-out infinite' }}>GUIBOUR</div>
                     <div style={{ fontFamily:"'Orbitron', sans-serif", fontSize:'8px', color:'#00D4CC', letterSpacing:'5px', marginTop:'2px' }}>SYSTEM</div>
                   </div>
                 </div>

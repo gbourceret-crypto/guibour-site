@@ -88,6 +88,10 @@ html, body {
   0%,100%{text-shadow:2px 2px 0 #041818, 0 0 12px #00C8BE, 0 0 28px rgba(0,200,190,.65), 0 0 60px rgba(0,200,190,.35)}
   50%{text-shadow:2px 2px 0 #041818, 0 0 22px #00C8BE, 0 0 55px rgba(0,200,190,.85), 0 0 110px rgba(0,200,190,.45)}
 }
+@keyframes glowWhite {
+  0%,100%{text-shadow:2px 2px 0 #0A1628, 0 0 14px rgba(255,255,255,.8), 0 0 32px rgba(255,255,255,.4), 0 0 64px rgba(0,71,171,.3)}
+  50%{text-shadow:2px 2px 0 #0A1628, 0 0 26px rgba(255,255,255,1), 0 0 60px rgba(255,255,255,.55), 0 0 120px rgba(0,71,171,.4)}
+}
 @keyframes walkCycle {
   0%{transform:translateX(-100%)}
   100%{transform:translateX(calc(100vw + 100%))}
