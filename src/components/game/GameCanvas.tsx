@@ -534,31 +534,31 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
 
       {/* ── HUD ROW: lives + level name + score + mute ── */}
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, background: '#060E00', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '1px solid #1B4332', marginTop: '4px' }}>
+        <div style={{ flexShrink: 0, background: '#0A1628', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #00C8BE', marginTop: '4px' }}>
 
           {/* Left: RTT lives — Excel cells */}
-          <div style={{ display: 'flex', gap: '1px', background: '#1B4332', border: '1px solid #1B4332' }}>
-            <div style={{ background: '#0D2B0D', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#4CAF50', letterSpacing: '2px' }}>ÉTAGE</div>
+          <div style={{ display: 'flex', gap: '1px', background: '#1B3A6B', border: '1px solid #1B3A6B' }}>
+            <div style={{ background: '#0D2B5E', padding: '6px 14px', textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>ÉTAGE</div>
               <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#FFE033' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
             </div>
-            <div style={{ background: '#0D2B0D', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#4CAF50', letterSpacing: '2px' }}>SALAIRE</div>
-              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#5CDB5C' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
+            <div style={{ background: '#0D2B5E', padding: '6px 14px', textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>SALAIRE</div>
+              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#00C8BE' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
             </div>
-            <div style={{ background: '#0D2B0D', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#4CAF50', letterSpacing: '2px' }}>RTT</div>
+            <div style={{ background: '#0D2B5E', padding: '6px 14px', textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>RTT</div>
               <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#FF4444' }}>{'❤'.repeat(hudInfo.lives)}</div>
             </div>
           </div>
 
           {/* Center: level name */}
           <div className="text-center" style={{ padding: '0 12px' }}>
-            <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '13px', color: '#FFE033', letterSpacing: '2px' }}>
+            <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '13px', color: '#A8D8FF', letterSpacing: '2px' }}>
               {hudInfo.levelName}
             </div>
             {showPhrase && (
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#4CAF50', marginTop: '1px', animation: 'fadeIn 0.3s ease' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', marginTop: '1px', animation: 'fadeIn 0.3s ease' }}>
                 {hudInfo.phrase}
               </div>
             )}
@@ -569,7 +569,7 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
             <button
               onClick={handleToggleMute}
               className="pointer-events-auto cursor-pointer"
-              style={{ background: '#0D2B0D', padding: '6px 10px', border: '1px solid #1B4332', fontSize: '20px', color: isMuted ? '#FF4444' : '#5CDB5C', lineHeight: 1 }}
+              style={{ background: '#0D2B5E', padding: '6px 10px', border: '1px solid #1B3A6B', fontSize: '20px', color: isMuted ? '#FF4444' : '#00C8BE', lineHeight: 1 }}
             >
               {isMuted ? '🔇' : '🔊'}
             </button>

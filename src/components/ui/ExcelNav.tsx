@@ -34,8 +34,8 @@ export default function ExcelNav() {
       onMouseEnter={e => { e.currentTarget.style.width = '200px'; }}
       onMouseLeave={e => { e.currentTarget.style.width = '48px'; }}
     >
-      {/* Logo area — cliquable vers accueil */}
-      <Link
+      {/* Logo area — hard navigation pour quitter le jeu et revenir à l'accueil */}
+      <a
         href="/"
         style={{
           padding: '12px 0',
@@ -59,7 +59,7 @@ export default function ExcelNav() {
             color: '#FFFFFF',
             letterSpacing: '2px',
             lineHeight: 1.1,
-            textShadow: '0 0 10px rgba(0,200,190,.7)',
+            textShadow: '0 0 10px rgba(255,255,255,.5)',
           }}>GUIBOUR</div>
           <div style={{
             fontFamily: "'Orbitron', sans-serif",
@@ -70,7 +70,7 @@ export default function ExcelNav() {
             marginTop: '-1px',
           }}>SYSTEM</div>
         </div>
-      </Link>
+      </a>
 
       {/* Nav links */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', paddingTop: '8px' }}>
@@ -114,8 +114,8 @@ export default function ExcelNav() {
                 <>
                   JOUER À{' '}
                   <span style={{
-                    color: '#7AEC7A',
-                    textShadow: '0 0 8px rgba(122,236,122,.5)',
+                    color: '#00C8BE',
+                    textShadow: '0 0 8px rgba(0,200,190,.5)',
                     marginLeft: '4px',
                   }}>W.O.W</span>
                 </>
@@ -160,7 +160,7 @@ export default function ExcelNav() {
             e.currentTarget.style.boxShadow = '0 0 14px rgba(0,71,171,.25)';
           }}
         >
-          JOUER À <span style={{ color: '#7AEC7A', marginLeft: '4px', textShadow: '0 0 6px rgba(122,236,122,.5)' }}>W.O.W</span>
+          JOUER À <span style={{ color: '#00C8BE', marginLeft: '4px', textShadow: '0 0 6px rgba(0,200,190,.5)' }}>W.O.W</span>
         </Link>
       </div>
     </nav>

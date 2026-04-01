@@ -32,9 +32,8 @@ export default function ContactPage() {
             </div>
             <div style={{ display:'flex', gap:'16px', flexWrap:'wrap' }}>
               {[
-                { label:'EMAIL', value:'contact@guibour.fr' },
-                { label:'STATUS', value:'● OPÉRATIONNEL' },
-                { label:'RÉF', value:'GS-CONTACT' },
+                { label:'HEURES', value:'9H – 18H · LUN–VEN' },
+                { label:'STATUT', value:'● OPÉRATIONNEL' },
               ].map(item => (
                 <div key={item.label} style={{ padding:'8px 16px', background:'rgba(255,255,255,.06)', border:'1px solid rgba(0,200,190,.15)' }}>
                   <div style={{ fontFamily:"'Orbitron', sans-serif", fontSize:'7px', color:'#3C5A7A', letterSpacing:'3px' }}>{item.label}</div>
@@ -72,8 +71,6 @@ export default function ContactPage() {
                 {[
                   { icon:'✉', label:'EMAIL', value:'contact@guibour.fr' },
                   { icon:'📍', label:'BUREAU', value:'OPEN SPACE · 7ème ÉTAGE' },
-                  { icon:'⏰', label:'HEURES', value:'9H – 18H // LUN-VEN' },
-                  { icon:'📞', label:'STATUT', value:'● OPÉRATIONNEL' },
                 ].map(item => (
                   <div key={item.label} style={{ display:'flex', gap:'12px', alignItems:'flex-start' }}>
                     <span style={{ fontSize:'16px', marginTop:'2px', flexShrink:0 }}>{item.icon}</span>
