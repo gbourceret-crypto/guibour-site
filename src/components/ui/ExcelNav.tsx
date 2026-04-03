@@ -6,9 +6,12 @@ import GlobeIcon from './GlobeIcon';
 
 const tabs = [
   { href: '/', label: 'JOUER À W.O.W' },
+  { href: '/jukebox', label: '🎵 JUKEBOX' },
   { href: '/resultats', label: 'CLASSEMENT' },
   { href: '/shopping', label: 'BOUTIQUE' },
   { href: '/contact', label: 'CONTACT' },
+  { href: '/cgv', label: 'CGV' },
+  { href: '/mentions-legales', label: 'MENTIONS' },
 ];
 
 export default function ExcelNav() {

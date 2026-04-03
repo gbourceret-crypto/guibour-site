@@ -8,12 +8,14 @@ import { LEVELS } from '@/lib/levels';
 import { audioManager } from '@/lib/audioManager';
 import TowerProgress from './TowerProgress';
 import GameOverScreen from './GameOverScreen';
+import { PlayerIdentity } from '@/components/ui/CharacterSelect';
 
 interface GameCanvasProps {
   characterName?: string;
+  playerIdentity?: PlayerIdentity | null;
 }
 
-export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
+export default function GameCanvas({ characterName = '', playerIdentity }: GameCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const stateRef = useRef<GameState | null>(null);
   const rafRef = useRef<number>(0);
@@ -28,6 +30,14 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
   const [showPhrase, setShowPhrase] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
   const [elevatorActive, setElevatorActive] = useState(false);
+  // YouTube subscribe popup (shown once between levels, around level 8-12)
+  const [showYouTubePopup, setShowYouTubePopup] = useState(false);
+  const youtubeShownRef = useRef(false);
+  // Boss level 25 overlay
+  const [showBossOverlay, setShowBossOverlay] = useState(false);
+  const bossShownRef = useRef(false);
+  // RTT bonus applied
+  const bonusRTTApplied = useRef(false);
   // Direct DOM refs for timer (avoid React re-render per frame)
   const timerFillRef = useRef<HTMLDivElement>(null);
   const timerTextRef = useRef<HTMLSpanElement>(null);
@@ -122,6 +132,12 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
         setGameStatus('playing');
       }
 
+      // Apply bonus RTT on first frame of playing
+      if (!bonusRTTApplied.current && playerIdentity && (playerIdentity.bonusRTT ?? 0) > 0) {
+        bonusRTTApplied.current = true;
+        s.player.lives = (s.player.lives ?? 3) + playerIdentity.bonusRTT;
+      }
+
       // Update HUD info
       if (s.level !== lastLevel) {
         lastLevel = s.level;
@@ -131,6 +147,17 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
           setHudInfo(prev => ({ ...prev, levelName: lc.name, phrase: lc.phrase }));
           setShowPhrase(true);
           setTimeout(() => setShowPhrase(false), 3000);
+        }
+        // YouTube popup once between level 8-12
+        if (s.level >= 8 && s.level <= 12 && !youtubeShownRef.current) {
+          youtubeShownRef.current = true;
+          setShowYouTubePopup(true);
+        }
+        // Boss level 25
+        if (s.level >= 24 && !bossShownRef.current) {
+          bossShownRef.current = true;
+          setShowBossOverlay(true);
+          setTimeout(() => setShowBossOverlay(false), 4000);
         }
       }
       setHudInfo(prev => ({
@@ -411,37 +438,84 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
             </div>
           )}
 
-          {/* ── BOUTONS MOBILES ── visibles pendant la partie */}
+          {/* ── THUMB CONTROLS — Bullet Trouble style ── */}
           {(gameStatus === 'playing' || gameStatus === 'burnout') && (
-            <div style={{ position: 'absolute', bottom: '10px', left: 0, right: 0, display: 'flex', justifyContent: 'space-between', padding: '0 10px', zIndex: 15, pointerEvents: 'none' }}>
-              {/* Gauche */}
-              <button style={{ pointerEvents: 'auto', width: '72px', height: '72px', background: 'rgba(0,200,190,.12)', border: '2px solid rgba(0,200,190,.3)', borderRadius: '10px', color: '#00C8BE', fontSize: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none', transition: 'background .1s' }}
-                onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
-                onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
-                onMouseDown={() => { if(stateRef.current) stateRef.current.touchLeft = true; }}
-                onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
-                onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
-              >←</button>
-              {/* Tir */}
-              <button style={{ pointerEvents: 'auto', width: '72px', height: '72px', background: 'rgba(0,71,171,.18)', border: '2px solid rgba(91,155,213,.4)', borderRadius: '10px', color: '#A8D8FF', fontSize: '26px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none', flexDirection: 'column', gap: '2px' }}
-                onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = true; }}
-                onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
-                onMouseDown={() => { if(stateRef.current) stateRef.current.touchShoot = true; }}
-                onMouseUp={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
-                onMouseLeave={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
-              >
-                <span style={{ fontSize: '18px' }}>↑</span>
-                <span style={{ fontFamily: "'Orbitron',sans-serif", fontSize: '7px', letterSpacing: '1px', color: '#5B9BD5' }}>TIRER</span>
-              </button>
-              {/* Droite */}
-              <button style={{ pointerEvents: 'auto', width: '72px', height: '72px', background: 'rgba(0,200,190,.12)', border: '2px solid rgba(0,200,190,.3)', borderRadius: '10px', color: '#00C8BE', fontSize: '32px', cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', userSelect: 'none', WebkitUserSelect: 'none', touchAction: 'none', transition: 'background .1s' }}
-                onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
-                onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
-                onMouseDown={() => { if(stateRef.current) stateRef.current.touchRight = true; }}
-                onMouseUp={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
-                onMouseLeave={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
-              >→</button>
-            </div>
+            <>
+              {/* LEFT THUMB ZONE — movement (← et →) */}
+              <div style={{
+                position: 'absolute', bottom: '12px', left: '10px',
+                display: 'flex', gap: '6px', zIndex: 15,
+              }}>
+                {/* Bouton gauche ← */}
+                <button
+                  className="thumb-btn"
+                  style={{
+                    width: '76px', height: '76px',
+                    background: 'rgba(0,200,190,.10)',
+                    border: '2px solid rgba(0,200,190,.35)',
+                    borderRadius: '12px',
+                    color: '#00C8BE', fontSize: '34px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
+                  }}
+                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
+                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchLeft = true; }}
+                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                >
+                  ◀
+                </button>
+                {/* Bouton droit → */}
+                <button
+                  className="thumb-btn"
+                  style={{
+                    width: '76px', height: '76px',
+                    background: 'rgba(0,200,190,.10)',
+                    border: '2px solid rgba(0,200,190,.35)',
+                    borderRadius: '12px',
+                    color: '#00C8BE', fontSize: '34px',
+                    boxShadow: '0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
+                  }}
+                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
+                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchRight = true; }}
+                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                >
+                  ▶
+                </button>
+              </div>
+
+              {/* RIGHT THUMB ZONE — tir */}
+              <div style={{
+                position: 'absolute', bottom: '12px', right: '10px',
+                zIndex: 15,
+              }}>
+                <button
+                  className="thumb-btn"
+                  style={{
+                    width: '100px', height: '100px',
+                    background: 'linear-gradient(135deg, rgba(0,71,171,.22), rgba(0,168,157,.18))',
+                    border: '2px solid rgba(0,200,190,.5)',
+                    borderRadius: '50%',
+                    color: '#FFFFFF',
+                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
+                    boxShadow: '0 4px 20px rgba(0,200,190,.25), inset 0 1px 0 rgba(255,255,255,.08)',
+                  }}
+                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = true; }}
+                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchShoot = true; }}
+                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                >
+                  <span style={{ fontSize: '32px', lineHeight: 1 }}>🏹</span>
+                  <span style={{ fontFamily: "'Orbitron',sans-serif", fontSize: '8px', letterSpacing: '2px', color: '#00C8BE', fontWeight: 700 }}>TIRER</span>
+                </button>
+              </div>
+            </>
           )}
 
           {/* Name modal */}
@@ -501,7 +575,91 @@ export default function GameCanvas({ characterName = '' }: GameCanvasProps) {
 
           {/* Game Over / Victory */}
           {(gameStatus === 'gameOver' || gameStatus === 'victory') && stateRef.current && (
-            <GameOverScreen state={stateRef.current} onRestart={handleRestart} />
+            <GameOverScreen state={stateRef.current} onRestart={handleRestart} playerIdentity={playerIdentity} />
+          )}
+
+          {/* YouTube Subscribe popup — between levels, one-time */}
+          {showYouTubePopup && (
+            <div className="absolute inset-0 z-40 flex items-center justify-center"
+                 style={{ background: 'rgba(0,0,0,0.75)', backdropFilter: 'blur(4px)' }}>
+              <div style={{
+                width: '360px', maxWidth: '92vw',
+                background: '#0C2A62', border: '2px solid #FF0000',
+                borderRadius: '6px', overflow: 'hidden',
+                animation: 'slideUp 0.3s ease-out',
+              }}>
+                <div style={{ background: '#CC0000', padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#fff', letterSpacing: '2px', fontWeight: 700 }}>
+                    ▶ GUIBOUR — YOUTUBE
+                  </span>
+                  <button onClick={() => setShowYouTubePopup(false)} style={{ background: 'none', border: 'none', color: '#fff', cursor: 'pointer', fontSize: '16px', lineHeight: 1 }}>✕</button>
+                </div>
+                <div style={{ padding: '20px', textAlign: 'center' }}>
+                  <div style={{ fontSize: '36px', marginBottom: '10px' }}>▶</div>
+                  <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '22px', color: '#FFFFFF', letterSpacing: '3px', marginBottom: '6px' }}>
+                    ABONNE-TOI
+                  </div>
+                  <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', lineHeight: 1.6, marginBottom: '16px' }}>
+                    Retrouve les clips de Guibour sur YouTube. Ton abonnement c&apos;est du carburant pour la prochaine prod.
+                  </p>
+                  <div style={{ display: 'flex', gap: '8px', justifyContent: 'center' }}>
+                    <a
+                      href="https://www.youtube.com/@Guibour?sub_confirmation=1"
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      onClick={() => setShowYouTubePopup(false)}
+                      style={{
+                        fontFamily: "'Orbitron', sans-serif", fontSize: '10px', letterSpacing: '2px',
+                        padding: '10px 20px', background: 'linear-gradient(135deg,#FF0000,#CC0000)',
+                        color: '#fff', border: '1px solid #FF4444', textDecoration: 'none',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      S&apos;ABONNER →
+                    </a>
+                    <button
+                      onClick={() => setShowYouTubePopup(false)}
+                      style={{
+                        fontFamily: "'Orbitron', sans-serif", fontSize: '9px', letterSpacing: '2px',
+                        padding: '10px 14px', background: 'transparent',
+                        color: '#3C5A7A', border: '1px solid #1A3E7A', cursor: 'pointer',
+                        borderRadius: '2px',
+                      }}
+                    >
+                      CONTINUER
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* Boss Level 25 — screen takeover */}
+          {showBossOverlay && (
+            <div className="absolute inset-0 z-50 flex flex-col items-center justify-center"
+                 style={{ background: 'rgba(60,0,0,0.96)' }}>
+              <div style={{
+                fontFamily: "'Luckiest Guy', cursive",
+                fontSize: 'clamp(60px, 14vw, 140px)',
+                color: '#FF0000',
+                letterSpacing: '4px',
+                lineHeight: 0.9,
+                textAlign: 'center',
+                animation: 'scareSlam 0.5s cubic-bezier(.15,0,.25,1) both, scareGlow 1.5s ease-in-out infinite 0.5s',
+              }}>
+                ⚠ BOSS<br />FINAL
+              </div>
+              <div style={{
+                fontFamily: "'Orbitron', sans-serif",
+                fontSize: 'clamp(12px, 2vw, 18px)',
+                color: '#FF6666',
+                letterSpacing: '6px',
+                marginTop: '20px',
+                animation: 'fadeIn 0.5s ease 0.8s both',
+              }}>
+                ÉTAGE 25 — DERNIER NIVEAU
+              </div>
+            </div>
           )}
         </div>
 

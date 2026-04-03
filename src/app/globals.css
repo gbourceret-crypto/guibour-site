@@ -189,3 +189,47 @@ html, body {
 .sidebar-nav:hover {
   width: 200px;
 }
+
+/* ===== GAME WRAPPER — mobile removes left sidebar padding ===== */
+.game-wrapper {
+  padding-left: 48px;
+}
+
+/* ===== MOBILE — full-screen game, no sidebar ===== */
+@media (max-width: 640px) {
+  .game-wrapper {
+    padding-left: 0 !important;
+  }
+  .sidebar-nav-hide-game {
+    display: none !important;
+  }
+  /* Prevent bounce scroll on iOS during game */
+  .game-canvas-container {
+    overscroll-behavior: none;
+    -webkit-overflow-scrolling: auto;
+  }
+}
+
+/* Thumb control hit zones — always rendered but only pointer-events on touch devices */
+.thumb-zone {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  align-items: flex-end;
+  z-index: 15;
+}
+.thumb-btn {
+  -webkit-tap-highlight-color: transparent;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.1s ease, transform 0.05s ease;
+}
+.thumb-btn:active {
+  transform: scale(0.94);
+}

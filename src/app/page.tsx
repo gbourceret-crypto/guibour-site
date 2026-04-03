@@ -5,8 +5,9 @@ import dynamic from 'next/dynamic';
 import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
 import LoadingScreen from '@/components/ui/LoadingScreen';
-import CharacterSelect, { CharacterData } from '@/components/ui/CharacterSelect';
+import CharacterSelect, { CharacterData, PlayerIdentity } from '@/components/ui/CharacterSelect';
 import LogoSphere from '@/components/ui/LogoSphere';
+import { useDayNight, getDayNightTheme } from '@/hooks/useDayNight';
 
 const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
   ssr: false,
@@ -14,6 +15,7 @@ const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
 });
 
 import Link from 'next/link';
+import Countdown from '@/components/ui/Countdown';
 
 function WowSpan() {
   return (
@@ -152,6 +154,9 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         }} />
       </button>
 
+      {/* Countdown rouge vers le 1er juin 2026 */}
+      <Countdown />
+
       {/* Bouton Boutique — gros et visible */}
       <Link
         href="/shopping"
@@ -193,6 +198,9 @@ export default function Home() {
   const [showGame, setShowGame] = useState(false);
   const [loadingDone, setLoadingDone] = useState(false);
   const [selectedCharacter, setSelectedCharacter] = useState<CharacterData | null>(null);
+  const [playerIdentity, setPlayerIdentity] = useState<PlayerIdentity | null>(null);
+  const timeMode = useDayNight();
+  const theme = getDayNightTheme(timeMode);
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -216,8 +224,9 @@ export default function Home() {
     setShowCharacterSelect(true);
   }, []);
 
-  const handleCharacterSelect = useCallback((character: CharacterData) => {
+  const handleCharacterSelect = useCallback((character: CharacterData, identity: PlayerIdentity) => {
     setSelectedCharacter(character);
+    setPlayerIdentity(identity);
     setShowCharacterSelect(false);
     setShowGame(true);
   }, []);
@@ -237,26 +246,38 @@ export default function Home() {
   if (showGame) {
     return (
       <div
-        className="flex flex-col overflow-hidden"
-        style={{ background: '#1A3F78', height: '100dvh', paddingLeft: '48px' }}
+        className="game-wrapper flex flex-col overflow-hidden"
+        style={{ background: '#1A3F78', height: '100dvh' }}
       >
+        {/* Sidebar hidden on mobile during game via CSS */}
+        <div className="sidebar-nav-hide-game">
+          <ExcelNav />
+        </div>
         <main
           className="flex-1"
           style={{ minHeight: 0, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}
         >
-          <GameCanvas characterName={selectedCharacter?.name ?? ''} />
+          <GameCanvas characterName={selectedCharacter?.name ?? ''} playerIdentity={playerIdentity} />
         </main>
-        <ExcelNav />
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#1A3F78' }}>
+    <div className="min-h-screen" style={{ background: theme.bg, transition: 'background 2s ease' }}>
       <ExcelNav />
       <ExcelChrome formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2026") → WELCOME_TO_THE_SYSTEM'>
         <HeroContent onPlay={handlePlay} />
       </ExcelChrome>
+      {/* Indicateur mode jour/nuit discret */}
+      <div style={{
+        position: 'fixed', bottom: '12px', right: '12px',
+        fontFamily: "'Orbitron', sans-serif",
+        fontSize: '8px', color: '#2B5090', letterSpacing: '2px',
+        zIndex: 10, opacity: 0.6, pointerEvents: 'none',
+      }}>
+        {theme.accentLabel}
+      </div>
     </div>
   );
 }
