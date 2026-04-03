@@ -59,29 +59,26 @@ export default function JukeboxPage() {
   return (
     <div className="min-h-screen" style={{ background: 'var(--bg, #1A3F78)' }}>
       <ExcelNav />
-      <ExcelChrome formulaText='=PLAY("GUIBOUR_EP","JUKEBOX_2026") → BROADCAST_MODE_ON'>
-        <div style={{ padding: '32px 24px 60px', maxWidth: '1100px', margin: '0 auto' }}>
+      <ExcelChrome formulaText='=PLAY("GUIBOUR_EP","VIDEO_MUSIC_BOX_2026") → BROADCAST_MODE_ON'>
+        <div style={{ padding: '32px 24px 60px', maxWidth: '900px', margin: '0 auto' }}>
 
           {/* ── HEADER ── */}
-          <div style={{ marginBottom: '32px' }}>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#5B9BD5', letterSpacing: '5px', marginBottom: '8px' }}>
-              GUIBOUR SYSTEM // BROADCAST CENTER // 2026
+          <div style={{ marginBottom: '28px' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '4px', marginBottom: '6px' }}>
+              GUIBOUR SYSTEM // 2026
             </div>
             <h1 style={{
               fontFamily: "'Luckiest Guy', cursive",
-              fontSize: 'clamp(40px, 7vw, 72px)',
-              color: '#FFFFFF',
-              letterSpacing: '6px',
-              lineHeight: 1,
-              textShadow: '3px 5px 0 #0C2A62, 0 0 40px rgba(0,200,190,.3)',
-              marginBottom: '6px',
-            }}>JUKEBOX</h1>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '12px', color: '#00D4CC', letterSpacing: '4px' }}>
-              ÉCOUTER · REGARDER · ENREGISTRER
+              fontSize: 'clamp(32px, 6vw, 60px)',
+              color: '#FFFFFF', letterSpacing: '4px', lineHeight: 1,
+              textShadow: '3px 4px 0 #0C2A62, 0 0 30px rgba(0,200,190,.25)', marginBottom: '4px',
+            }}>VIDEO &amp; MUSIC BOX</h1>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#00D4CC', letterSpacing: '3px' }}>
+              ÉCOUTER · REGARDER · PARTAGER
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 340px', gap: '24px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 280px', gap: '20px' }}>
 
             {/* ── LEFT COLUMN — PLAYER + TRACKLIST ── */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -402,69 +399,17 @@ export default function JukeboxPage() {
                 </div>
               </div>
 
-              {/* W.O.W Sounds playlist card */}
-              <div style={{
-                background: 'linear-gradient(135deg, #0A2254, #0C2A62)',
-                border: '2px solid #00C8BE',
-                borderRadius: '4px',
-                padding: '16px',
-                textAlign: 'center',
-              }}>
-                <div style={{ fontSize: '28px', marginBottom: '8px' }}>📋</div>
-                <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#00C8BE', letterSpacing: '3px', marginBottom: '8px' }}>
-                  W.O.W SOUNDS
-                </div>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', lineHeight: 1.6, marginBottom: '12px' }}>
-                  LA PLAYLIST COLLABORATIVE — AJOUTE TON SON PRÉFÉRÉ
-                </div>
-                <a
-                  href={WOW_PLAYLIST_URL}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    display: 'inline-block',
-                    fontFamily: "'Orbitron', sans-serif", fontSize: '8px',
-                    padding: '8px 20px',
-                    background: 'linear-gradient(135deg, #1DB954, #169940)',
-                    color: '#fff',
-                    border: '1px solid #1DB954',
-                    textDecoration: 'none',
-                    letterSpacing: '2px',
-                    borderRadius: '2px',
-                  }}
-                >
-                  + REJOINDRE LA PLAYLIST
-                </a>
-              </div>
-
-              {/* YouTube subscribe */}
-              <a
-                href={YOUTUBE_CHANNEL}
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  display: 'flex', alignItems: 'center', gap: '12px',
-                  padding: '14px 16px',
-                  background: 'linear-gradient(135deg, #1A0000, #2A0000)',
-                  border: '2px solid #FF0000',
-                  borderRadius: '4px',
-                  textDecoration: 'none',
-                  transition: 'all .2s',
-                  animation: 'pulse 3s ease-in-out infinite',
-                }}
-                onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #2A0000, #3A0000)'; e.currentTarget.style.boxShadow = '0 0 20px rgba(255,0,0,.3)'; }}
-                onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1A0000, #2A0000)'; e.currentTarget.style.boxShadow = 'none'; }}
-              >
-                <span style={{ fontSize: '28px' }}>▶</span>
+              {/* YouTube subscribe — compact */}
+              <a href={YOUTUBE_CHANNEL} target="_blank" rel="noopener noreferrer"
+                style={{ display: 'flex', alignItems: 'center', gap: '10px', padding: '12px 14px', background: '#0A0000', border: '2px solid #CC0000', textDecoration: 'none', transition: 'all .2s' }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#FF0000'; e.currentTarget.style.boxShadow = '0 0 16px rgba(255,0,0,.25)'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#CC0000'; e.currentTarget.style.boxShadow = 'none'; }}>
+                <span style={{ fontSize: '22px' }}>▶</span>
                 <div>
-                  <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '14px', color: '#FF4444', letterSpacing: '2px' }}>
-                    S&apos;ABONNER YOUTUBE
-                  </div>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#FF8888', letterSpacing: '1px' }}>
-                    @GUIBOUR — CLIPS & CONTENU
-                  </div>
+                  <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '13px', color: '#FF4444', letterSpacing: '2px' }}>S&apos;ABONNER</div>
+                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#884444', letterSpacing: '1px' }}>@GUIBOUR</div>
                 </div>
-                <span style={{ marginLeft: 'auto', color: '#FF4444', fontSize: '18px' }}>→</span>
+                <span style={{ marginLeft: 'auto', color: '#FF4444', fontSize: '16px' }}>→</span>
               </a>
             </div>
           </div>

@@ -210,227 +210,102 @@ export default function CharacterSelect({ onSelect, onBack }: CharacterSelectPro
   const active = CHARACTERS[activeIndex];
   const currentId = existingIdentity?.employeeId ?? employeeId;
 
-  // ── STEP 1: IDENTITY FORM ────────────────────────────────────────────────
+  // ── STEP 1: IDENTITY FORM (simplifié) ────────────────────────────────────
   if (step === 'identity') {
     return (
       <div style={{
         position: 'fixed', inset: 0, zIndex: 100,
-        background: 'linear-gradient(160deg, #1A3F78 0%, #1A3F78 60%, #264D82 100%)',
+        background: 'linear-gradient(160deg, #0D1F45 0%, #1A3F78 100%)',
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: '20px',
-        overflow: 'hidden',
       }}>
-        {/* Grid texture */}
-        <div style={{
-          position: 'absolute', inset: 0, pointerEvents: 'none',
-          backgroundImage: 'linear-gradient(rgba(0,72,171,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,72,171,.07) 1px,transparent 1px)',
-          backgroundSize: '56px 34px',
-        }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,72,171,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,72,171,.06) 1px,transparent 1px)', backgroundSize: '56px 34px' }} />
 
-        {/* Card */}
-        <div style={{
-          position: 'relative', zIndex: 2,
-          width: '100%', maxWidth: '440px',
-          background: '#0C2A62',
-          border: '2px solid #1A3E7A',
-          borderRadius: '6px',
-          overflow: 'hidden',
-          boxShadow: '0 20px 60px rgba(0,0,0,.5)',
-          animation: 'slideUp 0.3s ease-out',
-        }}>
-          {/* Windows title bar */}
-          <div style={{ background: '#0047AB', padding: '8px 12px', display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ display: 'flex', gap: '5px' }}>
-              <span style={{ display: 'block', width: 10, height: 10, borderRadius: '50%', background: '#FF5F56' }} />
-              <span style={{ display: 'block', width: 10, height: 10, borderRadius: '50%', background: '#FFBD2E' }} />
-              <span style={{ display: 'block', width: 10, height: 10, borderRadius: '50%', background: '#27C93F' }} />
+        <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '380px', animation: 'slideUp 0.3s ease-out' }}>
+
+          {/* Title */}
+          <div style={{ textAlign: 'center', marginBottom: '28px' }}>
+            <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '32px', color: '#FFFFFF', letterSpacing: '5px', textShadow: '2px 3px 0 #0C2A62' }}>
+              GUIBOUR SYSTEM
             </div>
-            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', fontWeight: 700, color: '#fff', letterSpacing: '2px' }}>
-              GUIBOUR SYSTEM — IDENTIFICATION RH
-            </span>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '4px', marginTop: '4px' }}>
+              IDENTIFICATION EMPLOYÉ
+            </div>
           </div>
 
-          {/* fx bar */}
-          <div style={{ background: '#091E4A', padding: '5px 14px', borderBottom: '1px solid #1A3E7A', display: 'flex', alignItems: 'center', gap: '10px' }}>
-            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
-            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5' }}>
-              =CONNECT(&quot;EMPLOYEE_ID&quot;) → {currentId}
-            </span>
-          </div>
-
-          <div style={{ padding: '24px' }}>
-
-            {/* Existing player welcome back */}
-            {existingIdentity && (
-              <div style={{
-                background: 'rgba(0,200,190,.08)',
-                border: '1px solid rgba(0,200,190,.3)',
-                borderRadius: '4px',
-                padding: '12px 14px',
-                marginBottom: '18px',
-              }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '2px', marginBottom: '4px' }}>
-                  ✓ PROFIL RECONNU
-                </div>
-                <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '20px', color: '#FFFFFF', letterSpacing: '3px' }}>
-                  {existingIdentity.pseudo}
-                </div>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', marginTop: '4px' }}>
-                  EMPLOYÉ N° {existingIdentity.employeeId}
-                </div>
-                <button
-                  onClick={handlePlayAsExisting}
-                  style={{
-                    marginTop: '10px', width: '100%',
-                    fontFamily: "'Lilita One', cursive", fontSize: '14px', letterSpacing: '3px',
-                    color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)',
-                    border: '2px solid #00C8BE', padding: '10px', cursor: 'pointer',
-                    boxShadow: '0 0 16px rgba(0,200,190,.25)', transition: 'all .2s',
-                  }}
-                  onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 28px rgba(0,200,190,.5)'}
-                  onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 16px rgba(0,200,190,.25)'}
-                >
-                  CONTINUER EN TANT QUE {existingIdentity.pseudo} →
-                </button>
-                <div style={{ textAlign: 'center', margin: '12px 0 4px', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#3C5A7A' }}>
-                  — OU JOUER AVEC UN AUTRE PROFIL —
-                </div>
-              </div>
-            )}
-
-            {/* Pseudo */}
-            <div style={{ marginBottom: '14px' }}>
-              <label style={{ display: 'block', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#A8D8FF', letterSpacing: '2px', marginBottom: '6px' }}>
-                PSEUDO * <span style={{ color: '#FF4444' }}>OBLIGATOIRE</span>
-              </label>
-              <input
-                type="text"
-                value={pseudo}
-                onChange={e => { setPseudo(e.target.value); setPseudoError(''); }}
-                placeholder="TON NOM EN JEU"
-                maxLength={20}
-                style={{
-                  width: '100%', padding: '10px 12px',
-                  fontFamily: "'Orbitron', sans-serif", fontSize: '12px', letterSpacing: '2px',
-                  background: '#091E4A', color: '#FFFFFF',
-                  border: `1px solid ${pseudoError ? '#FF4444' : '#1A3E7A'}`,
-                  outline: 'none', boxSizing: 'border-box',
-                  transition: 'border-color .2s',
-                }}
-                onFocus={e => e.target.style.borderColor = '#00C8BE'}
-                onBlur={e => e.target.style.borderColor = pseudoError ? '#FF4444' : '#1A3E7A'}
-                onKeyDown={e => e.key === 'Enter' && handleIdentitySubmit()}
-              />
-              {pseudoError && <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#FF4444', marginTop: '4px' }}>{pseudoError}</div>}
+          {/* Existing identity shortcut */}
+          {existingIdentity && (
+            <div style={{ marginBottom: '16px', background: 'rgba(0,200,190,.08)', border: '1px solid rgba(0,200,190,.25)', padding: '14px 16px' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#00C8BE', letterSpacing: '2px', marginBottom: '6px' }}>✓ PROFIL SAUVEGARDÉ</div>
+              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '20px', color: '#fff', letterSpacing: '3px', marginBottom: '8px' }}>{existingIdentity.pseudo}</div>
+              <button onClick={handlePlayAsExisting} style={{ width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '15px', letterSpacing: '3px', color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '11px', cursor: 'pointer' }}>
+                CONTINUER →
+              </button>
+              <div style={{ textAlign: 'center', marginTop: '10px', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#2B4060' }}>— ou crée un nouveau profil —</div>
             </div>
+          )}
 
-            {/* RTT bonus banner */}
-            <div style={{
-              background: 'rgba(0,71,171,.15)',
-              border: '1px solid rgba(0,71,171,.4)',
-              borderRadius: '3px',
-              padding: '10px 12px',
-              marginBottom: '12px',
-              fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#A8D8FF',
-              lineHeight: 1.6,
-            }}>
-              💼 <strong style={{ color: '#FFE033' }}>BONUS RTT :</strong> Laisse ton email ou ton téléphone et gagne des vies supplémentaires pour ta partie !
-            </div>
-
-            {/* Email */}
-            {!emailGiven && (
-              <div style={{ marginBottom: '12px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#A8D8FF', letterSpacing: '2px', marginBottom: '6px' }}>
-                  EMAIL
-                  <span style={{
-                    background: 'rgba(0,200,190,.15)',
-                    border: '1px solid #00C8BE',
-                    color: '#00C8BE',
-                    padding: '2px 8px',
-                    fontSize: '8px', borderRadius: '2px',
-                  }}>+1 RTT ❤</span>
-                  <span style={{ color: '#607888', fontSize: '8px' }}>— facultatif</span>
-                </label>
-                <input
-                  type="email"
-                  value={email}
-                  onChange={e => setEmail(e.target.value)}
-                  placeholder="ton@email.com"
-                  style={{
-                    width: '100%', padding: '9px 12px',
-                    fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
-                    background: '#091E4A', color: '#FFFFFF',
-                    border: '1px solid #1A3E7A', outline: 'none', boxSizing: 'border-box',
-                  }}
-                  onFocus={e => e.target.style.borderColor = '#00C8BE'}
-                  onBlur={e => e.target.style.borderColor = '#1A3E7A'}
-                />
-              </div>
-            )}
-
-            {/* Phone */}
-            {!phoneGiven && (
-              <div style={{ marginBottom: '20px' }}>
-                <label style={{ display: 'flex', alignItems: 'center', gap: '8px', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#A8D8FF', letterSpacing: '2px', marginBottom: '6px' }}>
-                  TÉLÉPHONE
-                  <span style={{
-                    background: 'rgba(0,200,190,.15)',
-                    border: '1px solid #00C8BE',
-                    color: '#00C8BE',
-                    padding: '2px 8px',
-                    fontSize: '8px', borderRadius: '2px',
-                  }}>+1 RTT ❤</span>
-                  <span style={{ color: '#607888', fontSize: '8px' }}>— facultatif</span>
-                </label>
-                <input
-                  type="tel"
-                  value={phone}
-                  onChange={e => setPhone(e.target.value)}
-                  placeholder="+33 6 xx xx xx xx"
-                  style={{
-                    width: '100%', padding: '9px 12px',
-                    fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
-                    background: '#091E4A', color: '#FFFFFF',
-                    border: '1px solid #1A3E7A', outline: 'none', boxSizing: 'border-box',
-                  }}
-                  onFocus={e => e.target.style.borderColor = '#00C8BE'}
-                  onBlur={e => e.target.style.borderColor = '#1A3E7A'}
-                />
-              </div>
-            )}
-
-            {/* Submit */}
-            <button
-              onClick={handleIdentitySubmit}
+          {/* Pseudo field */}
+          <div style={{ marginBottom: '12px' }}>
+            <input
+              type="text"
+              value={pseudo}
+              onChange={e => { setPseudo(e.target.value); setPseudoError(''); }}
+              placeholder="TON PSEUDO *"
+              maxLength={20}
+              autoFocus={!existingIdentity}
               style={{
-                width: '100%',
-                fontFamily: "'Lilita One', cursive", fontSize: '18px', letterSpacing: '4px',
-                color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)',
-                border: '2px solid #00C8BE', padding: '14px', cursor: 'pointer',
-                boxShadow: '0 0 20px rgba(0,200,190,.3)', transition: 'all .2s',
-                position: 'relative', overflow: 'hidden',
+                width: '100%', padding: '14px 16px', boxSizing: 'border-box',
+                fontFamily: "'Orbitron', sans-serif", fontSize: '14px', letterSpacing: '2px',
+                background: '#091E4A', color: '#FFFFFF',
+                border: `2px solid ${pseudoError ? '#FF4444' : '#1A3E7A'}`,
+                outline: 'none', textAlign: 'center',
               }}
-              onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 32px rgba(0,200,190,.55)'}
-              onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 20px rgba(0,200,190,.3)'}
-            >
-              ENTRER DANS LE SYSTÈME →
-            </button>
+              onFocus={e => e.target.style.borderColor = '#00C8BE'}
+              onBlur={e => e.target.style.borderColor = pseudoError ? '#FF4444' : '#1A3E7A'}
+              onKeyDown={e => e.key === 'Enter' && handleIdentitySubmit()}
+            />
+            {pseudoError && <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#FF4444', marginTop: '4px', textAlign: 'center' }}>{pseudoError}</div>}
+          </div>
 
-            <div style={{ textAlign: 'center', marginTop: '10px', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#2B4060', lineHeight: 1.5 }}>
-              En jouant tu acceptes que tes données soient utilisées pour le classement et les relances du concours.
-              Aucune revente à des tiers.
+          {/* Email/phone — compact with RTT badge */}
+          {!emailGiven && (
+            <div style={{ marginBottom: '8px', position: 'relative' }}>
+              <input
+                type="email" value={email} onChange={e => setEmail(e.target.value)}
+                placeholder="EMAIL (facultatif)"
+                style={{ width: '100%', padding: '11px 16px', boxSizing: 'border-box', fontFamily: "'Orbitron', sans-serif", fontSize: '11px', background: '#091E4A', color: '#FFFFFF', border: '1px solid #1A3E7A', outline: 'none' }}
+                onFocus={e => e.target.style.borderColor = '#00C8BE'}
+                onBlur={e => e.target.style.borderColor = '#1A3E7A'}
+              />
+              <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#00C8BE', background: 'rgba(0,200,190,.15)', border: '1px solid #00C8BE', padding: '2px 6px', borderRadius: '2px' }}>+1 RTT ❤</span>
             </div>
+          )}
+          {!phoneGiven && (
+            <div style={{ marginBottom: '20px', position: 'relative' }}>
+              <input
+                type="tel" value={phone} onChange={e => setPhone(e.target.value)}
+                placeholder="TÉLÉPHONE (facultatif)"
+                style={{ width: '100%', padding: '11px 16px', boxSizing: 'border-box', fontFamily: "'Orbitron', sans-serif", fontSize: '11px', background: '#091E4A', color: '#FFFFFF', border: '1px solid #1A3E7A', outline: 'none' }}
+                onFocus={e => e.target.style.borderColor = '#00C8BE'}
+                onBlur={e => e.target.style.borderColor = '#1A3E7A'}
+              />
+              <span style={{ position: 'absolute', right: '8px', top: '50%', transform: 'translateY(-50%)', fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#00C8BE', background: 'rgba(0,200,190,.15)', border: '1px solid #00C8BE', padding: '2px 6px', borderRadius: '2px' }}>+1 RTT ❤</span>
+            </div>
+          )}
+
+          <button onClick={handleIdentitySubmit} style={{ width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '20px', letterSpacing: '4px', color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px', cursor: 'pointer', boxShadow: '0 0 20px rgba(0,200,190,.3)' }}
+            onMouseEnter={e => e.currentTarget.style.boxShadow = '0 0 32px rgba(0,200,190,.55)'}
+            onMouseLeave={e => e.currentTarget.style.boxShadow = '0 0 20px rgba(0,200,190,.3)'}>
+            ENTRER →
+          </button>
+
+          <div style={{ textAlign: 'center', marginTop: '10px', fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#1E3252' }}>
+            Données utilisées pour le classement du concours uniquement.
           </div>
         </div>
 
-        <button
-          onClick={() => { playClick(); onBack(); }}
-          style={{
-            position: 'relative', zIndex: 2, marginTop: '16px',
-            fontFamily: "'Orbitron', sans-serif", fontSize: '9px', letterSpacing: '3px', color: '#3C5A7A',
-            background: 'transparent', border: '1px solid #1A3E7A', padding: '7px 18px', cursor: 'pointer',
-          }}
-        >← RETOUR</button>
+        <button onClick={() => { playClick(); onBack(); }} style={{ position: 'relative', zIndex: 2, marginTop: '16px', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', letterSpacing: '3px', color: '#3C5A7A', background: 'transparent', border: '1px solid #1A3E7A', padding: '7px 18px', cursor: 'pointer' }}>← RETOUR</button>
       </div>
     );
   }

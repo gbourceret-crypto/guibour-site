@@ -262,7 +262,8 @@ function updatePlayer(state: GameState) {
     state.projectiles.push({
       id: state.nextId++,
       x: player.x,
-      y: player.y - player.height / 2,
+      // Spawn at top of character (head/shoulder level) so arrow appears to come FROM the player
+      y: player.y - player.height + 10,
       height: 0,
       active: true,
       piercing: piluleActive,
@@ -675,13 +676,17 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   const walkVideo = assets?.player.walkVideo;
   const idleImg = assets?.player.idle;
   const isMoving = player.direction === 'left' || player.direction === 'right';
+  // Show idle/front-facing when shooting (has active projectile)
+  const isShooting = state.projectiles.some(p => p.active);
+  // Use walk animation only when moving AND not shooting
+  const useWalk = isMoving && !isShooting;
 
   // Manage video play/pause
   if (walkVideo && walkVideo.readyState >= 2) {
-    if (isMoving && !walkVideoPlaying) {
+    if (useWalk && !walkVideoPlaying) {
       walkVideo.play().catch(() => {});
       walkVideoPlaying = true;
-    } else if (!isMoving && walkVideoPlaying) {
+    } else if (!useWalk && walkVideoPlaying) {
       walkVideo.pause();
       walkVideoPlaying = false;
     }
@@ -689,10 +694,10 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
 
   ctx.save();
 
-  if (isMoving && walkVideo && walkVideo.readyState >= 2) {
-    // Draw video frame — video is natively facing left (1280×720)
-    // Character occupies x=401..857 (sw=456) of the full frame (with ~20px padding)
-    const sx = 401, sy = 0, sw = 456, sh = 720;
+  if (useWalk && walkVideo && walkVideo.readyState >= 2) {
+    // Draw video frame — video is natively facing left (1280×720), trimmed from 1.0s
+    // Character occupies x=356..935 (sw=579) of the full hflipped frame
+    const sx = 356, sy = 0, sw = 579, sh = 720;
     if (player.direction === 'right') {
       // Flip horizontally for right movement
       ctx.translate(player.x + player.width / 2, player.y - player.height);
@@ -703,7 +708,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
       ctx.drawImage(walkVideo, sx, sy, sw, sh, player.x - player.width / 2, player.y - player.height, player.width, player.height);
     }
   } else if (idleImg) {
-    // Idle: draw static image
+    // Idle or shooting: draw face-forward static image
     ctx.drawImage(idleImg, player.x - player.width / 2, player.y - player.height, player.width, player.height);
   } else {
     // Fallback rectangle

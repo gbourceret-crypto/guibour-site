@@ -293,7 +293,7 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
       <div className="mb-6 text-center" style={{ pointerEvents: 'none', flexShrink: 0 }}>
         <h1 style={{
           fontFamily: "'Luckiest Guy', cursive",
-          fontSize: isVictory ? 'clamp(58px, 10vw, 108px)' : 'clamp(64px, 12vw, 130px)',
+          fontSize: isVictory ? 'clamp(58px, 10vw, 108px)' : 'clamp(52px, 9vw, 100px)',
           color: isVictory ? '#00C9C8' : '#FF2020',
           letterSpacing: isVictory ? '6px' : '3px',
           lineHeight: 0.92, display: 'block',
@@ -306,11 +306,11 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
         {!isVictory && (
           <p style={{
             fontFamily: "'Luckiest Guy', cursive",
-            fontSize: 'clamp(32px, 6vw, 64px)',
-            color: '#FF5050', letterSpacing: '8px', marginTop: '10px', display: 'block',
+            fontSize: 'clamp(28px, 5vw, 58px)',
+            color: '#FF5050', letterSpacing: '4px', marginTop: '8px', display: 'block',
             animation: 'scareSlam 0.65s cubic-bezier(.15,0,.25,1) 0.18s both, scarePulse 1.8s ease-in-out infinite 0.85s',
           }}>
-            GAME OVER
+            TU ES UN LOOSER
           </p>
         )}
         {isVictory && (
@@ -328,281 +328,125 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
       {showContent && (
         <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', padding: '0 16px 16px', width: '100%', maxWidth: '960px' }}>
 
-          {/* Main stats card */}
-          <div className="w-[440px] max-w-[92vw] overflow-hidden shadow-2xl"
-               style={{ animation: 'slideUp 0.4s ease-out', border: '2px solid #0047AB', background: '#fff', flexShrink: 0 }}>
-            <div className="flex items-center justify-between px-3 py-2" style={{ background: '#0047AB' }}>
-              <div className="flex items-center gap-2">
-                <div className="flex gap-1.5">
-                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FF5F56' }} />
-                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#FFBD2E' }} />
-                  <span className="block h-2.5 w-2.5 rounded-full" style={{ background: '#27C93F' }} />
-                </div>
-                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', fontWeight: 700, color: '#fff', letterSpacing: '1px' }}>
-                  {isVictory ? 'W.O.W — LIBERATION' : 'W.O.W — FIN DE CONTRAT'}
-                </span>
+          {/* ── STATS CARD ── */}
+          <div style={{
+            width: '400px', maxWidth: '92vw',
+            background: '#0C1E40',
+            border: '2px solid #0047AB',
+            animation: 'slideUp 0.4s ease-out',
+            flexShrink: 0,
+            overflow: 'hidden',
+          }}>
+            {/* Title bar */}
+            <div style={{ background: '#0047AB', padding: '8px 14px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <div style={{ display: 'flex', gap: '5px' }}>
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FF5F56', display: 'inline-block' }} />
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#FFBD2E', display: 'inline-block' }} />
+                <span style={{ width: 9, height: 9, borderRadius: '50%', background: '#27C93F', display: 'inline-block' }} />
               </div>
-              <div className="flex gap-2 text-white/60" style={{ fontSize: '10px' }}><span>—</span><span>□</span><span>✕</span></div>
-            </div>
-
-            <div className="flex items-center border-b" style={{ borderColor: '#C0D0DE', background: '#FAFAFA' }}>
-              <div className="flex items-center justify-center border-r px-2 py-1" style={{ borderColor: '#C0D0DE', background: '#E8E8E8' }}>
-                <span style={{ fontFamily: 'monospace', fontSize: '9px', color: '#777' }}>fx</span>
-              </div>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#0047AB', padding: '4px 8px' }}>
-                =BILAN(&quot;{pseudo}&quot;, DUREE({durationText}), SALAIRE({formatSalary(player.score)}))
+              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#fff', letterSpacing: '2px' }}>
+                {isVictory ? 'LIBERTÉ OBTENUE' : 'DOSSIER CLASSÉ'}
               </span>
+              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: 'rgba(255,255,255,.4)' }}>✕</span>
             </div>
 
-            <div className="p-5 text-center" style={{ background: '#F5F5F5' }}>
-              <div style={{ background: '#fff', border: '1px solid #C8D8E8', padding: '10px', marginBottom: '12px' }}>
-                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#607888' }}>DURÉE DANS LE SYSTÈME</span>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '32px', fontWeight: 800, color: '#0047AB', lineHeight: 1.2 }}>{durationText}</div>
+            {/* Stats */}
+            <div style={{ padding: '20px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+              {/* Employee row */}
+              <div style={{ textAlign: 'center' }}>
+                <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '22px', color: '#FFFFFF', letterSpacing: '4px' }}>{pseudo}</div>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#3C5A7A', letterSpacing: '3px' }}>EMPLOYÉ(E) DU MOIS</div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '1px', background: '#C8D8E8', border: '1px solid #C8D8E8', marginBottom: '12px' }}>
+              {/* 3 stats */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
                 {[
-                  { label: 'ÉTAGE', value: String(level).padStart(2, '0'), color: '#0A1520' },
-                  { label: 'SALAIRE', value: formatSalary(player.score), color: '#0047AB' },
-                  { label: 'CLASSEMENT', value: `#${rank}`, color: '#D4A020' },
-                ].map(cell => (
-                  <div key={cell.label} style={{ background: '#fff', padding: '8px 6px', textAlign: 'center' }}>
-                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#607888', letterSpacing: '2px', marginBottom: '2px' }}>{cell.label}</div>
-                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '18px', fontWeight: 700, color: cell.color }}>{cell.value}</div>
+                  { label: 'ÉTAGE', value: `${String(level).padStart(2,'0')}/25`, color: '#FFE033' },
+                  { label: 'SALAIRE', value: formatSalary(player.score), color: '#00C8BE' },
+                  { label: 'RANG', value: rank > 0 ? `#${rank}` : '—', color: '#FF7744' },
+                ].map(s => (
+                  <div key={s.label} style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '10px 6px', textAlign: 'center' }}>
+                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#3C5A7A', letterSpacing: '2px', marginBottom: '4px' }}>{s.label}</div>
+                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '16px', fontWeight: 700, color: s.color }}>{s.value}</div>
                   </div>
                 ))}
               </div>
 
-              <div className="flex gap-2 flex-wrap">
-                <button onClick={() => { playClick(); onRestart(); }} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#0047AB', border: '1px solid #0A1520', minWidth: '80px' }}>
+              {/* Duration */}
+              <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '8px 12px', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#3C5A7A', letterSpacing: '2px' }}>DURÉE</span>
+                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '14px', color: '#A8D8FF', fontWeight: 700 }}>{durationText}</span>
+              </div>
+
+              {/* Actions */}
+              <div style={{ display: 'flex', gap: '8px' }}>
+                <button onClick={() => { playClick(); onRestart(); }}
+                  style={{ flex: 1, fontFamily: "'Luckiest Guy', cursive", fontSize: '15px', letterSpacing: '3px', color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '12px', cursor: 'pointer', transition: 'all .2s' }}>
                   REJOUER
                 </button>
-                <button onClick={handleShare} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#00A89D', color: '#fff', border: '1px solid #0047AB', minWidth: '80px' }}>
-                  {copied ? 'COPIÉ !' : 'PARTAGER'}
+                <button onClick={handleShare}
+                  style={{ padding: '12px 14px', fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#00C8BE', background: 'transparent', border: '1px solid #1A3E7A', cursor: 'pointer' }}>
+                  {copied ? '✓' : '↗'}
                 </button>
-                <button
-                  onClick={handleDownloadCertificate}
-                  title="Télécharger votre certificat PDF"
-                  className="cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]"
-                  style={{ fontFamily: "'Orbitron', sans-serif", background: 'linear-gradient(135deg, #C8960A, #A07008)', color: '#fff', border: '1px solid #FFE033', padding: '12px 14px', minWidth: '40px' }}
-                >
+                <button onClick={handleDownloadCertificate}
+                  title="Certificat PDF"
+                  style={{ padding: '12px 14px', fontFamily: "'Orbitron', sans-serif", fontSize: '14px', color: '#FFE033', background: 'transparent', border: '1px solid #3A2A00', cursor: 'pointer' }}>
                   📜
                 </button>
               </div>
+
+              {/* Instagram share — compact */}
+              {shareImageUrl && (
+                <div style={{ display: 'flex', gap: '6px', alignItems: 'center', padding: '8px 10px', background: '#0A1828', border: '1px solid #2A1830' }}>
+                  <img src={shareImageUrl} alt="Score" style={{ width: '40px', height: '40px', objectFit: 'cover', borderRadius: '2px' }} />
+                  <div style={{ flex: 1 }}>
+                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#C13584', letterSpacing: '1px', marginBottom: '4px' }}>PARTAGER LE SCORE</div>
+                    <div style={{ display: 'flex', gap: '4px' }}>
+                      <button onClick={handleInstagramShare} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', padding: '4px 8px', background: 'linear-gradient(135deg,#C13584,#E1306C)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '2px' }}>INSTA</button>
+                      <button onClick={handleWhatsAppShare} disabled={waShareCount >= 3} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', padding: '4px 8px', background: waShareCount >= 3 ? '#1A3E7A' : '#25D366', color: '#fff', border: 'none', cursor: waShareCount >= 3 ? 'not-allowed' : 'pointer', borderRadius: '2px', opacity: waShareCount >= 3 ? 0.5 : 1 }}>WA {waShareCount}/3</button>
+                      <button onClick={handleDownloadImage} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', padding: '4px 6px', background: 'transparent', color: '#5B9BD5', border: '1px solid #1A3E7A', cursor: 'pointer', borderRadius: '2px' }}>↓</button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* Replay — compact */}
+              {replayUrl && (
+                <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '8px 10px', display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#00C8BE', letterSpacing: '1px' }}>🎬 REPLAY</span>
+                  <a href={replayUrl} download={`wow-replay-${pseudo}.webm`} style={{ marginLeft: 'auto', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', padding: '5px 10px', background: 'rgba(0,200,190,.12)', color: '#00C8BE', border: '1px solid #1A3E7A', textDecoration: 'none', borderRadius: '2px' }}>↓ DL</a>
+                </div>
+              )}
+
+              {/* RTT bonus (only if game over) */}
+              {showRTTPanel && !isVictory && !emailGiven && (
+                <div style={{ background: '#1A1000', border: '1px solid #3A2A00', padding: '10px 12px' }}>
+                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#FFE033', letterSpacing: '2px', marginBottom: '6px' }}>💼 +1 RTT — LAISSE TON EMAIL</div>
+                  <div style={{ display: 'flex', gap: '4px' }}>
+                    <input type="email" placeholder="ton@email.com" id="rtt-email-input"
+                      style={{ flex: 1, padding: '6px 8px', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none' }} />
+                    <button onClick={() => {
+                      playClick();
+                      const input = document.getElementById('rtt-email-input') as HTMLInputElement;
+                      if (input?.value?.includes('@')) {
+                        const stored = localStorage.getItem('guibour-identity');
+                        if (stored) { const id = JSON.parse(stored); id.email = input.value; id.bonusRTT = (id.bonusRTT ?? 0) + 1; localStorage.setItem('guibour-identity', JSON.stringify(id)); }
+                        fetch('/api/email-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: input.value, pseudo, source: 'rtt-bonus' }) }).catch(() => {});
+                        setEmailGiven(true);
+                      }
+                    }} style={{ padding: '6px 12px', background: '#FFE033', color: '#0A1520', border: 'none', cursor: 'pointer', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', fontWeight: 700 }}>OK</button>
+                  </div>
+                </div>
+              )}
+              {emailGiven && !isVictory && (
+                <div style={{ textAlign: 'center', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#00C8BE', padding: '6px', border: '1px solid rgba(0,200,190,.2)' }}>✓ EMAIL ENREGISTRÉ — +1 RTT AU PROCHAIN RUN</div>
+              )}
             </div>
 
-            <div className="flex items-center justify-between px-3 py-1" style={{ background: '#0047AB', borderTop: '1px solid #0F3320' }}>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,0.6)' }}>guibour.fr</span>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,0.6)' }}>#WOW #guibour</span>
+            <div style={{ background: '#0047AB', padding: '5px 14px', display: 'flex', justifyContent: 'space-between' }}>
+              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,.5)' }}>guibour.fr</span>
+              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,.5)' }}>#WOW2026</span>
             </div>
-          </div>
-
-          {/* Right side: share + RTT bonus */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '12px', width: '280px', maxWidth: '92vw', flexShrink: 0 }}>
-
-            {/* Share on Instagram */}
-            {shareImageUrl && (
-              <div style={{
-                background: '#0C2A62', border: '2px solid #C13584',
-                borderRadius: '4px', padding: '14px',
-                animation: 'slideUp 0.4s ease-out 0.15s both',
-              }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#C13584', letterSpacing: '2px', marginBottom: '8px' }}>
-                  📸 PARTAGER SUR INSTAGRAM
-                </div>
-                <img src={shareImageUrl} alt="Score card" style={{ width: '100%', borderRadius: '2px', marginBottom: '8px', border: '1px solid #1A3E7A' }} />
-                <div style={{ display: 'flex', gap: '6px' }}>
-                  <button
-                    onClick={handleInstagramShare}
-                    style={{
-                      flex: 1, fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '1px',
-                      padding: '8px', background: 'linear-gradient(135deg, #C13584, #E1306C)',
-                      color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '2px',
-                    }}
-                  >
-                    DL + INSTA →
-                  </button>
-                  <button
-                    onClick={handleDownloadImage}
-                    style={{
-                      fontFamily: "'Orbitron', sans-serif", fontSize: '8px', padding: '8px 10px',
-                      background: 'transparent', color: '#5B9BD5', border: '1px solid #1A3E7A', cursor: 'pointer', borderRadius: '2px',
-                    }}
-                  >
-                    ↓
-                  </button>
-                </div>
-              </div>
-            )}
-
-            {/* Game Replay download */}
-            {replayUrl && (
-              <div style={{
-                background: '#0C2A62', border: '2px solid #00C8BE',
-                borderRadius: '4px', padding: '12px',
-                animation: 'slideUp 0.4s ease-out 0.2s both',
-              }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '2px', marginBottom: '8px' }}>
-                  🎬 REPLAY — DERNIÈRES 10 SECONDES
-                </div>
-                <video
-                  src={replayUrl}
-                  controls
-                  autoPlay
-                  muted
-                  loop
-                  style={{ width: '100%', borderRadius: '2px', border: '1px solid #1A3E7A', marginBottom: '8px', maxHeight: '100px', objectFit: 'cover' }}
-                />
-                <a
-                  href={replayUrl}
-                  download={`wow-replay-${playerIdentity?.pseudo || 'player'}.webm`}
-                  style={{
-                    display: 'block', textAlign: 'center',
-                    fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '2px',
-                    padding: '8px', background: 'rgba(0,200,190,.12)',
-                    color: '#00C8BE', border: '1px solid #1A3E7A', textDecoration: 'none', borderRadius: '2px',
-                  }}
-                >
-                  ↓ TÉLÉCHARGER LE REPLAY (.webm)
-                </a>
-              </div>
-            )}
-
-            {/* RTT Bonus panel (only on game over, not victory) */}
-            {showRTTPanel && !isVictory && (
-              <div style={{
-                background: '#0C2A62', border: '2px solid #FFE033',
-                borderRadius: '4px', overflow: 'hidden',
-                animation: 'slideUp 0.4s ease-out 0.3s both',
-              }}>
-                <div style={{ background: '#2A1A00', padding: '8px 14px' }}>
-                  <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#FFE033', letterSpacing: '2px' }}>
-                    💼 GAGNER UN RTT
-                  </div>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#C8960A', marginTop: '2px' }}>
-                    RÉCUPÈRE UNE VIE POUR TON PROCHAIN RUN
-                  </div>
-                </div>
-                <div style={{ padding: '12px', display: 'flex', flexDirection: 'column', gap: '8px' }}>
-
-                  {/* WhatsApp share x3 */}
-                  <div style={{
-                    background: waShareCount >= 3 ? 'rgba(0,200,190,.08)' : 'rgba(0,71,171,.1)',
-                    border: `1px solid ${waShareCount >= 3 ? '#00C8BE' : '#1A3E7A'}`,
-                    borderRadius: '3px', padding: '10px',
-                  }}>
-                    <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                      <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#A8D8FF', letterSpacing: '1px' }}>
-                        📱 PARTAGER SUR WHATSAPP
-                      </span>
-                      <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#FFE033' }}>
-                        {waShareCount}/3
-                      </span>
-                    </div>
-                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', marginBottom: '8px', lineHeight: 1.5 }}>
-                      Partage le lien du jeu à tes potes — jusqu&apos;à 3 fois +1 RTT chacune
-                    </div>
-                    {/* Progress dots */}
-                    <div style={{ display: 'flex', gap: '4px', marginBottom: '8px' }}>
-                      {[0, 1, 2].map(i => (
-                        <div key={i} style={{
-                          flex: 1, height: '4px', borderRadius: '2px',
-                          background: i < waShareCount ? '#25D366' : '#1A3E7A',
-                          transition: 'background .3s',
-                        }} />
-                      ))}
-                    </div>
-                    <button
-                      onClick={handleWhatsAppShare}
-                      disabled={waShareCount >= 3}
-                      style={{
-                        width: '100%', fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '1px',
-                        padding: '8px', cursor: waShareCount >= 3 ? 'not-allowed' : 'pointer',
-                        background: waShareCount >= 3 ? '#1A3E7A' : 'linear-gradient(135deg,#25D366,#128C7E)',
-                        color: '#fff', border: 'none', borderRadius: '2px',
-                        opacity: waShareCount >= 3 ? 0.5 : 1,
-                      }}
-                    >
-                      {waShareCount >= 3 ? '✓ MAX ATTEINT' : `PARTAGER SUR WHATSAPP (+1 RTT)`}
-                    </button>
-                  </div>
-
-                  {/* Email (once only) */}
-                  {!emailGiven && (
-                    <div style={{ background: 'rgba(0,71,171,.1)', border: '1px solid #1A3E7A', borderRadius: '3px', padding: '10px' }}>
-                      <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#A8D8FF', letterSpacing: '1px', marginBottom: '6px' }}>
-                        📧 LAISSE TON EMAIL (+1 RTT)
-                      </div>
-                      <div style={{ display: 'flex', gap: '4px' }}>
-                        <input
-                          type="email"
-                          placeholder="email@example.com"
-                          id="rtt-email-input"
-                          style={{
-                            flex: 1, padding: '6px 8px',
-                            fontFamily: "'Orbitron', sans-serif", fontSize: '9px',
-                            background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none',
-                            borderRadius: '2px',
-                          }}
-                        />
-                        <button
-                          onClick={() => {
-                            playClick();
-                            const input = document.getElementById('rtt-email-input') as HTMLInputElement;
-                            if (input?.value?.includes('@')) {
-                              // Save to identity
-                              const stored = localStorage.getItem('guibour-identity');
-                              if (stored) {
-                                const id = JSON.parse(stored);
-                                id.email = input.value;
-                                id.bonusRTT = (id.bonusRTT ?? 0) + 1;
-                                localStorage.setItem('guibour-identity', JSON.stringify(id));
-                              }
-                              // Send to API (fire and forget)
-                              fetch('/api/email-collect', {
-                                method: 'POST',
-                                headers: { 'Content-Type': 'application/json' },
-                                body: JSON.stringify({ email: input.value, pseudo, source: 'rtt-bonus' }),
-                              }).catch(() => {});
-                              setEmailGiven(true);
-                            }
-                          }}
-                          style={{
-                            padding: '6px 10px', background: '#0047AB', color: '#fff',
-                            border: 'none', cursor: 'pointer', fontSize: '10px', borderRadius: '2px',
-                          }}
-                        >
-                          OK
-                        </button>
-                      </div>
-                    </div>
-                  )}
-
-                  {emailGiven && (
-                    <div style={{
-                      background: 'rgba(0,200,190,.08)', border: '1px solid #00C8BE',
-                      borderRadius: '3px', padding: '10px', textAlign: 'center',
-                    }}>
-                      <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE' }}>
-                        ✓ EMAIL ENREGISTRÉ — +1 RTT ACCORDÉ AU PROCHAIN RUN
-                      </span>
-                    </div>
-                  )}
-
-                  <button
-                    onClick={() => { playClick(); onRestart(); }}
-                    style={{
-                      width: '100%', fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', letterSpacing: '3px',
-                      color: '#fff', background: 'linear-gradient(135deg,#0047AB,#007B8A)',
-                      border: '2px solid #00C8BE', padding: '12px', cursor: 'pointer',
-                      boxShadow: '0 0 16px rgba(0,200,190,.25)', marginTop: '4px',
-                    }}
-                  >
-                    REJOUER →
-                  </button>
-                </div>
-              </div>
-            )}
           </div>
         </div>
       )}

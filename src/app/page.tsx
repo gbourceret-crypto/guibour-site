@@ -6,7 +6,6 @@ import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import CharacterSelect, { CharacterData, PlayerIdentity } from '@/components/ui/CharacterSelect';
-import LogoSphere from '@/components/ui/LogoSphere';
 import { useDayNight, getDayNightTheme } from '@/hooks/useDayNight';
 import { playClick } from '@/lib/sounds';
 
@@ -52,51 +51,28 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         EMPLOYEE ID: GS-4891 // W.O.W // 2026
       </div>
 
-      {/* Logo centré — globe derrière GUIBOUR SYSTEM */}
-      <div style={{
-        position: 'relative',
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        marginBottom: '4px',
-        zIndex: 2,
-      }}>
-        {/* Sphère 3D style logo années 90 — centrée derrière le texte */}
+      {/* Logo GUIBOUR SYSTEM — épuré, sans sphère */}
+      <div style={{ textAlign: 'center', position: 'relative', zIndex: 2, marginBottom: '4px' }}>
         <div style={{
-          position: 'absolute',
-          top: '50%',
-          left: '50%',
-          transform: 'translate(-50%, -50%)',
-          opacity: 0.78,
-          animation: 'float 6s ease-in-out infinite',
-          pointerEvents: 'none',
+          fontFamily: "'Lilita One', cursive",
+          fontSize: 'clamp(52px, 10vw, 90px)',
+          color: '#FFFFFF',
+          letterSpacing: '5px',
+          lineHeight: 1,
+          animation: 'glowWhite3D 3s ease-in-out infinite',
         }}>
-          <LogoSphere size={270} />
+          GUIBOUR
         </div>
-
-        {/* Texte en avant-plan */}
-        <div style={{ textAlign: 'center', position: 'relative', zIndex: 1 }}>
-          <div style={{
-            fontFamily: "'Lilita One', cursive",
-            fontSize: 'clamp(48px, 9vw, 82px)',
-            color: '#FFFFFF',
-            letterSpacing: '5px',
-            lineHeight: 1,
-            animation: 'glowWhite3D 3s ease-in-out infinite',
-          }}>
-            GUIBOUR
-          </div>
-          <div style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: 'clamp(13px, 2.2vw, 22px)',
-            color: '#00D4CC',
-            letterSpacing: '10px',
-            fontWeight: 400,
-            textShadow: '0 0 12px rgba(0,212,204,.45)',
-            marginTop: '-8px',
-          }}>
-            SYSTEM
-          </div>
+        <div style={{
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: 'clamp(13px, 2.2vw, 22px)',
+          color: '#00D4CC',
+          letterSpacing: '10px',
+          fontWeight: 400,
+          textShadow: '0 0 12px rgba(0,212,204,.45)',
+          marginTop: '-6px',
+        }}>
+          SYSTEM
         </div>
       </div>
 
