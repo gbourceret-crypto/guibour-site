@@ -1,10 +1,10 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback } from 'react';
 import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
 import GlobeIcon from '@/components/ui/GlobeIcon';
-import { getLeaderboard, formatSalary } from '@/lib/leaderboard';
+import { formatSalary } from '@/lib/leaderboard';
 import { LeaderboardEntry } from '@/lib/gameTypes';
 
 function getRankTitle(rank: number): string {
@@ -40,7 +40,41 @@ function PodiumCard({ entry, rank, index }: { entry: LeaderboardEntry; rank: num
 
 export default function ResultatsPage() {
   const [board, setBoard] = useState<LeaderboardEntry[]>([]);
-  useEffect(() => { setBoard(getLeaderboard()); }, []);
+  const [playerCount, setPlayerCount] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [lastUpdate, setLastUpdate] = useState('');
+
+  const fetchBoard = useCallback(async () => {
+    try {
+      const res = await fetch('/api/leaderboard', { cache: 'no-store' });
+      const data = await res.json();
+      if (Array.isArray(data.entries)) {
+        setBoard(data.entries as LeaderboardEntry[]);
+        setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
+      }
+    } catch {
+      // silently fail
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  const fetchCount = useCallback(async () => {
+    try {
+      const res = await fetch('/api/players');
+      const data = await res.json();
+      setPlayerCount(data.count ?? null);
+    } catch { /* ignore */ }
+  }, []);
+
+  useEffect(() => {
+    fetchBoard();
+    fetchCount();
+    // Refresh every 30s
+    const id = setInterval(() => { fetchBoard(); fetchCount(); }, 30000);
+    return () => clearInterval(id);
+  }, [fetchBoard, fetchCount]);
+
   const topThree = board.slice(0, 3);
 
   return (
@@ -66,7 +100,8 @@ export default function ResultatsPage() {
             </div>
             <div style={{ display:'flex', gap:'16px', flexWrap:'wrap' }}>
               {[
-                { label:'JOUEURS', value: String(board.length).padStart(3,'0') },
+                { label:'EN JEU', value: playerCount !== null ? `${playerCount} 🟢` : '...' },
+                { label:'INSCRITS', value: String(board.length).padStart(3,'0') },
                 { label:'MEILLEUR', value: board[0] ? formatSalary(board[0].score) : '—' },
                 { label:'NIVEAU MAX', value: board[0] ? `ÉTG ${board[0].level}` : '—' },
               ].map(s => (
@@ -128,7 +163,7 @@ export default function ResultatsPage() {
               })}
             </div>
             <div style={{ marginTop:'14px', fontFamily:"'Orbitron', sans-serif", fontSize:'7px', color:'#8FA5B8', letterSpacing:'2px', display:'flex', justifyContent:'space-between' }}>
-              <span>=LAST_UPDATE() // CLASSEMENT LOCAL — SESSION</span>
+              <span>=LAST_UPDATE() // {lastUpdate || 'CHARGEMENT...'} — {loading ? 'SYNC...' : 'GLOBAL'}</span>
               <span>W.O.W · WORK OR WINDOW · 2026</span>
             </div>
           </div>

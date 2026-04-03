@@ -6,7 +6,7 @@ import { GameState } from '@/lib/gameTypes';
 import { loadAllAssets, GameAssets } from '@/lib/assetLoader';
 import { LEVELS } from '@/lib/levels';
 import { audioManager } from '@/lib/audioManager';
-import TowerProgress from './TowerProgress';
+import SponsoredSidebar from './SponsoredSidebar';
 import GameOverScreen from './GameOverScreen';
 import { PlayerIdentity } from '@/components/ui/CharacterSelect';
 
@@ -42,6 +42,10 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
   const timerFillRef = useRef<HTMLDivElement>(null);
   const timerTextRef = useRef<HTMLSpanElement>(null);
   const timerFormulaRef = useRef<HTMLSpanElement>(null);
+  // Game replay — rolling 10s MediaRecorder buffer
+  const recorderRef = useRef<MediaRecorder | null>(null);
+  const chunksRef = useRef<Blob[]>([]);
+  const [replayUrl, setReplayUrl] = useState<string | null>(null);
 
   // Load assets on mount
   useEffect(() => {
@@ -275,6 +279,59 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     setGameStatus('playing');
     audioManager.play('gameplay');
   };
+
+  // ── Game replay : rolling 10s canvas recording ──────────────────────────
+  useEffect(() => {
+    if (gameStatus !== 'playing') return;
+    const canvas = canvasRef.current;
+    if (!canvas || !('captureStream' in canvas)) return;
+
+    let recorder: MediaRecorder | null = null;
+    try {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const stream = (canvas as any).captureStream(24);
+      const mimeType = MediaRecorder.isTypeSupported('video/webm;codecs=vp9')
+        ? 'video/webm;codecs=vp9'
+        : MediaRecorder.isTypeSupported('video/webm')
+        ? 'video/webm'
+        : '';
+      if (!mimeType) return;
+
+      recorder = new MediaRecorder(stream, { mimeType, videoBitsPerSecond: 1_500_000 });
+      recorderRef.current = recorder;
+      chunksRef.current = [];
+
+      // Rolling buffer: drop old chunks so we keep ≤ 10s
+      recorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) {
+          chunksRef.current.push(e.data);
+          // Keep only last ~10 chunks (timeslice=1000ms → ~10s)
+          if (chunksRef.current.length > 12) chunksRef.current.shift();
+        }
+      };
+
+      recorder.start(1000); // 1 chunk per second
+    } catch (_) {}
+
+    return () => {
+      if (recorder && recorder.state !== 'inactive') recorder.stop();
+    };
+  }, [gameStatus]);
+
+  // When game ends, finalize the replay blob
+  useEffect(() => {
+    if (gameStatus !== 'gameOver' && gameStatus !== 'victory') return;
+    const recorder = recorderRef.current;
+    if (!recorder || recorder.state === 'inactive') return;
+
+    recorder.onstop = () => {
+      const blob = new Blob(chunksRef.current, { type: 'video/webm' });
+      if (blob.size > 0) {
+        setReplayUrl(URL.createObjectURL(blob));
+      }
+    };
+    recorder.stop();
+  }, [gameStatus]);
 
   // Stop gameplay music on game over/victory
   useEffect(() => {
@@ -575,7 +632,12 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
 
           {/* Game Over / Victory */}
           {(gameStatus === 'gameOver' || gameStatus === 'victory') && stateRef.current && (
-            <GameOverScreen state={stateRef.current} onRestart={handleRestart} playerIdentity={playerIdentity} />
+            <GameOverScreen
+              state={stateRef.current}
+              onRestart={handleRestart}
+              playerIdentity={playerIdentity}
+              replayUrl={replayUrl}
+            />
           )}
 
           {/* YouTube Subscribe popup — between levels, one-time */}
@@ -663,9 +725,9 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
           )}
         </div>
 
-        {/* Tower on RIGHT — only during game */}
+        {/* Sponsored sidebar on RIGHT — tower progress + satirical ads */}
         {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-          <TowerProgress currentLevel={currentLevel} totalLevels={25} assets={assetsRef} />
+          <SponsoredSidebar currentLevel={currentLevel} totalLevels={25} assets={assetsRef} />
         )}
       </div>
 

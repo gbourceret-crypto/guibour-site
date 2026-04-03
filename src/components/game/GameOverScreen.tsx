@@ -9,6 +9,7 @@ interface Props {
   state: GameState;
   onRestart: () => void;
   playerIdentity?: PlayerIdentity | null;
+  replayUrl?: string | null;
 }
 
 // ── WhatsApp share RTT tracker ────────────────────────────────────────────────
@@ -140,7 +141,7 @@ function generateShareImage(pseudo: string, level: number, score: number): strin
   return canvas.toDataURL('image/png');
 }
 
-export default function GameOverScreen({ state, onRestart, playerIdentity }: Props) {
+export default function GameOverScreen({ state, onRestart, playerIdentity, replayUrl }: Props) {
   const { player, level, status } = state;
   const isVictory = status === 'victory';
   const [rank, setRank] = useState(0);
@@ -161,13 +162,31 @@ export default function GameOverScreen({ state, onRestart, playerIdentity }: Pro
   const durationText = formatDuration(durationMs);
   const pseudo = playerIdentity?.pseudo || player.name || 'EMPLOYÉ';
 
+  // Submit score to global API leaderboard + register player counter
   useEffect(() => {
     if (!saved) {
+      setSaved(true);
+      // Local leaderboard (legacy fallback)
       const r = addScore({ name: pseudo, score: player.score, level, date: new Date().toISOString() });
       setRank(r);
-      setSaved(true);
+      // Global API leaderboard
+      fetch('/api/leaderboard', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: pseudo,
+          score: player.score,
+          level,
+          employeeId: playerIdentity?.employeeId || `GS-${Math.random().toString(36).slice(2,8).toUpperCase()}`,
+        }),
+      })
+        .then(res => res.json())
+        .then(d => { if (d.rank) setRank(d.rank); })
+        .catch(() => {});
+      // Increment active player counter
+      fetch('/api/players', { method: 'POST' }).catch(() => {});
     }
-  }, [saved, pseudo, player, level]);
+  }, [saved, pseudo, player, level, playerIdentity]);
 
   // Show big text, then content after 2.5s
   useEffect(() => {
@@ -202,6 +221,17 @@ export default function GameOverScreen({ state, onRestart, playerIdentity }: Pro
       setEmailGiven(!!(playerIdentity.email));
     }
   }, [playerIdentity]);
+
+  const handleDownloadCertificate = async () => {
+    const { generateCertificate } = await import('@/lib/generateCertificate');
+    await generateCertificate({
+      pseudo,
+      employeeId: playerIdentity?.employeeId || 'GS-000000',
+      level,
+      score: player.score,
+      rank: rank > 0 ? rank : undefined,
+    });
+  };
 
   const handleShare = async () => {
     const text = getShareText(pseudo, level, player.score, durationMs);
@@ -337,12 +367,20 @@ export default function GameOverScreen({ state, onRestart, playerIdentity }: Pro
                 ))}
               </div>
 
-              <div className="flex gap-2">
-                <button onClick={onRestart} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#0047AB', border: '1px solid #0A1520' }}>
+              <div className="flex gap-2 flex-wrap">
+                <button onClick={onRestart} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest text-white transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#0047AB', border: '1px solid #0A1520', minWidth: '80px' }}>
                   REJOUER
                 </button>
-                <button onClick={handleShare} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#00A89D', color: '#fff', border: '1px solid #0047AB' }}>
+                <button onClick={handleShare} className="flex-1 cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]" style={{ fontFamily: "'Orbitron', sans-serif", background: '#00A89D', color: '#fff', border: '1px solid #0047AB', minWidth: '80px' }}>
                   {copied ? 'COPIÉ !' : 'PARTAGER'}
+                </button>
+                <button
+                  onClick={handleDownloadCertificate}
+                  title="Télécharger votre certificat PDF"
+                  className="cursor-pointer py-3 text-xs font-bold tracking-widest transition-all hover:brightness-110 active:scale-[0.98]"
+                  style={{ fontFamily: "'Orbitron', sans-serif", background: 'linear-gradient(135deg, #C8960A, #A07008)', color: '#fff', border: '1px solid #FFE033', padding: '12px 14px', minWidth: '40px' }}
+                >
+                  📜
                 </button>
               </div>
             </div>
@@ -388,6 +426,39 @@ export default function GameOverScreen({ state, onRestart, playerIdentity }: Pro
                     ↓
                   </button>
                 </div>
+              </div>
+            )}
+
+            {/* Game Replay download */}
+            {replayUrl && (
+              <div style={{
+                background: '#0C2A62', border: '2px solid #00C8BE',
+                borderRadius: '4px', padding: '12px',
+                animation: 'slideUp 0.4s ease-out 0.2s both',
+              }}>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '2px', marginBottom: '8px' }}>
+                  🎬 REPLAY — DERNIÈRES 10 SECONDES
+                </div>
+                <video
+                  src={replayUrl}
+                  controls
+                  autoPlay
+                  muted
+                  loop
+                  style={{ width: '100%', borderRadius: '2px', border: '1px solid #1A3E7A', marginBottom: '8px', maxHeight: '100px', objectFit: 'cover' }}
+                />
+                <a
+                  href={replayUrl}
+                  download={`wow-replay-${playerIdentity?.pseudo || 'player'}.webm`}
+                  style={{
+                    display: 'block', textAlign: 'center',
+                    fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '2px',
+                    padding: '8px', background: 'rgba(0,200,190,.12)',
+                    color: '#00C8BE', border: '1px solid #1A3E7A', textDecoration: 'none', borderRadius: '2px',
+                  }}
+                >
+                  ↓ TÉLÉCHARGER LE REPLAY (.webm)
+                </a>
               </div>
             )}
 

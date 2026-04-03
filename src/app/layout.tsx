@@ -60,7 +60,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           rel="stylesheet"
         />
       </head>
-      <body>{children}</body>
+      <body>
+        {children}
+        {/* Plausible Analytics — privacy-first, no cookies */}
+        <script
+          defer
+          data-domain="guibour.fr"
+          src="https://plausible.io/js/script.js"
+        />
+      </body>
     </html>
   );
 }
