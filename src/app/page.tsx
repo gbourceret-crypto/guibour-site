@@ -16,6 +16,7 @@ const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
 
 import Link from 'next/link';
 import Countdown from '@/components/ui/Countdown';
+import GlobeO from '@/components/ui/GlobeO';
 
 function WowSpan() {
   return (
@@ -51,26 +52,45 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         EMPLOYEE ID: GS-4891 // W.O.W // 2026
       </div>
 
-      {/* Logo GUIBOUR SYSTEM — épuré, sans sphère */}
+      {/* Logo GUIBOUR SYSTEM — globe neon dans le O */}
       <div style={{ textAlign: 'center', position: 'relative', zIndex: 2, marginBottom: '4px' }}>
+        {/* Ligne GUIB + globe + UR */}
         <div style={{
-          fontFamily: "'Lilita One', cursive",
-          fontSize: 'clamp(52px, 10vw, 90px)',
-          color: '#FFFFFF',
-          letterSpacing: '5px',
-          lineHeight: 1,
-          animation: 'glowWhite3D 3s ease-in-out infinite',
+          fontSize     : 'clamp(52px, 10vw, 90px)',
+          lineHeight   : 1,
+          display      : 'flex',
+          alignItems   : 'center',
+          justifyContent: 'center',
+          gap          : 0,
         }}>
-          GUIBOUR
+          <span style={{
+            fontFamily: "'Lilita One', cursive",
+            color     : '#FFFFFF',
+            letterSpacing: '3px',
+            animation : 'glowWhite3D 3s ease-in-out infinite',
+          }}>
+            GUIB
+          </span>
+          <GlobeO />
+          <span style={{
+            fontFamily: "'Lilita One', cursive",
+            color     : '#FFFFFF',
+            letterSpacing: '3px',
+            animation : 'glowWhite3D 3s ease-in-out infinite',
+          }}>
+            UR
+          </span>
         </div>
+
+        {/* Sous-titre SYSTEM */}
         <div style={{
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: 'clamp(13px, 2.2vw, 22px)',
-          color: '#00D4CC',
+          fontFamily  : "'Orbitron', sans-serif",
+          fontSize    : 'clamp(13px, 2.2vw, 22px)',
+          color       : '#00FFEE',
           letterSpacing: '10px',
-          fontWeight: 400,
-          textShadow: '0 0 12px rgba(0,212,204,.45)',
-          marginTop: '-6px',
+          fontWeight  : 400,
+          textShadow  : '0 0 14px rgba(0,255,238,.5)',
+          marginTop   : '-4px',
         }}>
           SYSTEM
         </div>
