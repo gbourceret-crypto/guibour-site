@@ -28,7 +28,7 @@ function Digit({ value }: { value: string }) {
       {/* Segments éteints */}
       <span style={{
         fontFamily: "'DSEG7', monospace",
-        fontSize: 'clamp(28px, 4vw, 48px)',
+        fontSize: 'clamp(18px, 2.6vw, 32px)',
         color: 'rgba(255,34,34,0.10)',
         letterSpacing: '1px',
         position: 'absolute', top: 0, left: 0,
@@ -37,7 +37,7 @@ function Digit({ value }: { value: string }) {
       {/* Segments allumés */}
       <span style={{
         fontFamily: "'DSEG7', monospace",
-        fontSize: 'clamp(28px, 4vw, 48px)',
+        fontSize: 'clamp(18px, 2.6vw, 32px)',
         color: '#FF2222',
         letterSpacing: '1px',
         textShadow: '0 0 10px rgba(255,34,34,.8), 0 0 24px rgba(255,34,34,.4)',
@@ -51,7 +51,7 @@ function Sep() {
   return (
     <span style={{
       fontFamily: "'DSEG7', monospace",
-      fontSize: 'clamp(28px, 4vw, 48px)',
+      fontSize: 'clamp(18px, 2.6vw, 32px)',
       color: '#FF2222',
       textShadow: '0 0 10px rgba(255,34,34,.7)',
       opacity: 0.65,
@@ -85,13 +85,14 @@ export default function Countdown() {
       gap: '6px',
       pointerEvents: 'none',
     }}>
-      {/* Label */}
+      {/* Label — typo Orbitron comme SYSTEM, rouge neon */}
       <div style={{
-        fontFamily: "'DSEG7', monospace",
-        fontSize: 'clamp(9px, 1.2vw, 13px)',
-        color: 'rgba(255,60,60,0.55)',
-        letterSpacing: '4px',
-        textShadow: '0 0 8px rgba(255,34,34,.3)',
+        fontFamily: "'Orbitron', sans-serif",
+        fontWeight: 700,
+        fontSize: 'clamp(8px, 1vw, 11px)',
+        color: '#FF3333',
+        letterSpacing: '6px',
+        textShadow: '0 0 10px rgba(255,34,34,.65), 0 0 22px rgba(255,34,34,.25)',
       }}>
         FIN DU JEU DANS :
       </div>

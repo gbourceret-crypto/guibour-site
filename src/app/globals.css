@@ -197,30 +197,24 @@ html, body {
   inset: 0;
   /* Même grille, lignes cyan neon — opacité réduite */
   background-image:
-    linear-gradient(rgba(0, 230, 215, 0.5) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 230, 215, 0.5) 1px, transparent 1px);
+    linear-gradient(rgba(0, 240, 225, 0.72) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 240, 225, 0.72) 1px, transparent 1px);
   background-size: 56px 34px;
   background-position: 48px 52px;
-  /*
-    Masque double :
-    [1] Fenêtre glissante gauche→droite (animée)
-    [2] Ellipse fixe : très sombre au centre, plus ouvert sur les bords
-    → mask-composite: intersect multiplie les deux → centre ultra-léger
-  */
   mask-image:
     linear-gradient(
       90deg,
       transparent     0%,
-      rgba(0,0,0,.08) 20%,
-      rgba(0,0,0,.48) 50%,
-      rgba(0,0,0,.08) 80%,
+      rgba(0,0,0,.14) 20%,
+      rgba(0,0,0,.70) 50%,
+      rgba(0,0,0,.14) 80%,
       transparent     100%
     ),
     radial-gradient(
       ellipse 65% 55% at 50% 48%,
-      rgba(0,0,0,.04) 0%,
-      rgba(0,0,0,.35) 45%,
-      rgba(0,0,0,.90) 100%
+      rgba(0,0,0,.05) 0%,
+      rgba(0,0,0,.42) 45%,
+      rgba(0,0,0,.95) 100%
     );
   mask-size: 50% 100%, 100% 100%;
   mask-repeat: no-repeat, no-repeat;
@@ -235,24 +229,24 @@ html, body {
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 210, 200, 0.35) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 210, 200, 0.35) 1px, transparent 1px);
+    linear-gradient(rgba(0, 220, 210, 0.52) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 220, 210, 0.52) 1px, transparent 1px);
   background-size: 56px 34px;
   background-position: 48px 52px;
   mask-image:
     linear-gradient(
       90deg,
       transparent     0%,
-      rgba(0,0,0,.05) 25%,
-      rgba(0,0,0,.30) 50%,
-      rgba(0,0,0,.05) 75%,
+      rgba(0,0,0,.09) 25%,
+      rgba(0,0,0,.48) 50%,
+      rgba(0,0,0,.09) 75%,
       transparent     100%
     ),
     radial-gradient(
       ellipse 60% 50% at 50% 48%,
-      rgba(0,0,0,.03) 0%,
-      rgba(0,0,0,.28) 42%,
-      rgba(0,0,0,.85) 100%
+      rgba(0,0,0,.04) 0%,
+      rgba(0,0,0,.36) 42%,
+      rgba(0,0,0,.90) 100%
     );
   mask-size: 32% 100%, 100% 100%;
   mask-repeat: no-repeat, no-repeat;
