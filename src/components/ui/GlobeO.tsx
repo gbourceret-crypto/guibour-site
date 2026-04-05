@@ -3,16 +3,16 @@
 import { useEffect, useRef } from 'react';
 
 // Globe neon (variante 02) qui remplace le "O" dans GUIBOUR.
-// Le canvas est rendu en 80x90px en interne, puis mis à l'échelle
-// via CSS (0.62em × 0.88em) pour suivre la font-size du parent.
+// Canvas carré 80×80 → CSS 0.73em × 0.73em = sphère parfaite,
+// aussi haute que large, alignée sur la hauteur de capitales.
 
 const N_MERIDIANS = 6;
 const N_PARALLELS = 5;
-const W = 80;
-const H = 90;
-const R = 32;
+const W  = 80;
+const H  = 80;   // carré = sphère parfaite
+const R  = 36;   // rayon remplit bien le carré
 const CX = W / 2;
-const CY = H / 2 + 4; // léger offset pour aligner avec la hauteur de capitales
+const CY = H / 2;
 
 export default function GlobeO() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -105,10 +105,10 @@ export default function GlobeO() {
       height={H}
       style={{
         display      : 'inline-block',
-        // CSS scaling : suit la font-size du parent (em units)
-        width        : '0.60em',
-        height       : '0.88em',
-        verticalAlign: '-0.10em', // aligne le bas du globe avec la baseline
+        // 0.73em = cap-height approx de Lilita One → sphère aussi haute que les lettres
+        width        : '0.73em',
+        height       : '0.73em',   // même valeur → cercle parfait
+        verticalAlign: '-0.06em',  // remonte légèrement pour centrer sur les capitales
       }}
     />
   );
