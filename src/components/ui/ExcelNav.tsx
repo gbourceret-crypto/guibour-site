@@ -7,8 +7,8 @@ import { playClick } from '@/lib/sounds';
 
 const mainTabs = [
   { href: '/', label: 'JOUER À W.O.W' },
-  { href: '/jukebox', label: '🎵 VIDEO & MUSIC BOX' },
   { href: '/resultats', label: 'CLASSEMENT' },
+  { href: '/jukebox', label: '🎵 SALLE D\'ÉCOUTE' },
   { href: '/shopping', label: 'BOUTIQUE' },
   { href: '/contact', label: 'CONTACT' },
 ];
