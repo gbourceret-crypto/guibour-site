@@ -141,7 +141,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
           e.currentTarget.style.boxShadow = '0 0 18px rgba(0,71,171,.3)';
         }}
       >
-        <span style={{ position: 'relative', zIndex: 1 }}>
+        <span style={{ position: 'relative', zIndex: 1, textShadow: '1px 2px 0 rgba(0,0,0,0.55)' }}>
           JOUER À <WowSpan />
         </span>
         <span style={{
@@ -181,7 +181,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
           e.currentTarget.style.background = 'transparent';
         }}
       >
-        ALLER À LA BOUTIQUE
+        <span style={{ textShadow: '1px 2px 0 rgba(0,0,0,0.55)' }}>ALLER À LA BOUTIQUE</span>
       </Link>
     </div>
   );

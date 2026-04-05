@@ -1,11 +1,32 @@
 import { NextRequest, NextResponse } from 'next/server';
 import fs from 'fs';
 import path from 'path';
+import crypto from 'crypto';
 
 export const runtime = 'nodejs';
 
-// Max entries kept in the leaderboard
 const MAX_ENTRIES = 100;
+
+// ── Anti-cheat constants ────────────────────────────────────────────────────
+// Max theoretical score: ~10M for a perfect 25-level run (generous ×1.5)
+const MAX_SCORE = 15_000_000;
+const MAX_LEVEL = 25;
+// Score/level plausibility: score shouldn't massively exceed levels completed
+// Generous ceiling: 600k points per level + 100k base
+const maxScoreForLevel = (level: number) => Math.max(level * 600_000 + 100_000, 50_000);
+
+// In-memory rate limiter: ip → [timestamps]
+const rateMap = new Map<string, number[]>();
+const RATE_LIMIT = 15;        // max submissions per IP
+const RATE_WINDOW = 60 * 60 * 1000; // per hour
+
+function isRateLimited(ip: string): boolean {
+  const now = Date.now();
+  const times = (rateMap.get(ip) ?? []).filter(t => now - t < RATE_WINDOW);
+  if (times.length >= RATE_LIMIT) return true;
+  rateMap.set(ip, [...times, now]);
+  return false;
+}
 
 interface Entry {
   name: string;
@@ -15,58 +36,81 @@ interface Entry {
   date: string;
 }
 
-// ── KV helpers (Vercel KV) ──────────────────────────────────────────────────
+// ── Storage: Upstash Redis REST (no SDK, pure fetch) ───────────────────────
+const UPSTASH_URL   = process.env.UPSTASH_REDIS_REST_URL;
+const UPSTASH_TOKEN = process.env.UPSTASH_REDIS_REST_TOKEN;
+const hasUpstash    = !!(UPSTASH_URL && UPSTASH_TOKEN);
+
+async function upstashGet(): Promise<Entry[]> {
+  if (!hasUpstash) return [];
+  try {
+    const res = await fetch(`${UPSTASH_URL}/get/leaderboard`, {
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}` },
+      cache: 'no-store',
+    });
+    const json = await res.json() as { result?: string | null };
+    if (!json.result) return [];
+    return JSON.parse(json.result) as Entry[];
+  } catch { return []; }
+}
+
+async function upstashSet(entries: Entry[]): Promise<boolean> {
+  if (!hasUpstash) return false;
+  try {
+    await fetch(`${UPSTASH_URL}/set/leaderboard`, {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${UPSTASH_TOKEN}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify(JSON.stringify(entries)),
+    });
+    return true;
+  } catch { return false; }
+}
+
+// ── Storage: Vercel KV (legacy, keep for backward compat) ──────────────────
+const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+
 async function kvGet(): Promise<Entry[]> {
   try {
     const { kv } = await import('@vercel/kv');
     const data = await kv.get<Entry[]>('leaderboard');
     return Array.isArray(data) ? data : [];
-  } catch {
-    return [];
-  }
+  } catch { return []; }
 }
 
-async function kvSet(entries: Entry[]): Promise<void> {
+async function kvSet(entries: Entry[]): Promise<boolean> {
   try {
     const { kv } = await import('@vercel/kv');
     await kv.set('leaderboard', entries);
-  } catch {
-    // Ignore — fallback below handles persistence
-  }
+    return true;
+  } catch { return false; }
 }
 
-// ── File-based fallback (dev / no KV) ──────────────────────────────────────
-const DATA_DIR = path.join(process.cwd(), 'data');
-const LB_FILE = path.join(DATA_DIR, 'leaderboard.json');
+// ── Storage: /tmp file fallback (dev + Vercel without KV) ──────────────────
+// Note: /tmp IS writable on Vercel but resets on cold starts.
+// It's used as a last-resort dev/staging fallback.
+const TMP_FILE = path.join('/tmp', 'guibour_leaderboard.json');
 
 function fileGet(): Entry[] {
   try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    if (!fs.existsSync(LB_FILE)) return [];
-    return JSON.parse(fs.readFileSync(LB_FILE, 'utf-8')) as Entry[];
-  } catch {
-    return [];
-  }
+    if (!fs.existsSync(TMP_FILE)) return [];
+    return JSON.parse(fs.readFileSync(TMP_FILE, 'utf-8')) as Entry[];
+  } catch { return []; }
 }
 
 function fileSet(entries: Entry[]): void {
-  try {
-    if (!fs.existsSync(DATA_DIR)) fs.mkdirSync(DATA_DIR, { recursive: true });
-    fs.writeFileSync(LB_FILE, JSON.stringify(entries, null, 2));
-  } catch {
-    // Ignore
-  }
+  try { fs.writeFileSync(TMP_FILE, JSON.stringify(entries)); } catch { /* ignore */ }
 }
 
-const hasKV = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
-
 async function getEntries(): Promise<Entry[]> {
-  return hasKV ? await kvGet() : fileGet();
+  if (hasUpstash) return upstashGet();
+  if (hasKV)     return kvGet();
+  return fileGet();
 }
 
 async function saveEntries(entries: Entry[]): Promise<void> {
-  if (hasKV) await kvSet(entries);
-  else fileSet(entries);
+  if (hasUpstash) { await upstashSet(entries); return; }
+  if (hasKV)     { await kvSet(entries); return; }
+  fileSet(entries);
 }
 
 // ── GET /api/leaderboard ────────────────────────────────────────────────────
@@ -80,31 +124,76 @@ export async function GET() {
 
 // ── POST /api/leaderboard ───────────────────────────────────────────────────
 export async function POST(req: NextRequest) {
-  try {
-    const { name, score, level, employeeId } = await req.json();
+  // ── Rate limiting ─────────────────────────────────────────────────────────
+  const ip =
+    req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ||
+    req.headers.get('x-real-ip') ||
+    'unknown';
 
+  if (isRateLimited(ip)) {
+    return NextResponse.json({ error: 'Trop de soumissions, réessayez plus tard.' }, { status: 429 });
+  }
+
+  try {
+    const body = await req.json() as {
+      name?: unknown; score?: unknown; level?: unknown;
+      employeeId?: unknown; scoreToken?: unknown;
+    };
+    const { name, score, level, employeeId, scoreToken } = body;
+
+    // ── Basic validation ─────────────────────────────────────────────────────
     if (!name || typeof score !== 'number' || typeof level !== 'number') {
       return NextResponse.json({ error: 'Données manquantes' }, { status: 400 });
     }
 
-    const entries = await getEntries();
+    // ── Anti-cheat bounds ────────────────────────────────────────────────────
+    const scoreInt = Math.floor(score);
+    const levelInt = Math.floor(level);
 
-    // Remove previous entry from same employeeId (keep best score)
-    const existingIdx = entries.findIndex(e => e.employeeId === employeeId);
+    if (scoreInt < 0 || scoreInt > MAX_SCORE) {
+      return NextResponse.json({ error: 'Score invalide.' }, { status: 400 });
+    }
+    if (levelInt < 0 || levelInt > MAX_LEVEL) {
+      return NextResponse.json({ error: 'Niveau invalide.' }, { status: 400 });
+    }
+    if (levelInt > 0 && scoreInt > maxScoreForLevel(levelInt)) {
+      return NextResponse.json({ error: 'Score incompatible avec le niveau atteint.' }, { status: 400 });
+    }
+
+    // ── Optional: verify score token (HMAC) ─────────────────────────────────
+    const secret = process.env.SCORE_SECRET;
+    if (secret && scoreToken) {
+      // Token format: hmac-sha256(secret, `${employeeId}:${scoreInt}:${levelInt}`)
+      const expected = crypto
+        .createHmac('sha256', secret)
+        .update(`${String(employeeId)}:${scoreInt}:${levelInt}`)
+        .digest('hex');
+      if (scoreToken !== expected) {
+        console.warn('[leaderboard] invalid score token from IP', ip);
+        // Don't hard reject — soft drop (register but flag if needed in future)
+      }
+    }
+
+    // ── Save ─────────────────────────────────────────────────────────────────
+    const entries = await getEntries();
+    const empId = String(employeeId || 'GS-000000').slice(0, 12);
+
+    const existingIdx = entries.findIndex(e => e.employeeId === empId);
     if (existingIdx !== -1) {
-      // Only replace if new score is better
-      if (score <= entries[existingIdx].score) {
-        const rank = [...entries].sort((a, b) => b.score - a.score).findIndex(e => e.employeeId === employeeId) + 1;
+      // Keep best score only
+      if (scoreInt <= entries[existingIdx].score) {
+        const rank = [...entries].sort((a, b) => b.score - a.score)
+          .findIndex(e => e.employeeId === empId) + 1;
         return NextResponse.json({ success: true, rank });
       }
       entries.splice(existingIdx, 1);
     }
 
     const newEntry: Entry = {
-      name: String(name).slice(0, 20),
-      score: Math.floor(score),
-      level: Math.min(Math.floor(level), 25),
-      employeeId: String(employeeId || 'GS-000000').slice(0, 12),
+      name: String(name).replace(/[<>]/g, '').slice(0, 20), // strip html
+      score: scoreInt,
+      level: Math.min(levelInt, MAX_LEVEL),
+      employeeId: empId,
       date: new Date().toISOString(),
     };
 
@@ -114,6 +203,7 @@ export async function POST(req: NextRequest) {
 
     const rank = sorted.findIndex(e => e.employeeId === newEntry.employeeId) + 1;
     return NextResponse.json({ success: true, rank });
+
   } catch (err) {
     console.error('[leaderboard POST]', err);
     return NextResponse.json({ error: 'Erreur serveur' }, { status: 500 });
