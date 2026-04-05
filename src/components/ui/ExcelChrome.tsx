@@ -13,13 +13,16 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
       position: 'relative',
       minHeight: '100vh',
       paddingLeft: '48px', // leave room for sidebar nav
-      backgroundColor: '#1A3F78',
+      backgroundColor: '#0E2660',
       backgroundImage:
-        'linear-gradient(rgba(60,130,240,.16) 1px, transparent 1px), linear-gradient(90deg, rgba(60,130,240,.16) 1px, transparent 1px)',
+        'linear-gradient(rgba(60,130,240,.18) 1px, transparent 1px), linear-gradient(90deg, rgba(60,130,240,.18) 1px, transparent 1px)',
       backgroundSize: '56px 34px',
       // aligné avec les en-têtes de colonnes (28px header + 24px formula bar = 52px chrome total)
       backgroundPosition: '48px 52px',
     }}>
+      {/* Shimmer overlay — reflet lumineux sur la grille */}
+      <div className="grid-shimmer" />
+
       {/* Column headers row */}
       <div style={{
         position: 'sticky',
@@ -27,8 +30,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         zIndex: 20,
         display: 'flex',
         height: '28px',
-        background: '#1A3E7A',
-        borderBottom: '1px solid #2B5490',
+        background: '#0F2562',
+        borderBottom: '1px solid #1E4080',
       }}>
         {COLUMNS.map(col => (
           <div key={col} style={{
@@ -55,8 +58,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         display: 'flex',
         alignItems: 'center',
         height: '24px',
-        background: '#0C2A62',
-        borderBottom: '2px solid #1A3E7A',
+        background: '#091D4E',
+        borderBottom: '2px solid #0F2562',
         paddingLeft: '8px',
         gap: '12px',
       }}>

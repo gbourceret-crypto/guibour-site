@@ -39,7 +39,7 @@
 
 html, body {
   font-family: var(--font-body);
-  background: #1A3F78;
+  background: #0E2660;
   color: #A8D8FF;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
@@ -153,11 +153,61 @@ html, body {
 
 /* ===== EXCEL BLUE GRID ===== */
 .excel-bg {
-  background-color: #1A3F78;
+  background-color: #0E2660;
   background-image:
-    linear-gradient(rgba(60,130,240,.16) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(60,130,240,.16) 1px, transparent 1px);
+    linear-gradient(rgba(60,130,240,.18) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(60,130,240,.18) 1px, transparent 1px);
   background-size: 56px 34px;
+}
+
+/* ===== GRID SHIMMER — lumière / reflet sur la grille ===== */
+@keyframes gridShimmer {
+  0%   { transform: translateX(-120%) skewX(-15deg); opacity: 0; }
+  10%  { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { transform: translateX(120%) skewX(-15deg); opacity: 0; }
+}
+
+.grid-shimmer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.grid-shimmer::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 35%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(100, 170, 255, 0.03) 30%,
+    rgba(140, 200, 255, 0.055) 50%,
+    rgba(100, 170, 255, 0.03) 70%,
+    transparent 100%
+  );
+  animation: gridShimmer 11s ease-in-out infinite;
+}
+
+.grid-shimmer::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 20%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(160, 220, 255, 0.025) 50%,
+    transparent 100%
+  );
+  animation: gridShimmer 11s ease-in-out 5.5s infinite;
 }
 
 /* ===== SCANLINES ===== */

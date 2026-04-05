@@ -105,10 +105,10 @@ export default function GlobeO() {
       height={H}
       style={{
         display      : 'inline-block',
-        // 0.73em = cap-height approx de Lilita One → sphère aussi haute que les lettres
-        width        : '0.73em',
-        height       : '0.73em',   // même valeur → cercle parfait
-        verticalAlign: '-0.06em',  // remonte légèrement pour centrer sur les capitales
+        // 0.80em = légèrement plus grand que la cap-height, imposant mais équilibré
+        width        : '0.80em',
+        height       : '0.80em',   // même valeur → cercle parfait
+        verticalAlign: '-0.08em',  // compense la hauteur supplémentaire
       }}
     />
   );

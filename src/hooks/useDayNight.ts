@@ -46,20 +46,20 @@ export function useDayNight(): TimeMode {
 export function getDayNightTheme(mode: TimeMode) {
   if (mode === 'day') {
     return {
-      bg: '#1E4A8C',          // légèrement plus clair le jour
-      bg2: '#122E68',
-      gridOpacity: 0.22,
+      bg: '#132E6E',          // légèrement plus clair le jour
+      bg2: '#0C2050',
+      gridOpacity: 0.20,
       accentLabel: '☀ MODE JOURNÉE',
-      navBg: '#0E3068',
-      navBorder: '#224A8C',
+      navBg: '#0C2560',
+      navBorder: '#1A3A7C',
     };
   }
   return {
-    bg: '#1A3F78',            // nuit — couleurs habituelles
-    bg2: '#0C2A62',
-    gridOpacity: 0.16,
+    bg: '#0E2660',            // nuit — plus sombre
+    bg2: '#081A4E',
+    gridOpacity: 0.18,
     accentLabel: '🌙 MODE NUIT',
-    navBg: '#0D2B5E',
-    navBorder: '#1B3A6B',
+    navBg: '#0A1E50',
+    navBorder: '#162E64',
   };
 }
