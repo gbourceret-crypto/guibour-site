@@ -22,7 +22,7 @@ function WowSpan() {
   return (
     <span style={{
       color: '#00C8BE',
-      textShadow: '0 0 10px rgba(0,200,190,.55)',
+      textShadow: '0 0 10px rgba(0,200,190,.55), 1px 2px 0 #003A38',
     }}>W.O.W</span>
   );
 }

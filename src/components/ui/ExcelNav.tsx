@@ -78,7 +78,7 @@ export default function ExcelNav() {
               {/* Label — masqué collapsed */}
               <span style={{ overflow: 'hidden' }}>
                 {isWow ? (
-                  <>JOUER À{' '}<span style={{ color: '#00C8BE', textShadow: '1px 2px 0 rgba(0,0,0,0.55)' }}>W.O.W</span></>
+                  <>JOUER À{' '}<span style={{ color: '#00C8BE', textShadow: '1px 2px 0 #003A38' }}>W.O.W</span></>
                 ) : tab.label}
               </span>
             </Link>
@@ -116,7 +116,7 @@ export default function ExcelNav() {
         onMouseEnter={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #1B5EBB, #008B9A)'; e.currentTarget.style.boxShadow = '0 0 22px rgba(0,71,171,.45)'; }}
         onMouseLeave={e => { e.currentTarget.style.background = 'linear-gradient(135deg, #0047AB, #007B8A)'; e.currentTarget.style.boxShadow = '0 0 14px rgba(0,71,171,.25)'; }}
         >
-          JOUER À <span style={{ color: '#00C8BE', marginLeft: '4px', textShadow: '1px 2px 0 rgba(0,0,0,0.55)' }}>W.O.W</span>
+          JOUER À <span style={{ color: '#00C8BE', marginLeft: '4px', textShadow: '1px 2px 0 #003A38' }}>W.O.W</span>
         </Link>
       </div>
     </nav>
