@@ -103,6 +103,42 @@ html, body {
   100% { transform: translateY(-100%); opacity: 0; }
 }
 
+@keyframes elevatorFloorIn {
+  0%   { opacity: 0; transform: translateY(-10px) scale(0.92); }
+  55%  { opacity: 1; transform: translateY(2px) scale(1.04); }
+  80%  { transform: translateY(-1px) scale(0.99); }
+  100% { transform: translateY(0) scale(1); }
+}
+
+@keyframes scareSlam {
+  0%   { opacity: 0; transform: scale(1.6) rotate(-3deg); }
+  55%  { opacity: 1; transform: scale(0.95) rotate(1deg); }
+  75%  { transform: scale(1.02) rotate(-0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes scareGlow {
+  0%, 100% { text-shadow: 4px 5px 0 #5A0000, 8px 10px 0 rgba(60,0,0,.7), 0 0 60px rgba(255,30,30,.8); }
+  50%       { text-shadow: 4px 5px 0 #5A0000, 8px 10px 0 rgba(60,0,0,.7), 0 0 100px rgba(255,30,30,1), 0 0 200px rgba(200,0,0,.6); }
+}
+
+@keyframes victorySlam {
+  0%   { opacity: 0; transform: scale(1.5) rotate(2deg); }
+  55%  { opacity: 1; transform: scale(0.96) rotate(-1deg); }
+  75%  { transform: scale(1.02) rotate(0.5deg); }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+@keyframes victoryGlow {
+  0%, 100% { text-shadow: 3px 4px 0 #003A38, 6px 8px 0 rgba(0,30,28,.7), 0 0 60px rgba(0,255,238,.65); }
+  50%       { text-shadow: 3px 4px 0 #003A38, 6px 8px 0 rgba(0,30,28,.7), 0 0 100px rgba(0,255,238,1), 0 0 200px rgba(0,200,180,.6); }
+}
+
+@keyframes adSlideIn {
+  0%   { opacity: 0; transform: translateX(20px); }
+  100% { opacity: 1; transform: translateX(0); }
+}
+
 @keyframes pulse {
   0%, 100% { opacity: 1; transform: translateY(0); }
   50% { opacity: 0.5; transform: translateY(-4px); }

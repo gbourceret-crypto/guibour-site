@@ -23,11 +23,18 @@ export default function GameCanvas() {
   const [hudInfo, setHudInfo] = useState({ lives: 3, score: 0, levelName: '', phrase: '' });
   const [showPhrase, setShowPhrase] = useState(false);
   const [isMuted, setIsMuted] = useState(false);
-  const [elevatorActive, setElevatorActive] = useState(false);
+  const [floorKey, setFloorKey] = useState(0); // key to retrigger floor animation
+  // Ad rotation: every 30s during game, show ad for 10s
+  const [isAdMode, setIsAdMode] = useState(false);
+  const adIntervalRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const adTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   // Direct DOM refs for timer (avoid React re-render per frame)
   const timerFillRef = useRef<HTMLDivElement>(null);
   const timerTextRef = useRef<HTMLSpanElement>(null);
   const timerFormulaRef = useRef<HTMLSpanElement>(null);
+
+  const isPlaying =
+    gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete';
 
   // Load assets on mount
   useEffect(() => {
@@ -48,6 +55,22 @@ export default function GameCanvas() {
       audioManager.stop('gameover');
     };
   }, []);
+
+  // Ad rotation system: fires every 30s for 10s during active game
+  useEffect(() => {
+    if (isPlaying) {
+      adIntervalRef.current = setInterval(() => {
+        setIsAdMode(true);
+        adTimeoutRef.current = setTimeout(() => setIsAdMode(false), 10000);
+      }, 30000);
+    } else {
+      setIsAdMode(false);
+    }
+    return () => {
+      if (adIntervalRef.current) clearInterval(adIntervalRef.current);
+      if (adTimeoutRef.current) clearTimeout(adTimeoutRef.current);
+    };
+  }, [isPlaying]);
 
   const resize = useCallback(() => {
     const canvas = canvasRef.current;
@@ -93,8 +116,6 @@ export default function GameCanvas() {
         setGameStatus('burnout');
       } else if (s.status === 'levelComplete' && gameStatus !== 'levelComplete') {
         setGameStatus('levelComplete');
-        setElevatorActive(true);
-        setTimeout(() => setElevatorActive(false), 1500);
       } else if (s.status === 'playing' && (gameStatus === 'burnout' || gameStatus === 'levelComplete')) {
         setGameStatus('playing');
       }
@@ -103,6 +124,7 @@ export default function GameCanvas() {
       if (s.level !== lastLevel) {
         lastLevel = s.level;
         setCurrentLevel(s.level);
+        setFloorKey(k => k + 1);
         const lc = LEVELS[s.level];
         if (lc) {
           setHudInfo(prev => ({ ...prev, levelName: lc.name, phrase: lc.phrase }));
@@ -110,11 +132,11 @@ export default function GameCanvas() {
           setTimeout(() => setShowPhrase(false), 3000);
         }
       }
-      setHudInfo(prev => ({
-        ...prev,
-        lives: s.player.lives,
-        score: s.player.score,
-      }));
+      setHudInfo(prev =>
+        prev.lives === s.player.lives && prev.score === s.player.score
+          ? prev
+          : { ...prev, lives: s.player.lives, score: s.player.score }
+      );
 
       // Update timer DOM directly (no React state = no re-render per frame)
       if (timerFillRef.current && s.timer) {
@@ -201,6 +223,7 @@ export default function GameCanvas() {
     stateRef.current = createInitialState(canvas.width, canvas.height);
     stateRef.current = startGame(stateRef.current, playerName.trim());
     setCurrentLevel(0);
+    setFloorKey(k => k + 1);
     setGameStatus('playing');
     audioManager.play('gameplay');
   };
@@ -210,6 +233,7 @@ export default function GameCanvas() {
     stateRef.current = createInitialState(canvas.width, canvas.height);
     stateRef.current = startGame(stateRef.current, playerName.trim());
     setCurrentLevel(0);
+    setFloorKey(k => k + 1);
     setGameStatus('playing');
     audioManager.play('gameplay');
   };
@@ -277,13 +301,13 @@ export default function GameCanvas() {
   }
 
   return (
-    <div className="flex flex-col h-full w-full" style={{ background: '#607888', gap: '3px', padding: '3px' }}>
+    <div className="flex h-full w-full" style={{ background: '#607888', gap: '3px', padding: '3px' }}>
 
-      {/* ── TOP ROW: game canvas + tower ── */}
-      <div className="flex flex-1" style={{ gap: '3px', minHeight: 0 }}>
+      {/* ── LEFT COLUMN: canvas + floor indicator + timer + HUD ── */}
+      <div className="flex flex-col flex-1" style={{ gap: '3px', minWidth: 0 }}>
 
-        {/* Game canvas area */}
-        <div className="relative flex-1" style={{ background: '#0A1520', overflow: 'hidden' }}>
+        {/* Game canvas */}
+        <div className="relative flex-1" style={{ background: '#0A1520', overflow: 'hidden', minHeight: 0 }}>
           <canvas
             ref={canvasRef}
             className="block h-full w-full"
@@ -292,19 +316,6 @@ export default function GameCanvas() {
             onTouchEnd={handleTouchEnd}
             onTouchCancel={handleTouchEnd}
           />
-
-          {/* Elevator transition */}
-          {elevatorActive && (
-            <div className="pointer-events-none absolute inset-0 z-15"
-                 style={{ background: '#0A1520', animation: 'elevatorSlide 1.5s ease-in-out forwards' }}>
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center">
-                  <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '24px', fontWeight: 700, color: '#00A89D', letterSpacing: '4px', animation: 'pulse 1s ease-in-out infinite' }}>▲</p>
-                  <p style={{ fontFamily: "'Share Tech Mono', monospace", fontSize: '13px', color: '#607888', letterSpacing: '2px', marginTop: '8px' }}>ASCENSEUR EN COURS...</p>
-                </div>
-              </div>
-            </div>
-          )}
 
           {/* IDLE overlay */}
           {gameStatus === 'idle' && (
@@ -394,74 +405,264 @@ export default function GameCanvas() {
           {(gameStatus === 'gameOver' || gameStatus === 'victory') && stateRef.current && (
             <GameOverScreen state={stateRef.current} onRestart={handleRestart} />
           )}
+
+          {/* Floor 00 controls tutorial */}
+          {isPlaying && currentLevel === 0 && (
+            <div style={{
+              position: 'absolute',
+              bottom: '14px',
+              left: '14px',
+              pointerEvents: 'none',
+              zIndex: 10,
+            }}>
+              <div style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '10px',
+                color: 'rgba(0,168,157,0.7)',
+                letterSpacing: '2px',
+                marginBottom: '8px',
+              }}>COMMANDES :</div>
+              <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+                {/* ESPACE button */}
+                <div style={{
+                  width: '160px',
+                  height: '40px',
+                  background: 'rgba(0,71,171,0.25)',
+                  border: '2px solid rgba(0,71,171,0.6)',
+                  borderRadius: '6px',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  fontFamily: "'Share Tech Mono', monospace",
+                  fontSize: '12px',
+                  color: '#fff',
+                  letterSpacing: '3px',
+                }}>ESPACE</div>
+                {/* Arrow buttons */}
+                <div style={{ display: 'flex', gap: '4px' }}>
+                  {['←', '→'].map(a => (
+                    <div key={a} style={{
+                      width: '40px',
+                      height: '36px',
+                      background: 'rgba(0,71,171,0.25)',
+                      border: '2px solid rgba(0,71,171,0.5)',
+                      borderRadius: '5px',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      fontSize: '16px',
+                      color: '#fff',
+                    }}>{a}</div>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
         </div>
 
-        {/* Tower on RIGHT — only during game */}
-        {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-          <TowerProgress currentLevel={currentLevel} totalLevels={25} assets={assetsRef} />
+        {/* ── FLOOR INDICATOR — centered below canvas ── */}
+        {isPlaying && (
+          <div style={{
+            flexShrink: 0,
+            background: '#0D1D2E',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            padding: '6px 0',
+          }}>
+            <div
+              key={floorKey}
+              style={{
+                display: 'inline-flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                background: '#0A1520',
+                border: '2px solid rgba(0,71,171,0.5)',
+                padding: '4px 28px',
+                boxShadow: '0 0 20px rgba(0,168,157,0.12), inset 0 0 16px rgba(0,0,0,0.5)',
+                animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both',
+              }}
+            >
+              <span style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '9px',
+                color: '#607888',
+                letterSpacing: '4px',
+              }}>ÉTAGE</span>
+              <span style={{
+                fontFamily: "'Orbitron', sans-serif",
+                fontSize: '34px',
+                fontWeight: 900,
+                lineHeight: 1,
+                color: '#00A89D',
+                textShadow: '0 0 16px rgba(0,168,157,0.7), 2px 3px 0 rgba(0,20,30,0.9)',
+              }}>
+                {String(currentLevel).padStart(2, '0')}
+              </span>
+              <span style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '9px',
+                color: '#00A89D',
+                letterSpacing: '2px',
+                marginTop: '1px',
+                opacity: 0.7,
+              }}>{hudInfo.levelName || '\u00a0'}</span>
+            </div>
+          </div>
         )}
-      </div>
 
-      {/* ── TIMER / FORMULA BAR ROW ── */}
-      {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, background: '#EBF0F5', fontFamily: "'Share Tech Mono', monospace" }}>
-          {/* Formula row */}
-          <div style={{ display: 'flex', alignItems: 'center', height: '28px', borderBottom: '1px solid #C0D0DE' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '100%', borderRight: '1px solid #C0D0DE', background: '#E0E8F0', flexShrink: 0 }}>
-              <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#0047AB', fontStyle: 'italic', fontWeight: 700 }}>fx</span>
-            </div>
-            <span ref={timerFormulaRef} style={{ fontSize: '12px', color: '#0047AB', padding: '0 10px', letterSpacing: '0.5px', whiteSpace: 'nowrap', overflow: 'hidden', flex: 1 }}>
-              =DESTROY(DOSSIERS,SALAIRE) // RTT:3 // SCORE:0€ // TEMPS:90s
-            </span>
-            <span ref={timerTextRef} style={{ fontSize: '13px', color: '#607888', paddingRight: '10px', flexShrink: 0, fontWeight: 700 }}>90s</span>
-          </div>
-          {/* Depleting progress bar */}
-          <div style={{ height: '5px', background: 'rgba(200,216,232,0.5)', position: 'relative', overflow: 'hidden' }}>
-            <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00A89D)', boxShadow: '0 0 6px rgba(0,168,157,0.4)', transition: 'background 0.3s ease' }} />
-          </div>
-        </div>
-      )}
-
-      {/* ── HUD ROW: lives + level name + score + mute ── */}
-      {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, height: '56px', background: '#0D1D2E', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 14px', fontFamily: "'Share Tech Mono', monospace" }}>
-
-          {/* Left: RTT lives */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
-            <span style={{ fontSize: '11px', color: '#607888', letterSpacing: '2px', marginRight: '4px' }}>RTT</span>
-            {[1, 2, 3].map(i => (
-              <div key={i} style={{ width: '28px', height: '28px', borderRadius: '50%', background: i <= hudInfo.lives ? '#0047AB' : 'rgba(0,71,171,0.15)', border: `2px solid ${i <= hudInfo.lives ? '#00A89D' : 'rgba(0,168,157,0.3)'}`, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: i <= hudInfo.lives ? '0 0 8px rgba(0,168,157,0.5)' : 'none', transition: 'all 0.3s ease' }}>
-                <span style={{ fontSize: '12px', color: i <= hudInfo.lives ? '#fff' : '#334' }}>★</span>
+        {/* ── TIMER BAR (game canvas width only) ── */}
+        {isPlaying && (
+          <div style={{ flexShrink: 0, background: '#EBF0F5', fontFamily: "'Share Tech Mono', monospace" }}>
+            {/* Formula row */}
+            <div style={{ display: 'flex', alignItems: 'center', height: '26px', borderBottom: '1px solid #C0D0DE' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '32px', height: '100%', borderRight: '1px solid #C0D0DE', background: '#E0E8F0', flexShrink: 0 }}>
+                <span style={{ fontFamily: 'monospace', fontSize: '13px', color: '#0047AB', fontStyle: 'italic', fontWeight: 700 }}>fx</span>
               </div>
-            ))}
-          </div>
-
-          {/* Center: level name + phrase */}
-          <div className="text-center">
-            <div style={{ fontSize: '13px', color: '#00A89D', letterSpacing: '1px' }}>
-              {hudInfo.levelName}
+              <span ref={timerFormulaRef} style={{ fontSize: '11px', color: '#0047AB', padding: '0 10px', letterSpacing: '0.5px', whiteSpace: 'nowrap', overflow: 'hidden', flex: 1, display: 'none' }}>
+                =DESTROY(DOSSIERS,SALAIRE)
+              </span>
+              <span ref={timerTextRef} style={{ fontSize: '12px', color: '#607888', padding: '0 10px', flexShrink: 0, fontWeight: 700 }}>90s</span>
             </div>
-            {showPhrase && (
-              <div style={{ fontSize: '11px', color: '#607888', marginTop: '2px', animation: 'fadeIn 0.3s ease' }}>
-                {hudInfo.phrase}
+            {/* Depleting progress bar — thicker */}
+            <div style={{ height: '18px', background: 'rgba(200,216,232,0.5)', position: 'relative', overflow: 'hidden' }}>
+              <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00A89D)', boxShadow: '0 0 8px rgba(0,168,157,0.5)', transition: 'background 0.3s ease' }} />
+            </div>
+          </div>
+        )}
+
+        {/* ── HUD ROW: RTT + level + SALAIRE + mute ── */}
+        {isPlaying && (
+          <div style={{
+            flexShrink: 0,
+            background: '#0D1D2E',
+            display: 'flex',
+            alignItems: 'stretch',
+            gap: '3px',
+            minHeight: '80px',
+          }}>
+            {/* RTT cell */}
+            <div style={{
+              background: '#0A1520',
+              border: '1px solid rgba(0,71,171,0.35)',
+              borderTop: '3px solid #0047AB',
+              padding: '8px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '6px',
+              flexShrink: 0,
+            }}>
+              <span style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '10px',
+                color: '#607888',
+                letterSpacing: '3px',
+              }}>RTT</span>
+              <div style={{ display: 'flex', gap: '6px' }}>
+                {[1, 2, 3].map(i => (
+                  <div key={i} style={{
+                    width: '30px',
+                    height: '30px',
+                    borderRadius: '50%',
+                    background: i <= hudInfo.lives ? '#0047AB' : 'rgba(0,71,171,0.12)',
+                    border: `2px solid ${i <= hudInfo.lives ? '#00A89D' : 'rgba(0,168,157,0.2)'}`,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: i <= hudInfo.lives ? '0 0 10px rgba(0,168,157,0.55)' : 'none',
+                    transition: 'all 0.3s ease',
+                  }}>
+                    <span style={{ fontSize: '14px', color: i <= hudInfo.lives ? '#fff' : '#2A3A4A' }}>★</span>
+                  </div>
+                ))}
               </div>
-            )}
-          </div>
-
-          {/* Right: score + mute */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <div style={{ fontSize: '15px', color: '#FFD700', letterSpacing: '1px', fontWeight: 700 }}>
-              {hudInfo.score.toLocaleString('fr-FR')} €
             </div>
+
+            {/* Center: level phrase */}
+            <div style={{
+              flex: 1,
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              padding: '6px 10px',
+            }}>
+              {showPhrase && (
+                <div style={{
+                  fontFamily: "'Share Tech Mono', monospace",
+                  fontSize: '11px',
+                  color: '#607888',
+                  letterSpacing: '1px',
+                  textAlign: 'center',
+                  animation: 'fadeIn 0.3s ease',
+                }}>
+                  {hudInfo.phrase}
+                </div>
+              )}
+            </div>
+
+            {/* SALAIRE cell */}
+            <div style={{
+              background: '#0A1520',
+              border: '1px solid rgba(0,71,171,0.35)',
+              borderTop: '3px solid #D4A020',
+              padding: '8px 20px',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '4px',
+              flexShrink: 0,
+            }}>
+              <span style={{
+                fontFamily: "'Share Tech Mono', monospace",
+                fontSize: '10px',
+                color: '#607888',
+                letterSpacing: '3px',
+              }}>SALAIRE</span>
+              <span style={{
+                fontFamily: "'Orbitron', sans-serif",
+                fontSize: '26px',
+                fontWeight: 900,
+                lineHeight: 1,
+                color: '#FFD700',
+                textShadow: '0 0 12px rgba(212,160,32,0.6)',
+                letterSpacing: '1px',
+              }}>
+                {hudInfo.score.toLocaleString('fr-FR')}&nbsp;€
+              </span>
+            </div>
+
+            {/* Mute button */}
             <button
               onClick={handleToggleMute}
               className="pointer-events-auto cursor-pointer"
-              style={{ background: 'rgba(0,71,171,0.2)', padding: '6px 10px', border: '1px solid rgba(0,71,171,0.4)', fontSize: '24px', color: isMuted ? '#FF5F56' : '#00A89D', lineHeight: 1 }}
+              style={{
+                background: 'rgba(0,71,171,0.18)',
+                padding: '0 14px',
+                border: 'none',
+                borderLeft: '1px solid rgba(0,71,171,0.3)',
+                fontSize: '26px',
+                color: isMuted ? '#FF5F56' : '#00A89D',
+                flexShrink: 0,
+              }}
             >
               {isMuted ? '🔇' : '🔊'}
             </button>
           </div>
-        </div>
+        )}
+      </div>
+
+      {/* ── RIGHT COLUMN: Tower (full height) with ad overlay ── */}
+      {isPlaying && (
+        <TowerProgress
+          currentLevel={currentLevel}
+          totalLevels={25}
+          assets={assetsRef}
+          isAdMode={isAdMode}
+        />
       )}
     </div>
   );

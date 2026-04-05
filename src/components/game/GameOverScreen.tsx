@@ -69,43 +69,61 @@ export default function GameOverScreen({ state, onRestart }: Props) {
          style={{ background: 'rgba(10,26,18,0.85)', backdropFilter: 'blur(4px)' }}>
 
       {/* Big announcement text */}
-      <div className="mb-8 text-center" style={{
-        animation: 'fadeIn 0.5s ease-out',
-      }}>
-        <h1 style={{
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: isVictory ? 'clamp(28px, 5vw, 52px)' : 'clamp(24px, 4vw, 44px)',
-          fontWeight: 900,
-          color: isVictory ? '#00C9C8' : '#FF4444',
-          letterSpacing: '4px',
-          textShadow: isVictory
-            ? '0 0 30px rgba(0,168,157,0.5)'
-            : '0 0 30px rgba(255,68,68,0.5)',
-        }}>
-          {isVictory ? 'VOUS ETES LIBRE' : 'CAREER FAILED'}
-        </h1>
-        {!isVictory && (
-          <p style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: 'clamp(16px, 3vw, 28px)',
-            fontWeight: 700,
-            color: '#FF6666',
-            letterSpacing: '6px',
-            marginTop: '8px',
-          }}>
-            GAME OVER
-          </p>
-        )}
-        {isVictory && (
-          <p style={{
-            fontFamily: "'Share Tech Mono', monospace",
-            fontSize: '12px',
-            color: '#607888',
-            letterSpacing: '2px',
-            marginTop: '8px',
-          }}>
-            Vous avez survecu aux 25 etages de Guibour Corp.
-          </p>
+      <div className="mb-8 text-center" style={{ animation: 'fadeIn 0.5s ease-out' }}>
+        {isVictory ? (
+          <>
+            <h1 style={{
+              fontFamily: "'Orbitron', sans-serif",
+              fontSize: 'clamp(48px, 8vw, 96px)',
+              fontWeight: 900,
+              color: '#00FFEE',
+              letterSpacing: '4px',
+              lineHeight: 0.95,
+              textShadow:
+                '3px 4px 0 #003A38, 6px 8px 0 rgba(0,30,28,.7), 9px 12px 0 rgba(0,0,0,.4), 0 0 60px rgba(0,255,238,.65)',
+              animation: 'victorySlam 0.7s cubic-bezier(.15,0,.25,1) both',
+            }}>
+              VOUS ETES<br />LIBRE
+            </h1>
+            <p style={{
+              fontFamily: "'Share Tech Mono', monospace",
+              fontSize: '13px',
+              color: '#607888',
+              letterSpacing: '2px',
+              marginTop: '14px',
+            }}>
+              Vous avez survecu aux 25 etages de Guibour Corp.
+            </p>
+          </>
+        ) : (
+          <>
+            <h1 style={{
+              fontFamily: "'Orbitron', sans-serif",
+              fontSize: 'clamp(58px, 10vw, 130px)',
+              fontWeight: 900,
+              color: '#FF2222',
+              letterSpacing: '2px',
+              lineHeight: 0.9,
+              textShadow:
+                '4px 5px 0 #5A0000, 8px 10px 0 rgba(60,0,0,.7), 12px 15px 0 rgba(0,0,0,.5), 0 0 60px rgba(255,30,30,.8), 0 0 120px rgba(200,0,0,.4)',
+              animation: 'scareSlam 0.7s cubic-bezier(.15,0,.25,1) both',
+            }}>
+              CAREER<br />FAILED
+            </h1>
+            <p style={{
+              fontFamily: "'Orbitron', sans-serif",
+              fontSize: 'clamp(28px, 5vw, 64px)',
+              fontWeight: 900,
+              color: '#FF6633',
+              letterSpacing: '8px',
+              marginTop: '10px',
+              textShadow:
+                '2px 3px 0 #4A1500, 4px 6px 0 rgba(50,10,0,.6), 0 0 40px rgba(255,100,30,.7)',
+              animation: 'scareSlam 0.7s cubic-bezier(.15,0,.25,1) both 0.15s',
+            }}>
+              BURN OUT
+            </p>
+          </>
         )}
       </div>
 
