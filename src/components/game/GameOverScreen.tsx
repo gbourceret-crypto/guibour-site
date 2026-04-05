@@ -292,23 +292,27 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
       {/* ── BIG SLAM TEXT ── */}
       <div className="mb-6 text-center" style={{ pointerEvents: 'none', flexShrink: 0 }}>
         <h1 style={{
-          fontFamily: "'Luckiest Guy', cursive",
-          fontSize: isVictory ? 'clamp(58px, 10vw, 108px)' : 'clamp(52px, 9vw, 100px)',
-          color: isVictory ? '#00C9C8' : '#FF2020',
-          letterSpacing: isVictory ? '6px' : '3px',
-          lineHeight: 0.92, display: 'block',
+          fontFamily: "'Lilita One', cursive",
+          fontSize: isVictory ? 'clamp(64px, 11vw, 116px)' : 'clamp(58px, 10vw, 108px)',
+          color: isVictory ? '#00FFEE' : '#FF2020',
+          letterSpacing: isVictory ? '8px' : '4px',
+          lineHeight: 0.9, display: 'block',
+          textShadow: isVictory
+            ? '3px 4px 0 #002A28, 6px 8px 0 rgba(0,30,28,.7), 9px 12px 0 rgba(0,0,0,.4), 0 0 40px rgba(0,255,235,.7)'
+            : '3px 4px 0 #2A0000, 6px 8px 0 rgba(40,0,0,.7), 9px 12px 0 rgba(0,0,0,.4), 0 0 40px rgba(255,30,30,.7)',
           animation: isVictory
-            ? 'victorySlam 0.65s cubic-bezier(.15,0,.25,1) both, victoryGlow 2s ease-in-out infinite 0.7s'
-            : 'scareSlam 0.65s cubic-bezier(.15,0,.25,1) both, scareGlow 2s ease-in-out infinite 0.7s',
+            ? 'victorySlam 0.7s cubic-bezier(.15,0,.25,1) both, victoryGlow 2s ease-in-out infinite 0.8s'
+            : 'scareSlam 0.7s cubic-bezier(.15,0,.25,1) both, scareGlow 2s ease-in-out infinite 0.8s',
         }}>
           {isVictory ? 'VOUS ÊTES\nLIBRE' : 'CAREER\nFAILED'}
         </h1>
         {!isVictory && (
           <p style={{
-            fontFamily: "'Luckiest Guy', cursive",
-            fontSize: 'clamp(28px, 5vw, 58px)',
-            color: '#FF5050', letterSpacing: '4px', marginTop: '8px', display: 'block',
-            animation: 'scareSlam 0.65s cubic-bezier(.15,0,.25,1) 0.18s both, scarePulse 1.8s ease-in-out infinite 0.85s',
+            fontFamily: "'Lilita One', cursive",
+            fontSize: 'clamp(30px, 5.5vw, 62px)',
+            color: '#FF5050', letterSpacing: '5px', marginTop: '10px', display: 'block',
+            textShadow: '2px 3px 0 #2A0000, 4px 6px 0 rgba(40,0,0,.6), 0 0 20px rgba(255,60,60,.5)',
+            animation: 'scareSlam 0.7s cubic-bezier(.15,0,.25,1) 0.2s both, scarePulse 1.8s ease-in-out infinite 0.9s',
           }}>
             TU ES UN LOOSER
           </p>
@@ -316,8 +320,8 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
         {isVictory && (
           <p style={{
             fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(11px, 1.8vw, 16px)',
-            color: '#00C8BE', letterSpacing: '4px', marginTop: '16px', opacity: 0.8,
-            animation: 'fadeIn 0.6s ease 0.8s both',
+            color: '#00C8BE', letterSpacing: '5px', marginTop: '18px', opacity: 0.8,
+            animation: 'fadeIn 0.6s ease 0.9s both',
           }}>
             25 ÉTAGES — MISSION ACCOMPLIE
           </p>

@@ -165,11 +165,12 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
           setTimeout(() => setShowBossOverlay(false), 4000);
         }
       }
-      setHudInfo(prev => ({
-        ...prev,
-        lives: s.player.lives,
-        score: s.player.score,
-      }));
+      // Only re-render HUD when values actually change (avoid 60fps React re-renders)
+      setHudInfo(prev =>
+        prev.lives === s.player.lives && prev.score === s.player.score
+          ? prev
+          : { ...prev, lives: s.player.lives, score: s.player.score }
+      );
 
       // Update timer DOM directly (no React state = no re-render per frame)
       if (timerFillRef.current && s.timer) {
@@ -454,6 +455,57 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             onTouchCancel={handleTouchEnd}
           />
 
+          {/* ── MUTE BUTTON — top right of game area ── */}
+          {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
+            <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 20 }}>
+              <button
+                onClick={handleToggleMute}
+                className="pointer-events-auto cursor-pointer"
+                style={{
+                  background: 'rgba(12,42,98,.85)',
+                  border: `1px solid ${isMuted ? 'rgba(255,68,68,.4)' : 'rgba(0,200,190,.35)'}`,
+                  borderRadius: '10px',
+                  padding: '8px 14px',
+                  fontSize: '18px',
+                  color: isMuted ? '#FF4444' : '#00C8BE',
+                  cursor: 'pointer',
+                  boxShadow: '0 2px 10px rgba(0,0,0,.5)',
+                  lineHeight: 1,
+                }}
+              >
+                {isMuted ? '🔇' : '🔊'}
+              </button>
+            </div>
+          )}
+
+          {/* ── ELEVATOR FLOOR INDICATOR — centered in game area ── */}
+          {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
+            <div style={{ position: 'absolute', top: '14px', left: '50%', transform: 'translateX(-50%)', zIndex: 18, textAlign: 'center', pointerEvents: 'none' }}>
+              <div key={currentLevel} style={{
+                display: 'inline-block',
+                background: 'rgba(2,6,18,.92)',
+                border: '2px solid rgba(0,255,235,.45)',
+                boxShadow: '0 0 24px rgba(0,255,235,.2), inset 0 0 20px rgba(0,0,0,.6)',
+                padding: '10px 22px 12px',
+                minWidth: '96px',
+                animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both',
+              }}>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#00FFEE', letterSpacing: '5px', opacity: 0.55, marginBottom: '4px' }}>ÉTAGE</div>
+                <div style={{
+                  fontFamily: "'Lilita One', cursive",
+                  fontSize: '52px', lineHeight: 1, letterSpacing: '2px',
+                  color: '#00FFEE',
+                  textShadow: '0 0 18px rgba(0,255,235,.8), 2px 3px 0 rgba(0,40,50,.9)',
+                }}>
+                  {String(currentLevel + 1).padStart(2, '0')}
+                </div>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#A8D8FF', letterSpacing: '3px', marginTop: '5px', opacity: 0.75 }}>
+                  {hudInfo.levelName}
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* Elevator transition */}
           {elevatorActive && (
             <div className="pointer-events-none absolute inset-0 z-15"
@@ -497,83 +549,94 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             </div>
           )}
 
-          {/* ── THUMB CONTROLS — Bullet Trouble style ── */}
+          {/* ── THUMB CONTROLS ── */}
           {(gameStatus === 'playing' || gameStatus === 'burnout') && (
             <>
-              {/* LEFT THUMB ZONE — movement (← et →) */}
-              <div style={{
-                position: 'absolute', bottom: '12px', left: '10px',
-                display: 'flex', gap: '6px', zIndex: 15,
-              }}>
-                {/* Bouton gauche ← */}
-                <button
-                  className="thumb-btn"
-                  style={{
-                    width: '76px', height: '76px',
-                    background: 'rgba(0,200,190,.10)',
-                    border: '2px solid rgba(0,200,190,.35)',
-                    borderRadius: '12px',
-                    color: '#00C8BE', fontSize: '34px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
-                  }}
-                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
-                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
-                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
-                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchLeft = true; }}
-                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
-                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
-                >
-                  ◀
-                </button>
-                {/* Bouton droit → */}
-                <button
-                  className="thumb-btn"
-                  style={{
-                    width: '76px', height: '76px',
-                    background: 'rgba(0,200,190,.10)',
-                    border: '2px solid rgba(0,200,190,.35)',
-                    borderRadius: '12px',
-                    color: '#00C8BE', fontSize: '34px',
-                    boxShadow: '0 4px 12px rgba(0,0,0,.4), inset 0 1px 0 rgba(255,255,255,.06)',
-                  }}
-                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
-                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
-                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
-                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchRight = true; }}
-                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
-                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
-                >
-                  ▶
-                </button>
-              </div>
-
-              {/* RIGHT THUMB ZONE — tir */}
-              <div style={{
-                position: 'absolute', bottom: '12px', right: '10px',
-                zIndex: 15,
-              }}>
-                <button
-                  className="thumb-btn"
-                  style={{
-                    width: '100px', height: '100px',
-                    background: 'linear-gradient(135deg, rgba(0,71,171,.22), rgba(0,168,157,.18))',
-                    border: '2px solid rgba(0,200,190,.5)',
-                    borderRadius: '50%',
-                    color: '#FFFFFF',
-                    display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '4px',
-                    boxShadow: '0 4px 20px rgba(0,200,190,.25), inset 0 1px 0 rgba(255,255,255,.08)',
-                  }}
-                  onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = true; }}
-                  onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
-                  onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
-                  onMouseDown={() => { if(stateRef.current) stateRef.current.touchShoot = true; }}
-                  onMouseUp={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
-                  onMouseLeave={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
-                >
-                  <span style={{ fontSize: '32px', lineHeight: 1 }}>🏹</span>
-                  <span style={{ fontFamily: "'Orbitron',sans-serif", fontSize: '8px', letterSpacing: '2px', color: '#00C8BE', fontWeight: 700 }}>TIRER</span>
-                </button>
-              </div>
+              {currentLevel === 0 ? (
+                /* ── ÉTAGE 00 — contrôles avec tutoriel ── */
+                <div style={{ position: 'absolute', bottom: '12px', left: '10px', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                  {/* Label COMMANDES */}
+                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '4px', color: '#00C8BE', textShadow: '0 0 8px rgba(0,200,190,.6)', alignSelf: 'flex-start' }}>
+                    COMMANDES :
+                  </div>
+                  {/* ESPACE — shoot button */}
+                  <button
+                    className="thumb-btn"
+                    style={{
+                      width: '160px', height: '44px',
+                      background: 'rgba(0,200,190,.12)',
+                      border: '2px solid rgba(0,200,190,.5)',
+                      borderRadius: '10px',
+                      color: '#00C8BE',
+                      fontFamily: "'Orbitron', sans-serif", fontSize: '11px', letterSpacing: '4px', fontWeight: 700,
+                      boxShadow: '0 4px 12px rgba(0,0,0,.4), 0 0 10px rgba(0,200,190,.15)',
+                    }}
+                    onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = true; }}
+                    onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                    onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                    onMouseDown={() => { if(stateRef.current) stateRef.current.touchShoot = true; }}
+                    onMouseUp={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                    onMouseLeave={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                  >
+                    ESPACE
+                  </button>
+                  {/* Flèches gauche / droite */}
+                  <div style={{ display: 'flex', gap: '6px' }}>
+                    <button
+                      className="thumb-btn"
+                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.10)', border: '2px solid rgba(0,200,190,.35)', borderRadius: '10px', color: '#00C8BE', fontSize: '30px', boxShadow: '0 4px 12px rgba(0,0,0,.4)' }}
+                      onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
+                      onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onMouseDown={() => { if(stateRef.current) stateRef.current.touchLeft = true; }}
+                      onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                    >◀</button>
+                    <button
+                      className="thumb-btn"
+                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.10)', border: '2px solid rgba(0,200,190,.35)', borderRadius: '10px', color: '#00C8BE', fontSize: '30px', boxShadow: '0 4px 12px rgba(0,0,0,.4)' }}
+                      onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
+                      onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onMouseDown={() => { if(stateRef.current) stateRef.current.touchRight = true; }}
+                      onMouseUp={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onMouseLeave={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                    >▶</button>
+                  </div>
+                </div>
+              ) : (
+                /* ── Étages 1+ — boutons discrets sans labels ── */
+                <>
+                  <div style={{ position: 'absolute', bottom: '12px', left: '10px', display: 'flex', gap: '6px', zIndex: 15 }}>
+                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.08)', border: '1px solid rgba(0,200,190,.25)', borderRadius: '10px', color: '#00C8BE', fontSize: '26px' }}
+                      onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
+                      onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onMouseDown={() => { if(stateRef.current) stateRef.current.touchLeft = true; }}
+                      onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                      onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
+                    >◀</button>
+                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.08)', border: '1px solid rgba(0,200,190,.25)', borderRadius: '10px', color: '#00C8BE', fontSize: '26px' }}
+                      onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
+                      onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onMouseDown={() => { if(stateRef.current) stateRef.current.touchRight = true; }}
+                      onMouseUp={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                      onMouseLeave={() => { if(stateRef.current) stateRef.current.touchRight = false; }}
+                    >▶</button>
+                  </div>
+                  <div style={{ position: 'absolute', bottom: '12px', right: '10px', zIndex: 15 }}>
+                    <button className="thumb-btn" style={{ width: '80px', height: '80px', background: 'rgba(0,71,171,.18)', border: '2px solid rgba(0,200,190,.4)', borderRadius: '50%', color: '#00C8BE', fontSize: '26px', boxShadow: '0 4px 16px rgba(0,200,190,.2)' }}
+                      onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = true; }}
+                      onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                      onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchShoot = false; }}
+                      onMouseDown={() => { if(stateRef.current) stateRef.current.touchShoot = true; }}
+                      onMouseUp={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                      onMouseLeave={() => { if(stateRef.current) stateRef.current.touchShoot = false; }}
+                    >●</button>
+                  </div>
+                </>
+              )}
             </>
           )}
 
@@ -733,22 +796,20 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
         )}
       </div>
 
-      {/* ── TIMER / FORMULA BAR ROW ── */}
+      {/* ── TIMER BAR ROW ── */}
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
         <div style={{ flexShrink: 0, background: '#1A3F78', borderTop: '2px solid #1A3E7A', fontFamily: "'Orbitron', sans-serif", marginTop: '6px' }}>
-          {/* Formula row */}
-          <div style={{ display: 'flex', alignItems: 'center', height: '28px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', height: '36px' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '100%', borderRight: '1px solid #1A3E7A', background: '#0C2A62', flexShrink: 0 }}>
               <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '13px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
             </div>
-            <div style={{ flex: 1, padding: '0 10px', overflow: 'hidden', display: 'flex', alignItems: 'center', gap: '8px' }}>
-              <div style={{ flex: 1, background: '#0C2A62', border: '1px solid #1A3E7A', height: '12px', borderRadius: '2px', overflow: 'hidden' }}>
-                <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00C8BE)', boxShadow: '0 0 6px rgba(0,200,190,.4)', transition: 'background 0.3s ease' }} />
+            <div style={{ flex: 1, padding: '0 12px', display: 'flex', alignItems: 'center' }}>
+              <div style={{ flex: 1, background: '#0C2A62', border: '1px solid #1A3E7A', height: '22px', borderRadius: '3px', overflow: 'hidden' }}>
+                <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00C8BE)', boxShadow: '0 0 8px rgba(0,200,190,.5)', transition: 'background 0.3s ease' }} />
               </div>
-              <span ref={timerFormulaRef} style={{ fontSize: '10px', color: '#5B9BD5', whiteSpace: 'nowrap', letterSpacing: '0.5px' }}>
-                =TEMPS(90s)
-              </span>
-              <span ref={timerTextRef} style={{ fontSize: '12px', color: '#FFE033', flexShrink: 0, fontFamily: "'Luckiest Guy', cursive" }}>90s</span>
+              {/* hidden refs kept for DOM updates */}
+              <span ref={timerFormulaRef} style={{ display: 'none' }} />
+              <span ref={timerTextRef} style={{ display: 'none' }} />
             </div>
           </div>
         </div>
@@ -758,43 +819,29 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
         <div style={{ flexShrink: 0, background: '#1A3F78', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #00C8BE', marginTop: '4px' }}>
 
-          {/* Left: RTT lives — Excel cells */}
-          <div style={{ display: 'flex', gap: '1px', background: '#1A3E7A', border: '1px solid #1A3E7A' }}>
-            <div style={{ background: '#0C2A62', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>ÉTAGE</div>
-              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#FFE033' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
+          {/* Left: ÉTAGE / SALAIRE / RTT — Excel cells */}
+          <div style={{ display: 'flex', gap: '2px', background: '#1A3E7A', border: '1px solid #1A3E7A' }}>
+            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '70px' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>ÉTAGE</div>
+              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FFE033', lineHeight: 1, textShadow: '0 0 10px rgba(255,224,51,.5)' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
             </div>
-            <div style={{ background: '#0C2A62', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>SALAIRE</div>
-              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#00C8BE' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
+            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '100px' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>SALAIRE</div>
+              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#00C8BE', lineHeight: 1, textShadow: '0 0 10px rgba(0,200,190,.5)' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
             </div>
-            <div style={{ background: '#0C2A62', padding: '6px 14px', textAlign: 'center' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#5B9BD5', letterSpacing: '2px' }}>RTT</div>
-              <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '16px', color: '#FF4444' }}>{'❤'.repeat(hudInfo.lives)}</div>
+            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '70px' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>RTT</div>
+              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FF4444', lineHeight: 1, textShadow: '0 0 10px rgba(255,68,68,.5)' }}>{'❤'.repeat(Math.max(0, hudInfo.lives))}</div>
             </div>
           </div>
 
-          {/* Center: level name */}
-          <div className="text-center" style={{ padding: '0 12px' }}>
-            <div style={{ fontFamily: "'Luckiest Guy', cursive", fontSize: '13px', color: '#A8D8FF', letterSpacing: '2px' }}>
-              {hudInfo.levelName}
-            </div>
+          {/* Center: phrase du niveau */}
+          <div className="text-center" style={{ padding: '0 12px', flex: 1 }}>
             {showPhrase && (
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', marginTop: '1px', animation: 'fadeIn 0.3s ease' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '2px', animation: 'fadeIn 0.3s ease', opacity: 0.7 }}>
                 {hudInfo.phrase}
               </div>
             )}
-          </div>
-
-          {/* Right: mute */}
-          <div style={{ padding: '0 8px' }}>
-            <button
-              onClick={handleToggleMute}
-              className="pointer-events-auto cursor-pointer"
-              style={{ background: '#0C2A62', padding: '6px 10px', border: '1px solid #1A3E7A', fontSize: '20px', color: isMuted ? '#FF4444' : '#00C8BE', lineHeight: 1 }}
-            >
-              {isMuted ? '🔇' : '🔊'}
-            </button>
           </div>
         </div>
       )}
