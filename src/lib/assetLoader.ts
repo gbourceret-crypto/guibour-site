@@ -42,8 +42,9 @@ function loadVideo(src: string): Promise<HTMLVideoElement> {
 function loadAudio(src: string): Promise<HTMLAudioElement> {
   return new Promise((resolve, reject) => {
     const audio = new Audio();
-    audio.oncanplaythrough = () => resolve(audio);
-    audio.onerror = () => reject(new Error(`Failed to load audio: ${src}`));
+    const timeout = setTimeout(() => reject(new Error(`Timeout loading audio: ` + src)), 5000);
+    audio.oncanplaythrough = () => { clearTimeout(timeout); resolve(audio); };
+    audio.onerror = () => { clearTimeout(timeout); reject(new Error(`Failed to load audio: ` + src)); };
     audio.preload = 'auto';
     audio.src = src;
   });
