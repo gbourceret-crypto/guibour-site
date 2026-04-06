@@ -90,7 +90,8 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     stateRef.current = createInitialState(canvas.width, canvas.height);
     const ctx = canvas.getContext('2d')!;
     renderGame(ctx, stateRef.current);
-    const ro = new ResizeObserver(() => resize());
+    let _rTimer: ReturnType<typeof setTimeout>|null = null;
+    const ro = new ResizeObserver(() => { if (_rTimer) clearTimeout(_rTimer); _rTimer = setTimeout(resize, 100); });
     ro.observe(canvas.parentElement!);
     window.addEventListener('resize', resize);
 
@@ -110,6 +111,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     return () => {
       ro.disconnect();
       window.removeEventListener('resize', resize);
+      if (_rTimer) clearTimeout(_rTimer);
     };
   }, [resize, assetsLoaded]); // eslint-disable-line
 
@@ -276,6 +278,9 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
   const handleRestart = () => {
     const canvas = canvasRef.current!;
     stateRef.current = createInitialState(canvas.width, canvas.height);
+    youtubeShownRef.current = false;
+    bossShownRef.current = false;
+    bonusRTTApplied.current = false;
     stateRef.current = startGame(stateRef.current, playerName.trim());
     setCurrentLevel(0);
     setGameStatus('playing');
