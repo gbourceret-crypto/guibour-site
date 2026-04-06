@@ -560,10 +560,6 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
       drawCgtShield(ctx, state);
     }
 
-    // 10. Level complete overlay
-    if (state.status === 'levelComplete') {
-      drawLevelComplete(ctx, state);
-    }
 
     // 11. BURN OUT flash
     if (state.status === 'burnout') {
@@ -829,23 +825,6 @@ function drawParticles(ctx: CanvasRenderingContext2D) {
     ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
   }
   ctx.globalAlpha = 1;
-}
-
-function drawLevelComplete(ctx: CanvasRenderingContext2D, state: GameState) {
-  const { canvasWidth: w, canvasHeight: h } = state;
-  ctx.fillStyle = 'rgba(10,26,18,0.5)';
-  ctx.fillRect(0, 0, w, h);
-
-  ctx.fillStyle = '#00C9C8';
-  ctx.font = 'bold 32px "Orbitron", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('DOSSIER CLASSE !', w / 2, h / 2 - 15);
-
-  ctx.fillStyle = '#fff';
-  ctx.font = '16px "Orbitron", sans-serif';
-  ctx.fillText(`Etage ${state.level} termine`, w / 2, h / 2 + 20);
-  ctx.textBaseline = 'alphabetic';
 }
 
 function drawBurnout(ctx: CanvasRenderingContext2D, w: number, h: number, state: GameState) {
