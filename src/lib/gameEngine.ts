@@ -263,7 +263,7 @@ function updatePlayer(state: GameState) {
       id: state.nextId++,
       x: player.x,
       // Spawn at top of character (head/shoulder level) so arrow appears to come FROM the player
-      y: player.y - player.height + 10,
+      y: player.y, // spawn at floor line, projectile grows upward
       height: 0,
       active: true,
       piercing: piluleActive,
@@ -325,7 +325,7 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight; // bonus items land at canvas bottom, same as player feet
+  const floorY = state.canvasHeight - 15; // center bonus 15px above floor so fully visible
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
@@ -703,23 +703,59 @@ function drawProjectiles(ctx: CanvasRenderingContext2D, state: GameState) {
   }
 }
 
+const BONUS_ICON_STYLES: Record<BonusType, { bg: string; border: string; glow: string; sym: string; label: string }> = {
+  argent:    { bg: '#0C2240', border: '#FFD700', glow: '#FFD700', sym: '+500',  label: 'ARGENT' },
+  rtt:       { bg: '#200A14', border: '#FF4444', glow: '#FF4444', sym: '+RTT',  label: 'RTT' },
+  temps:     { bg: '#041820', border: '#00C8BE', glow: '#00C8BE', sym: '+15s',  label: 'TEMPS' },
+  cafe:      { bg: '#2A1000', border: '#C87A3C', glow: '#C87A3C', sym: 'CAFE',  label: 'SPEED' },
+  biere:     { bg: '#0A1400', border: '#90C840', glow: '#90C840', sym: 'BIER',  label: 'SLOW' },
+  pilule:    { bg: '#1A0628', border: '#CC22FF', glow: '#CC22FF', sym: 'x2',    label: 'PILULE' },
+  stagiaire: { bg: '#001830', border: '#5B9BD5', glow: '#5B9BD5', sym: '+TIR',  label: 'STAG.' },
+  cgt:       { bg: '#041800', border: '#27C93F', glow: '#27C93F', sym: 'CGT',   label: 'SHIELD' },
+};
+
 function drawBonusItems(ctx: CanvasRenderingContext2D, state: GameState) {
-  const bonusSize = 30;
   for (const b of state.bonuses) {
     if (!b.active) continue;
-    const sprite = assets?.bonuses.get(b.type);
-    if (sprite) {
-      ctx.drawImage(sprite, b.x - bonusSize / 2, b.y - bonusSize / 2, bonusSize, bonusSize);
-    } else {
-      // Fallback
-      ctx.fillStyle = '#FFD700';
-      ctx.fillRect(b.x - bonusSize / 2, b.y - bonusSize / 2, bonusSize, bonusSize);
-      ctx.fillStyle = '#000';
-      ctx.font = '10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(b.type.slice(0, 3), b.x, b.y + 4);
-    }
+    drawBonusIcon(ctx, b.x, b.y, b.type);
   }
+}
+
+function drawBonusIcon(ctx: CanvasRenderingContext2D, x: number, y: number, type: BonusType) {
+  const st = BONUS_ICON_STYLES[type] || { bg: '#1A1A2E', border: '#FFFFFF', glow: '#FFFFFF', sym: '?', label: '?' };
+  const r = 18;
+  ctx.save();
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  const grad = ctx.createRadialGradient(x, y - r * 0.3, 1, x, y, r);
+  grad.addColorStop(0, st.bg + 'EE');
+  grad.addColorStop(1, st.bg);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = st.border;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  const symLen = st.sym.length;
+  const symSize = symLen <= 2 ? Math.round(r * 0.95) : symLen <= 3 ? Math.round(r * 0.7) : Math.round(r * 0.58);
+  ctx.font = 'bold ' + symSize + 'px "Orbitron", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = st.border;
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 8;
+  ctx.fillText(st.sym, x, y + 1);
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 7px "Orbitron", monospace';
+  ctx.fillStyle = st.border;
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 5;
+  ctx.textBaseline = 'top';
+  ctx.fillText(st.label, x, y + r + 3);
+  ctx.shadowBlur = 0;
+  ctx.restore();
 }
 
 function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
