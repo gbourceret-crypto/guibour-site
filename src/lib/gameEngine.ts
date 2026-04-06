@@ -612,18 +612,73 @@ function drawCeilingSpikes(ctx: CanvasRenderingContext2D, w: number) {
 
 function drawBubbles(ctx: CanvasRenderingContext2D, state: GameState) {
   for (const b of state.bubbles) {
-    const sprite = assets?.bubbles.get(b.size);
-    const drawSize = b.radius * 2;
-    if (sprite) {
-      ctx.drawImage(sprite, b.x - drawSize / 2, b.y - drawSize / 2, drawSize, drawSize);
-    } else {
-      // Fallback circle
-      ctx.fillStyle = '#F5C542';
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-      ctx.fill();
+    drawGlossyBubble(ctx, b.x, b.y, b.radius, b.size);
+  }
+}
+
+function drawGlossyBubble(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, size: BubbleSize) {
+  const BUBBLE_COLORS: Record<BubbleSize, string> = {
+    7: '#FF1A44', 6: '#0055FF', 5: '#00DD55',
+    4: '#FFD000', 3: '#CC22FF', 2: '#00FFEE', 1: '#FF7700',
+  };
+  const color = BUBBLE_COLORS[size];
+  const hx = color.replace('#', '');
+  const rv = parseInt(hx.slice(0,2), 16);
+  const gv = parseInt(hx.slice(2,4), 16);
+  const bv = parseInt(hx.slice(4,6), 16);
+  const L = (v: number, t: number) => Math.round(v + (255 - v) * t);
+  const D = (v: number, t: number) => Math.round(v * (1 - t));
+  const lc = 'rgb(' + L(rv,.5) + ',' + L(gv,.5) + ',' + L(bv,.5) + ')';
+  const dc = 'rgb(' + D(rv,.62) + ',' + D(gv,.62) + ',' + D(bv,.62) + ')';
+
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Glossy radial gradient
+  const grad = ctx.createRadialGradient(x - r*.18, y - r*.22, r*.05, x, y, r);
+  grad.addColorStop(0, lc);
+  grad.addColorStop(0.48, color);
+  grad.addColorStop(1, dc);
+  ctx.fillStyle = grad;
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
+
+  // Folder pattern (low opacity)
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = 'white';
+  const fw = r * .22, fh = r * .17;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      const i = row * 7 + col;
+      const fx = x - r*.88 + col*r*.28 + (row%2)*r*.14;
+      const fy = y - r*.88 + row*r*.32;
+      const rot = ((i*31 + row*13) % 42) - 21;
+      ctx.save();
+      ctx.translate(fx + fw/2, fy + fh/2);
+      ctx.rotate(rot * Math.PI / 180);
+      ctx.fillRect(-fw/2, -fh/2, fw, fh);
+      ctx.restore();
     }
   }
+  ctx.globalAlpha = 1;
+
+  // Highlight ellipse
+  const hg = ctx.createRadialGradient(x-r*.18, y-r*.22, 0, x-r*.18, y-r*.22, r*.35);
+  hg.addColorStop(0, 'rgba(255,255,255,0.65)');
+  hg.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hg;
+  ctx.beginPath();
+  ctx.ellipse(x-r*.18, y-r*.22, r*.31, r*.17, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Specular spot
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.beginPath();
+  ctx.arc(x-r*.28, y-r*.30, r*.085, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
 }
 
 function drawProjectiles(ctx: CanvasRenderingContext2D, state: GameState) {
