@@ -443,8 +443,9 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
 
       {/* ── TOP ROW: game canvas + tower ── */}
       <div className="flex flex-1" style={{ gap: '8px', minHeight: 0 }}>
-
-        {/* Game canvas area */}
+        {/* Left column: canvas + timer bar */}
+        <div className="flex flex-col flex-1" style={{ minWidth: 0 }}>
+{/* Game canvas area */}
         <div className="relative flex-1" style={{ background: '#0A1400', overflow: 'hidden', border: '2px solid #2C5F2E', boxSizing: 'border-box' }}>
           <canvas
             ref={canvasRef}
@@ -478,33 +479,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             </div>
           )}
 
-          {/* ── ELEVATOR FLOOR INDICATOR — centered in game area ── */}
-          {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-            <div style={{ position: 'absolute', top: '14px', left: '50%', transform: 'translateX(-50%)', zIndex: 18, textAlign: 'center', pointerEvents: 'none' }}>
-              <div key={currentLevel} style={{
-                display: 'inline-block',
-                background: 'rgba(2,6,18,.92)',
-                border: '2px solid rgba(0,255,235,.45)',
-                boxShadow: '0 0 24px rgba(0,255,235,.2), inset 0 0 20px rgba(0,0,0,.6)',
-                padding: '10px 22px 12px',
-                minWidth: '96px',
-                animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both',
-              }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#00FFEE', letterSpacing: '5px', opacity: 0.55, marginBottom: '4px' }}>ÉTAGE</div>
-                <div style={{
-                  fontFamily: "'Lilita One', cursive",
-                  fontSize: '52px', lineHeight: 1, letterSpacing: '2px',
-                  color: '#00FFEE',
-                  textShadow: '0 0 18px rgba(0,255,235,.8), 2px 3px 0 rgba(0,40,50,.9)',
-                }}>
-                  {String(currentLevel + 1).padStart(2, '0')}
-                </div>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '7px', color: '#A8D8FF', letterSpacing: '3px', marginTop: '5px', opacity: 0.75 }}>
-                  {hudInfo.levelName}
-                </div>
-              </div>
-            </div>
-          )}
+          
 
           {/* Elevator transition */}
           {elevatorActive && (
@@ -789,6 +764,24 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             </div>
           )}
         </div>
+        {/* ── TIMER BAR (canvas-width only) ── */}
+        {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
+          <div style={{ flexShrink: 0, background: '#0D1F3C', borderTop: '2px solid #1A3E7A', fontFamily: "'Orbitron', sans-serif" }}>
+            <div style={{ display: 'flex', alignItems: 'center', height: '32px' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '30px', height: '100%', borderRight: '1px solid #1A3E7A', background: '#0C2A62', flexShrink: 0 }}>
+                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '12px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
+              </div>
+              <div style={{ flex: 1, padding: '0 10px', display: 'flex', alignItems: 'center' }}>
+                <div style={{ flex: 1, background: '#0C2A62', border: '1px solid #1A3E7A', height: '20px', borderRadius: '3px', overflow: 'hidden' }}>
+                  <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00C8BE)', boxShadow: '0 0 8px rgba(0,200,190,.5)', transition: 'background 0.3s ease' }} />
+                </div>
+                <span ref={timerFormulaRef} style={{ display: 'none' }} />
+                <span ref={timerTextRef} style={{ display: 'none' }} />
+              </div>
+            </div>
+          </div>
+        )}
+        </div>{/* end left column */}
 
         {/* Sponsored sidebar on RIGHT — tower progress + satirical ads */}
         {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
@@ -796,52 +789,25 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
         )}
       </div>
 
-      {/* ── TIMER BAR ROW ── */}
-      {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
-        <div style={{ flexShrink: 0, background: '#1A3F78', borderTop: '2px solid #1A3E7A', fontFamily: "'Orbitron', sans-serif", marginTop: '6px' }}>
-          <div style={{ display: 'flex', alignItems: 'center', height: '36px' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '34px', height: '100%', borderRight: '1px solid #1A3E7A', background: '#0C2A62', flexShrink: 0 }}>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '13px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
-            </div>
-            <div style={{ flex: 1, padding: '0 12px', display: 'flex', alignItems: 'center' }}>
-              <div style={{ flex: 1, background: '#0C2A62', border: '1px solid #1A3E7A', height: '22px', borderRadius: '3px', overflow: 'hidden' }}>
-                <div ref={timerFillRef} style={{ height: '100%', width: '100%', background: 'linear-gradient(90deg, #0047AB, #00C8BE)', boxShadow: '0 0 8px rgba(0,200,190,.5)', transition: 'background 0.3s ease' }} />
-              </div>
-              {/* hidden refs kept for DOM updates */}
-              <span ref={timerFormulaRef} style={{ display: 'none' }} />
-              <span ref={timerTextRef} style={{ display: 'none' }} />
-            </div>
-          </div>
-        </div>
-      )}
-
+      
       {/* ── HUD ROW: lives + level name + score + mute ── */}
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
         <div style={{ flexShrink: 0, background: '#1A3F78', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #00C8BE', marginTop: '4px' }}>
 
-          {/* Left: ÉTAGE / SALAIRE / RTT — Excel cells */}
-          <div style={{ display: 'flex', gap: '2px', background: '#1A3E7A', border: '1px solid #1A3E7A' }}>
-            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '70px' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>ÉTAGE</div>
-              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FFE033', lineHeight: 1, textShadow: '0 0 10px rgba(255,224,51,.5)' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
-            </div>
-            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '100px' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>SALAIRE</div>
-              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#00C8BE', lineHeight: 1, textShadow: '0 0 10px rgba(0,200,190,.5)' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
-            </div>
-            <div style={{ background: '#0C2A62', padding: '8px 18px', textAlign: 'center', minWidth: '70px' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '3px' }}>RTT</div>
-              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FF4444', lineHeight: 1, textShadow: '0 0 10px rgba(255,68,68,.5)' }}>{'❤'.repeat(Math.max(0, hudInfo.lives))}</div>
-            </div>
+                {/* Left: ÉTAGE / SALAIRE / RTT — Excel cells (enlarged) */}
+        <div style={{ display: 'flex', gap: '3px', background: '#1A3E7A', border: '1px solid #1A3E7A' }}>
+          <div key={currentLevel} style={{ background: '#0C2A62', padding: '8px 20px', textAlign: 'center', minWidth: '120px', animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both', borderRight: '1px solid #1A3E7A' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '4px', marginBottom: '2px' }}>ÉTAGE</div>
+            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FFE033', lineHeight: 1, textShadow: '0 0 14px rgba(255,224,51,.6)' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#A8D8FF', letterSpacing: '2px', marginTop: '3px', opacity: 0.85, maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{hudInfo.levelName}</div>
           </div>
-
-          {/* Center: phrase du niveau */}
-          <div className="text-center" style={{ padding: '0 12px', flex: 1 }}>
-            {showPhrase && (
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#00C8BE', letterSpacing: '2px', animation: 'fadeIn 0.3s ease', opacity: 0.7 }}>
-                {hudInfo.phrase}
-              </div>
-            )}
+          <div style={{ background: '#0C2A62', padding: '8px 24px', textAlign: 'center', minWidth: '140px' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '2px' }}>SALAIRE</div>
+            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#00C8BE', lineHeight: 1, textShadow: '0 0 14px rgba(0,200,190,.6)' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
+          </div>
+          <div style={{ background: '#0C2A62', padding: '8px 20px', textAlign: 'center', minWidth: '110px' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '2px' }}>RTT</div>
+            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FF4444', lineHeight: 1, textShadow: '0 0 14px rgba(255,68,68,.6)' }}>{'\u2764'.repeat(Math.max(0, hudInfo.lives))}</div>
           </div>
         </div>
       )}
