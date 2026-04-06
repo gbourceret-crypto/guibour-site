@@ -18,13 +18,13 @@ const PLAYER_W = 40;
 const SIZE_CONFIG: Record<BubbleSize, {
   radius: number; bounceVy: number; speedX: number; divisionVy: number; score: number;
 }> = {
-  7: { radius: 80, bounceVy: -4.2,  speedX: 0.8, divisionVy: -4.9,  score: 50 },
-  6: { radius: 62, bounceVy: -4.9,  speedX: 1.0, divisionVy: -5.5,  score: 100 },
-  5: { radius: 48, bounceVy: -5.5,  speedX: 1.2, divisionVy: -6.2,  score: 150 },
-  4: { radius: 36, bounceVy: -6.2,  speedX: 1.4, divisionVy: -6.8,  score: 250 },
-  3: { radius: 26, bounceVy: -6.8,  speedX: 1.6, divisionVy: -7.5,  score: 400 },
-  2: { radius: 16, bounceVy: -7.5,  speedX: 1.8, divisionVy: -8.5,  score: 600 },
-  1: { radius: 10, bounceVy: -8.5,  speedX: 2.0, divisionVy: 0,    score: 1000 },
+  7: { radius: 80, bounceVy: -11.0, speedX: 0.8, divisionVy: -9.0, score: 50 },
+  6: { radius: 62, bounceVy: -10.0, speedX: 1.0, divisionVy: -8.0, score: 100 },
+  5: { radius: 48, bounceVy: -9.0,  speedX: 1.2, divisionVy: -7.0, score: 150 },
+  4: { radius: 36, bounceVy: -8.0,  speedX: 1.4, divisionVy: -6.5, score: 250 },
+  3: { radius: 26, bounceVy: -7.0,  speedX: 1.6, divisionVy: -6.0, score: 400 },
+  2: { radius: 16, bounceVy: -6.0,  speedX: 1.8, divisionVy: -5.5, score: 600 },
+  1: { radius: 10, bounceVy: -5.2,  speedX: 2.0, divisionVy: 0,    score: 1000 },
 };
 
 const SPLIT_MAP: Record<BubbleSize, BubbleSize | null> = {
@@ -436,8 +436,8 @@ function checkCollisions(state: GameState) {
   if (player.invincible <= 0) {
     for (const b of bubbles) {
       const dx = player.x - b.x;
-      const dy = (player.y - player.height / 3) - b.y;
-      if (Math.sqrt(dx * dx + dy * dy) < b.radius + player.width / 2.5) {
+      const dy = (player.y - player.height * 0.45) - b.y;
+      if (Math.sqrt(dx * dx + dy * dy) < b.radius + player.width / 2) {
         if (state.cgtShield) {
           // CGT shield absorbs hit
           state.cgtShield = false;
@@ -459,7 +459,7 @@ function checkCollisions(state: GameState) {
   for (let i = bonuses.length - 1; i >= 0; i--) {
     const b = bonuses[i];
     if (!b.active) continue;
-    if (Math.sqrt((player.x - b.x) ** 2 + ((player.y - player.height / 3) - b.y) ** 2) < 35) {
+    if (Math.sqrt((player.x - b.x) ** 2 + ((player.y - player.height * 0.45) - b.y) ** 2) < 40) {
       b.active = false;
       applyBonus(state, b.type, b.x, b.y);
     }
