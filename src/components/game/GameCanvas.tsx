@@ -797,6 +797,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FF4444', lineHeight: 1, textShadow: '0 0 14px rgba(255,68,68,.6)' }}>{'\u2764'.repeat(Math.max(0, hudInfo.lives))}</div>
           </div>
         </div>
+        </div>
       )}
     </div>
   );
