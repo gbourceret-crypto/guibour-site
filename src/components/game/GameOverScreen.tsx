@@ -1,4 +1,5 @@
 'use client';
+import React from 'react';
 
 import { GameState } from '@/lib/gameTypes';
 import { addScore, formatDuration, formatSalary, getShareText } from '@/lib/leaderboard';
@@ -142,7 +143,7 @@ function generateShareImage(pseudo: string, level: number, score: number): strin
   return canvas.toDataURL('image/png');
 }
 
-export default function GameOverScreen({ state, onRestart, playerIdentity, replayUrl }: Props) {
+function GameOverScreen({ state, onRestart, playerIdentity, replayUrl }: Props) {
   const { player, level, status } = state;
   const isVictory = status === 'victory';
   const [rank, setRank] = useState(0);
@@ -457,3 +458,5 @@ export default function GameOverScreen({ state, onRestart, playerIdentity, repla
     </div>
   );
 }
+
+export default React.memo(GameOverScreen);
