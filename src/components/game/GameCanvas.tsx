@@ -481,19 +481,6 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
 
           
 
-          {/* Elevator transition */}
-          {elevatorActive && (
-            <div className="pointer-events-none absolute inset-0 z-15"
-                 style={{ background: '#1A3F78', animation: 'elevatorSlide 1.5s ease-in-out forwards' }}>
-              <div className="flex h-full items-center justify-center">
-                <div className="text-center">
-                  <p style={{ fontFamily: "'Lilita One', cursive", fontSize: '28px', color: '#00C8BE', letterSpacing: '4px', animation: 'pulse 1s ease-in-out infinite', textShadow: '0 0 16px rgba(0,200,190,.5)' }}>▲ MONTÉE</p>
-                  <p style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '12px', color: '#5B9BD5', letterSpacing: '2px', marginTop: '8px' }}>ASCENSEUR EN COURS...</p>
-                </div>
-              </div>
-            </div>
-          )}
-
           {/* IDLE overlay */}
           {gameStatus === 'idle' && (
             <div className="absolute inset-0 z-20 flex flex-col items-center justify-center gap-6"
