@@ -40,6 +40,19 @@ export interface ActiveEffect {
   remaining: number; // frames remaining
 }
 
+// ===== FLOATING TEXT (bonus collection popup) =====
+export interface FloatingText {
+  id: number;
+  x: number;
+  y: number;
+  text: string;
+  color: string;
+  opacity: number; // 0-1
+  vy: number;      // rises upward (negative)
+  life: number;    // frames remaining
+  maxLife: number; // total frames
+}
+
 // ===== TIMER =====
 export interface RoundTimer {
   total: number;    // seconds
@@ -111,7 +124,8 @@ export interface GameState {
   levelTransitionTimer: number;
   startTime: number;
   endTime: number;
-  frameCount: number;
+
+  floatingTexts: FloatingText[];  frameCount: number;
 }
 
 // ===== LEADERBOARD =====
