@@ -31,8 +31,9 @@ function loadVideo(src: string): Promise<HTMLVideoElement> {
     video.loop = true;
     video.playsInline = true;
     video.preload = 'auto';
-    video.oncanplaythrough = () => resolve(video);
-    video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+    const timeout = setTimeout(() => reject(new Error(`Timeout loading video: ` + src)), 3000);
+    video.oncanplaythrough = () => { clearTimeout(timeout); resolve(video); };
+    video.onerror = () => { clearTimeout(timeout); reject(new Error(`Failed to load video: ` + src)); };
     video.src = src;
     video.load();
   });
