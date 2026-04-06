@@ -628,15 +628,14 @@ function drawGlossyBubble(ctx: CanvasRenderingContext2D, x: number, y: number, r
   const dc = 'rgb(' + D(rv,.62) + ',' + D(gv,.62) + ',' + D(bv,.62) + ')';
 
   // ── 3-D shadow (cast shadow behind bubble) ──
-  const _shadowG = ctx.createRadialGradient(x + r*0.28, y + r*0.38, 0, x + r*0.28, y + r*0.38, r*1.35);
-  _shadowG.addColorStop(0, 'rgba(0,0,0,0.60)');
-  _shadowG.addColorStop(0.5, 'rgba(0,0,0,0.25)');
+  const _shadowG = ctx.createRadialGradient(x + r*0.15, y + r*0.2, 0, x + r*0.15, y + r*0.2, r*0.9);
+  _shadowG.addColorStop(0, 'rgba(0,0,0,0.25)');
+  _shadowG.addColorStop(0.6, 'rgba(0,0,0,0.10)');
   _shadowG.addColorStop(1, 'rgba(0,0,0,0)');
   ctx.fillStyle = _shadowG;
   ctx.beginPath();
-  ctx.arc(x, y, r * 1.25, 0, Math.PI * 2);
+  ctx.arc(x, y, r * 0.85, 0, Math.PI * 2);
   ctx.fill();
-
   ctx.save();
   ctx.beginPath();
   ctx.arc(x, y, r, 0, Math.PI * 2);
@@ -776,8 +775,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   // Show idle/front-facing when shooting (has active projectile)
   const isShooting = state.projectiles.some(p => p.active);
   // Use walk animation only when moving AND not shooting
-  const useWalk = isMoving && !isShooting;
-
+  const useWalk = isMoving;
   // Manage video play/pause
   if (walkVideo && walkVideo.readyState >= 2) {
     if (useWalk && !walkVideoPlaying) {
@@ -795,14 +793,15 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     // Draw video frame — video is natively facing left (1280×720), trimmed from 1.0s
     // Character occupies x=356..935 (sw=579) of the full hflipped frame
     const sx = 356, sy = 0, sw = 579, sh = 720;
+    const drawW = Math.round(player.height * sw / sh);
     if (player.direction === 'right') {
       // Flip horizontally for right movement
-      ctx.translate(player.x + player.width / 2, player.y - player.height);
+      ctx.translate(player.x + drawW / 2, player.y - player.height);
       ctx.scale(-1, 1);
-      ctx.drawImage(walkVideo, sx, sy, sw, sh, -player.width, 0, player.width, player.height);
+      ctx.drawImage(walkVideo, sx, sy, sw, sh, -drawW, 0, drawW, player.height);
     } else {
       // Left = native direction
-      ctx.drawImage(walkVideo, sx, sy, sw, sh, player.x - player.width / 2, player.y - player.height, player.width, player.height);
+      ctx.drawImage(walkVideo, sx, sy, sw, sh, player.x - drawW / 2, player.y - player.height, drawW, player.height);
     }
   } else if (idleImg) {
     // Idle or shooting: draw face-forward static image
