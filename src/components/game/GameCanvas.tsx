@@ -516,7 +516,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             <>
               {currentLevel === 0 ? (
                 /* ── ÉTAGE 00 — contrôles avec tutoriel ── */
-                <div style={{ position: 'absolute', bottom: '12px', left: '10px', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
+                <div style={{ position: 'absolute', top: '12px', left: '10px', zIndex: 15, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px' }}>
                   {/* Label COMMANDES */}
                   <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '4px', color: '#00C8BE', textShadow: '0 0 8px rgba(0,200,190,.6)', alignSelf: 'flex-start' }}>
                     COMMANDES :
@@ -781,20 +781,22 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
       {(gameStatus === 'playing' || gameStatus === 'burnout' || gameStatus === 'levelComplete') && (
         <div style={{ flexShrink: 0, background: '#1A3F78', display: 'flex', alignItems: 'center', justifyContent: 'space-between', borderTop: '2px solid #00C8BE', marginTop: '4px' }}>
 
-                {/* Left: ÉTAGE / SALAIRE / RTT — Excel cells (enlarged) */}
-        <div style={{ display: 'flex', gap: '3px', background: '#1A3E7A', border: '1px solid #1A3E7A' }}>
-          <div key={currentLevel} style={{ background: '#0C2A62', padding: '8px 20px', textAlign: 'center', minWidth: '120px', animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both', borderRight: '1px solid #1A3E7A' }}>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '4px', marginBottom: '2px' }}>ÉTAGE</div>
-            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FFE033', lineHeight: 1, textShadow: '0 0 14px rgba(255,224,51,.6)' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#A8D8FF', letterSpacing: '2px', marginTop: '3px', opacity: 0.85, maxWidth: '110px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{hudInfo.levelName}</div>
-          </div>
-          <div style={{ background: '#0C2A62', padding: '8px 24px', textAlign: 'center', minWidth: '140px' }}>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '2px' }}>SALAIRE</div>
-            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#00C8BE', lineHeight: 1, textShadow: '0 0 14px rgba(0,200,190,.6)' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
-          </div>
-          <div style={{ background: '#0C2A62', padding: '8px 20px', textAlign: 'center', minWidth: '110px' }}>
+        {/* ── HUD: RTT | ETAGE (centre) | SALAIRE ── */}
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-start', alignItems: 'center' }}>
+          <div style={{ background: '#0C2A62', padding: '6px 20px', textAlign: 'center', borderRight: '1px solid #1A3E7A' }}>
             <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '2px' }}>RTT</div>
             <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FF4444', lineHeight: 1, textShadow: '0 0 14px rgba(255,68,68,.6)' }}>{'\u2764'.repeat(Math.max(0, hudInfo.lives))}</div>
+          </div>
+        </div>
+        <div key={currentLevel} style={{ flex: 2, textAlign: 'center', padding: '6px 16px', animation: 'elevatorFloorIn .35s cubic-bezier(.15,0,.25,1) both' }}>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '4px', marginBottom: '2px' }}>ETAGE</div>
+          <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#FFE033', lineHeight: 1, textShadow: '0 0 14px rgba(255,224,51,.6)' }}>{String(currentLevel + 1).padStart(2, '0')}</div>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#A8D8FF', letterSpacing: '2px', marginTop: '3px', opacity: 0.85, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{hudInfo.levelName}</div>
+        </div>
+        <div style={{ flex: 1, display: 'flex', justifyContent: 'flex-end', alignItems: 'center' }}>
+          <div style={{ background: '#0C2A62', padding: '6px 20px', textAlign: 'center', borderLeft: '1px solid #1A3E7A' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '2px' }}>SALAIRE</div>
+            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#00C8BE', lineHeight: 1, textShadow: '0 0 14px rgba(0,200,190,.6)' }}>{hudInfo.score.toLocaleString('fr-FR')}€</div>
           </div>
         </div>
         </div>
