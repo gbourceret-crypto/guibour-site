@@ -219,7 +219,7 @@ export default function CharacterSelect({ onSelect, onBack }: CharacterSelectPro
         display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center',
         padding: '20px',
       }}>
-        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,72,171,.06) 1px,transparent 1px),linear-gradient(90deg,rgba(0,72,171,.06) 1px,transparent 1px)', backgroundSize: '56px 34px' }} />
+        <div style={{ position: 'absolute', inset: 0, pointerEvents: 'none', backgroundImage: 'linear-gradient(rgba(0,200,190,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,190,.10) 1px,transparent 1px)', backgroundSize: '56px 34px' }} />
 
         <div style={{ position: 'relative', zIndex: 2, width: '100%', maxWidth: '380px', animation: 'slideUp 0.3s ease-out' }}>
 
@@ -321,7 +321,7 @@ export default function CharacterSelect({ onSelect, onBack }: CharacterSelectPro
       {/* Grid texture */}
       <div style={{
         position: 'absolute', inset: 0, pointerEvents: 'none',
-        backgroundImage: 'linear-gradient(rgba(0,72,171,.07) 1px,transparent 1px),linear-gradient(90deg,rgba(0,72,171,.07) 1px,transparent 1px)',
+        backgroundImage: 'linear-gradient(rgba(0,200,190,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(0,200,190,.10) 1px,transparent 1px)',
         backgroundSize: '56px 34px',
       }} />
 
