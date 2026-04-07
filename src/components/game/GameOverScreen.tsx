@@ -452,6 +452,14 @@ style={{ background: isVictory ? 'rgba(0,8,20,0.88)' : 'rgba(4,0,0,0.95)', backd
 
 </div>
 
+      {/* GUIBOUR DEFAITE */}
+      {!isVictory && (
+        <video autoPlay loop muted playsInline
+          style={{ width: '180px', height: 'auto', flexShrink: 0, marginBottom: '4px', imageRendering: 'pixelated', filter: 'drop-shadow(0 0 18px rgba(255,30,30,0.7))' }}
+          src="/game/player/guibour-defaite.webm"
+        />
+      )}
+
 {showContent && (
 
 <div style={{ display: 'flex', gap: '16px', flexWrap: 'wrap', justifyContent: 'center', padding: '0 16px 16px', width: '100%', maxWidth: '960px' }}>
