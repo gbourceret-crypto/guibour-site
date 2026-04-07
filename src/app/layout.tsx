@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import './globals.css';
+import GuibourChat from '@/components/ui/GuibourChat';
 
 export const metadata: Metadata = {
   title: 'GUIBOUR SYSTEM — W.O.W 2026',
@@ -69,6 +70,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           data-domain="guibour.fr"
           src="https://plausible.io/js/script.js"
         />
+      <GuibourChat />
       </body>
     </html>
   );
