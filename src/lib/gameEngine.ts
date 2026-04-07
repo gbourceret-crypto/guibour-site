@@ -11,7 +11,7 @@ const GRAVITY = 0.15;
 const PLAYER_SPEED = 3;
 const PROJECTILE_SPEED = 5;
 const PLAYER_H = 90;
-const PLAYER_W = 40;
+const PLAYER_W = 75;
 
 // 7 bubble sizes: radius, bounceVy, speedX, divisionVy, score
 // SPEC: plus la balle est grosse, MOINS elle rebondit (bounceVy proche de 0 = rebond faible)
@@ -816,9 +816,9 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   if (useWalk && walkVideo && walkVideo.readyState >= 2) {
     // Draw video frame — video is natively facing left (1280×720), trimmed from 1.0s
     // Character occupies x=356..935 (sw=579) of the full hflipped frame
-    const sx = 356, sy = 0, sw = 579, sh = 720;
+    const sx = 30, sy = 30, sw = 505, sh = 607;
     const drawW = Math.round(player.height * sw / sh);
-    if (player.direction === 'right') {
+    if (player.direction === 'left') {
       // Flip horizontally for right movement
       ctx.translate(player.x + drawW / 2, player.y - player.height);
       ctx.scale(-1, 1);
