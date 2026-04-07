@@ -456,7 +456,7 @@ style={{ background: isVictory ? 'rgba(0,8,20,0.88)' : 'rgba(4,0,0,0.95)', backd
       {!isVictory && (
         <video autoPlay loop muted playsInline
           style={{ width: '180px', height: 'auto', flexShrink: 0, marginBottom: '4px', imageRendering: 'pixelated', filter: 'drop-shadow(0 0 18px rgba(255,30,30,0.7))' }}
-          src="/game/player/guibour-defaite.webm"
+          src="/game/player/guibour-defaite-v4.webm"
         />
       )}
 
