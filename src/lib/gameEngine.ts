@@ -864,32 +864,21 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   // Blinking when invincible
   if (player.invincible > 0 && state.frameCount % 8 < 4) return;
 
-  const walkLeft = assets?.player.walkLeft;
-  const walkRight = assets?.player.walkRight;
+  // Use only walkLeft video for BOTH directions — flip canvas for right.
+  // This guarantees identical chroma key for both directions (same source pixels).
+  const walkVideo = assets?.player.walkLeft;
   const idleImg = assets?.player.idle;
   const isMoving = player.direction === 'left' || player.direction === 'right';
   const useWalk = isMoving;
 
-  // Manage video play/pause for each video independently
-  const activeWalkVideo = player.direction === 'left' ? walkLeft : walkRight;
-  const inactiveWalkVideo = player.direction === 'left' ? walkRight : walkLeft;
-
-  if (walkLeft && walkLeft.readyState >= 2) {
-    if (player.direction === 'left' && useWalk && !walkLeftPlaying) {
-      walkLeft.play().catch(() => {});
+  // Play/pause the single walk video
+  if (walkVideo && walkVideo.readyState >= 2) {
+    if (useWalk && !walkLeftPlaying) {
+      walkVideo.play().catch(() => {});
       walkLeftPlaying = true;
-    } else if ((player.direction !== 'left' || !useWalk) && walkLeftPlaying) {
-      walkLeft.pause();
+    } else if (!useWalk && walkLeftPlaying) {
+      walkVideo.pause();
       walkLeftPlaying = false;
-    }
-  }
-  if (walkRight && walkRight.readyState >= 2) {
-    if (player.direction === 'right' && useWalk && !walkRightPlaying) {
-      walkRight.play().catch(() => {});
-      walkRightPlaying = true;
-    } else if ((player.direction !== 'right' || !useWalk) && walkRightPlaying) {
-      walkRight.pause();
-      walkRightPlaying = false;
     }
   }
 
@@ -899,12 +888,17 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   const drawH = Math.round(player.height * PLAYER_DRAW_SCALE);
   const drawY = player.y - drawH;
 
-  if (useWalk && activeWalkVideo && activeWalkVideo.readyState >= 2) {
-    // Vidéo avec fond magenta — suppression à l'exécution (chroma key)
-    const vw = activeWalkVideo.videoWidth || 504;
-    const vh = activeWalkVideo.videoHeight || 607;
+  if (useWalk && walkVideo && walkVideo.readyState >= 2) {
+    const vw = walkVideo.videoWidth || 537;
+    const vh = walkVideo.videoHeight || 607;
     const drawW = Math.round(drawH * vw / vh);
-    drawVideoMagentaKey(ctx, activeWalkVideo, player.x - drawW / 2, drawY, drawW, drawH);
+
+    if (player.direction === 'right') {
+      // Mirror horizontally around player.x so the same video works for right direction
+      ctx.translate(player.x * 2, 0);
+      ctx.scale(-1, 1);
+    }
+    drawVideoMagentaKey(ctx, walkVideo, player.x - drawW / 2, drawY, drawW, drawH);
   } else if (idleImg) {
     // Idle : respecter le ratio naturel de l'image (has alpha transparency)
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
