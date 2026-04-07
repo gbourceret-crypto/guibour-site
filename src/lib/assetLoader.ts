@@ -31,8 +31,9 @@ function loadVideo(src: string): Promise<HTMLVideoElement> {
     video.loop = true;
     video.playsInline = true;
     video.preload = 'auto';
-    video.oncanplaythrough = () => resolve(video);
-    video.onerror = () => reject(new Error(`Failed to load video: ${src}`));
+    const timeout = setTimeout(() => reject(new Error(`Timeout loading video: ` + src)), 3000);
+    video.oncanplaythrough = () => { clearTimeout(timeout); resolve(video); };
+    video.onerror = () => { clearTimeout(timeout); reject(new Error(`Failed to load video: ` + src)); };
     video.src = src;
     video.load();
   });
@@ -41,8 +42,9 @@ function loadVideo(src: string): Promise<HTMLVideoElement> {
 function loadAudio(src: string): Promise<HTMLAudioElement> {
   return new Promise((resolve, reject) => {
     const audio = new Audio();
-    audio.oncanplaythrough = () => resolve(audio);
-    audio.onerror = () => reject(new Error(`Failed to load audio: ${src}`));
+    const timeout = setTimeout(() => reject(new Error(`Timeout loading audio: ` + src)), 5000);
+    audio.oncanplaythrough = () => { clearTimeout(timeout); resolve(audio); };
+    audio.onerror = () => { clearTimeout(timeout); reject(new Error(`Failed to load audio: ` + src)); };
     audio.preload = 'auto';
     audio.src = src;
   });
@@ -77,9 +79,9 @@ export async function loadAllAssets(
     loadImage(`/game/bonuses/${name}.png`).then(img => { bonusMap.set(name, img); tick(); })
   );
 
-  // Priority: player idle image + walk video
-  const playerIdlePromise = loadImage('/game/player/guibour-idle.jpg').then(img => { tick(); return img; });
-  const playerWalkPromise = loadVideo('/game/player/guibour-walk-left.mp4').then(v => { tick(); return v; })
+  // Priority: player idle image + walk video (WebM VP9 with alpha channel)
+  const playerIdlePromise = loadImage('/game/player/guibour-idle.png').then(img => { tick(); return img; });
+  const playerWalkPromise = loadVideo('/game/player/guibour-walk-right.webm?v=3').then(v => { tick(); return v; })
     .catch(() => { tick(); return document.createElement('video'); });
 
   // Priority: tower

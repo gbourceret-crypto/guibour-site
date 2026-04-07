@@ -1,7 +1,8 @@
 import {
   GameState, Bubble, BubbleSize, Projectile, Bonus, BonusType, Player,
-  RoundTimer, ElevatorAnim,
+  RoundTimer, ElevatorAnim, FloatingText,
 } from './gameTypes';
+import { playBonusSound } from './sounds';
 import { LEVELS } from './levels';
 import { GameAssets } from './assetLoader';
 
@@ -10,20 +11,20 @@ const GRAVITY = 0.15;
 const PLAYER_SPEED = 3;
 const PROJECTILE_SPEED = 5;
 const PLAYER_H = 90;
-const PLAYER_W = 40;
+const PLAYER_W = 75;
 
 // 7 bubble sizes: radius, bounceVy, speedX, divisionVy, score
 // SPEC: plus la balle est grosse, MOINS elle rebondit (bounceVy proche de 0 = rebond faible)
 const SIZE_CONFIG: Record<BubbleSize, {
   radius: number; bounceVy: number; speedX: number; divisionVy: number; score: number;
 }> = {
-  7: { radius: 80, bounceVy: -6.5,  speedX: 0.8, divisionVy: -7.5,  score: 50 },
-  6: { radius: 62, bounceVy: -7.5,  speedX: 1.0, divisionVy: -8.5,  score: 100 },
-  5: { radius: 48, bounceVy: -8.5,  speedX: 1.2, divisionVy: -9.5,  score: 150 },
-  4: { radius: 36, bounceVy: -9.5,  speedX: 1.4, divisionVy: -10.5, score: 250 },
-  3: { radius: 26, bounceVy: -10.5, speedX: 1.6, divisionVy: -11.5, score: 400 },
-  2: { radius: 16, bounceVy: -11.5, speedX: 1.8, divisionVy: -13.0, score: 600 },
-  1: { radius: 10, bounceVy: -13.0, speedX: 2.0, divisionVy: 0,     score: 1000 },
+  7: { radius: 80, bounceVy: -11.0, speedX: 0.8, divisionVy: -9.0, score: 50 },
+  6: { radius: 62, bounceVy: -10.0, speedX: 1.0, divisionVy: -8.0, score: 100 },
+  5: { radius: 48, bounceVy: -9.0,  speedX: 1.2, divisionVy: -7.0, score: 150 },
+  4: { radius: 36, bounceVy: -8.0,  speedX: 1.4, divisionVy: -6.5, score: 250 },
+  3: { radius: 26, bounceVy: -7.0,  speedX: 1.6, divisionVy: -6.0, score: 400 },
+  2: { radius: 16, bounceVy: -6.0,  speedX: 1.8, divisionVy: -5.5, score: 600 },
+  1: { radius: 10, bounceVy: -5.2,  speedX: 2.0, divisionVy: 0,    score: 1000 },
 };
 
 const SPLIT_MAP: Record<BubbleSize, BubbleSize | null> = {
@@ -85,6 +86,7 @@ export function createInitialState(cw: number, ch: number): GameState {
     levelTransitionTimer: 0,
     startTime: 0,
     endTime: 0,
+    floatingTexts: [],
     frameCount: 0,
   };
 }
@@ -92,7 +94,7 @@ export function createInitialState(cw: number, ch: number): GameState {
 function createPlayer(cw: number, ch: number, name: string): Player {
   return {
     x: cw / 2,
-    y: ch - GROUND_MARGIN, // feet on the ground line
+    y: ch, // feet on the ground line (canvas bottom)
     width: PLAYER_W,
     height: PLAYER_H,
     speed: PLAYER_SPEED,
@@ -169,7 +171,7 @@ export function updateGame(state: GameState): GameState {
         state.activeEffects = [];
         state.cgtShield = false;
         state.player.x = state.canvasWidth / 2;
-        state.player.y = state.canvasHeight - GROUND_MARGIN;
+        state.player.y = state.canvasHeight;
         state.player.invincible = 120;
       }
     }
@@ -194,7 +196,7 @@ export function updateGame(state: GameState): GameState {
       state.activeEffects = [];
       state.cgtShield = false;
       state.player.x = state.canvasWidth / 2;
-      state.player.y = state.canvasHeight - GROUND_MARGIN;
+      state.player.y = state.canvasHeight;
       state.player.invincible = 0;
       state.status = 'playing';
     }
@@ -218,6 +220,7 @@ export function updateGame(state: GameState): GameState {
   updateBonusItems(state);
   updateEffects(state);
   updateParticles();
+  updateFloatingTexts(state);
   checkCollisions(state);
 
   // Level complete
@@ -233,7 +236,7 @@ export function updateGame(state: GameState): GameState {
 }
 
 function updatePlayer(state: GameState) {
-  const { player, keys, canvasWidth } = state;
+  const { player, keys, canvasWidth, canvasHeight } = state;
   const cafeActive = state.activeEffects.some(e => e.type === 'cafe');
   const biereActive = state.activeEffects.some(e => e.type === 'biere');
 
@@ -249,6 +252,8 @@ function updatePlayer(state: GameState) {
   else { player.direction = 'idle'; }
 
   player.x = Math.max(player.width / 2, Math.min(canvasWidth - player.width / 2, player.x));
+  // Always keep player feet on the floor — handles canvas resize mid-game
+  player.y = canvasHeight;
 
   const wantsShoot = keys.has(' ') || keys.has('ArrowUp') || keys.has('z') || keys.has('w') || state.touchShoot;
   const activeProjectiles = state.projectiles.filter(p => p.active);
@@ -260,7 +265,8 @@ function updatePlayer(state: GameState) {
     state.projectiles.push({
       id: state.nextId++,
       x: player.x,
-      y: player.y - player.height / 2,
+      // Spawn at top of character (head/shoulder level) so arrow appears to come FROM the player
+      y: player.y, // spawn at floor line, projectile grows upward
       height: 0,
       active: true,
       piercing: piluleActive,
@@ -282,7 +288,7 @@ function updateProjectiles(state: GameState) {
 }
 
 function updateBubbles(state: GameState) {
-  const floorY = state.canvasHeight - GROUND_MARGIN;
+  const floorY = state.canvasHeight; // bubbles land at canvas bottom, same as player feet
   const ceilingY = TIMER_BAR_H + (state.ceilingSpikes ? SPIKE_H : 0);
 
   for (const b of state.bubbles) {
@@ -300,6 +306,7 @@ function updateBubbles(state: GameState) {
     if (b.y - b.radius <= ceilingY) {
       if (state.ceilingSpikes) {
         // Spikes destroy bubble on contact
+        state.player.score += SIZE_CONFIG[b.size].score * 2; // bonus for ceiling kill
         b.radius = -1; // mark for destruction
       } else {
         b.y = ceilingY + b.radius;
@@ -322,7 +329,7 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight - GROUND_MARGIN;
+  const floorY = state.canvasHeight - 15; // center bonus 15px above floor so fully visible
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
@@ -429,8 +436,8 @@ function checkCollisions(state: GameState) {
   if (player.invincible <= 0) {
     for (const b of bubbles) {
       const dx = player.x - b.x;
-      const dy = (player.y - player.height / 3) - b.y;
-      if (Math.sqrt(dx * dx + dy * dy) < b.radius + player.width / 2.5) {
+      const dy = (player.y - player.height * 0.45) - b.y;
+      if (Math.sqrt(dx * dx + dy * dy) < b.radius + player.width / 2) {
         if (state.cgtShield) {
           // CGT shield absorbs hit
           state.cgtShield = false;
@@ -452,9 +459,9 @@ function checkCollisions(state: GameState) {
   for (let i = bonuses.length - 1; i >= 0; i--) {
     const b = bonuses[i];
     if (!b.active) continue;
-    if (Math.sqrt((player.x - b.x) ** 2 + ((player.y - player.height / 3) - b.y) ** 2) < 35) {
+    if (Math.sqrt((player.x - b.x) ** 2 + ((player.y - player.height * 0.45) - b.y) ** 2) < 40) {
       b.active = false;
-      applyBonus(state, b.type);
+      applyBonus(state, b.type, b.x, b.y);
     }
   }
 }
@@ -491,7 +498,25 @@ function spawnBonus(state: GameState, x: number, y: number, weights: Partial<Rec
   });
 }
 
-function applyBonus(state: GameState, type: BonusType) {
+function applyBonus(state: GameState, type: BonusType, bx = 0, by = 0) {
+  playBonusSound(type);
+  const BONUS_LABELS: Partial<Record<BonusType, string>> = {
+    argent: '+500 €', rtt: '+1 RTT', temps: '+15s', cgt: 'SHIELD!',
+    cafe: 'SPEED!', biere: 'SLOW…', pilule: 'x2 TIR', stagiaire: '+STAG!',
+  };
+  const BONUS_COLORS: Partial<Record<BonusType, string>> = {
+    argent: '#FFD700', rtt: '#FF4444', temps: '#00C8BE', cgt: '#27C93F',
+    cafe: '#C87A3C', biere: '#90C840', pilule: '#CC22FF', stagiaire: '#5B9BD5',
+  };
+  state.floatingTexts.push({
+    id: state.nextId++,
+    x: bx, y: by - 10,
+    text: BONUS_LABELS[type] || type.toUpperCase(),
+    color: BONUS_COLORS[type] || '#FFFFFF',
+    opacity: 1,
+    vy: -1.5,
+    life: 60, maxLife: 60,
+  });
   switch (type) {
     case 'rtt':
       state.player.lives++;
@@ -545,6 +570,8 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
 
     // 6. Bonus items
     drawBonusItems(ctx, state);
+    // 6b. Floating text pop-ups
+    drawFloatingTexts(ctx, state);
 
     // 7. Projectiles
     drawProjectiles(ctx, state);
@@ -557,10 +584,6 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
       drawCgtShield(ctx, state);
     }
 
-    // 10. Level complete overlay
-    if (state.status === 'levelComplete') {
-      drawLevelComplete(ctx, state);
-    }
 
     // 11. BURN OUT flash
     if (state.status === 'burnout') {
@@ -609,18 +632,82 @@ function drawCeilingSpikes(ctx: CanvasRenderingContext2D, w: number) {
 
 function drawBubbles(ctx: CanvasRenderingContext2D, state: GameState) {
   for (const b of state.bubbles) {
-    const sprite = assets?.bubbles.get(b.size);
-    const drawSize = b.radius * 2;
-    if (sprite) {
-      ctx.drawImage(sprite, b.x - drawSize / 2, b.y - drawSize / 2, drawSize, drawSize);
-    } else {
-      // Fallback circle
-      ctx.fillStyle = '#F5C542';
-      ctx.beginPath();
-      ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
-      ctx.fill();
+    drawGlossyBubble(ctx, b.x, b.y, b.radius, b.size);
+  }
+}
+
+function drawGlossyBubble(ctx: CanvasRenderingContext2D, x: number, y: number, r: number, size: BubbleSize) {
+  const BUBBLE_COLORS: Record<BubbleSize, string> = {
+    7: '#FF1A44', 6: '#0055FF', 5: '#00DD55',
+    4: '#FFD000', 3: '#CC22FF', 2: '#00FFEE', 1: '#FF7700',
+  };
+  const color = BUBBLE_COLORS[size];
+  const hx = color.replace('#', '');
+  const rv = parseInt(hx.slice(0,2), 16);
+  const gv = parseInt(hx.slice(2,4), 16);
+  const bv = parseInt(hx.slice(4,6), 16);
+  const L = (v: number, t: number) => Math.round(v + (255 - v) * t);
+  const D = (v: number, t: number) => Math.round(v * (1 - t));
+  const lc = 'rgb(' + L(rv,.5) + ',' + L(gv,.5) + ',' + L(bv,.5) + ')';
+  const dc = 'rgb(' + D(rv,.62) + ',' + D(gv,.62) + ',' + D(bv,.62) + ')';
+
+  // ── 3-D shadow (cast shadow behind bubble) ──
+  const _shadowG = ctx.createRadialGradient(x + r*0.15, y + r*0.2, 0, x + r*0.15, y + r*0.2, r*0.9);
+  _shadowG.addColorStop(0, 'rgba(0,0,0,0.25)');
+  _shadowG.addColorStop(0.6, 'rgba(0,0,0,0.10)');
+  _shadowG.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = _shadowG;
+  ctx.beginPath();
+  ctx.arc(x, y, r * 0.85, 0, Math.PI * 2);
+  ctx.fill();
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  ctx.clip();
+
+  // Glossy radial gradient
+  const grad = ctx.createRadialGradient(x - r*.18, y - r*.22, r*.05, x, y, r);
+  grad.addColorStop(0, lc);
+  grad.addColorStop(0.48, color);
+  grad.addColorStop(1, dc);
+  ctx.fillStyle = grad;
+  ctx.fillRect(x - r, y - r, r * 2, r * 2);
+
+  // Folder pattern (low opacity)
+  ctx.globalAlpha = 0.12;
+  ctx.fillStyle = 'white';
+  const fw = r * .22, fh = r * .17;
+  for (let row = 0; row < 6; row++) {
+    for (let col = 0; col < 7; col++) {
+      const i = row * 7 + col;
+      const fx = x - r*.88 + col*r*.28 + (row%2)*r*.14;
+      const fy = y - r*.88 + row*r*.32;
+      const rot = ((i*31 + row*13) % 42) - 21;
+      ctx.save();
+      ctx.translate(fx + fw/2, fy + fh/2);
+      ctx.rotate(rot * Math.PI / 180);
+      ctx.fillRect(-fw/2, -fh/2, fw, fh);
+      ctx.restore();
     }
   }
+  ctx.globalAlpha = 1;
+
+  // Highlight ellipse
+  const hg = ctx.createRadialGradient(x-r*.18, y-r*.22, 0, x-r*.18, y-r*.22, r*.35);
+  hg.addColorStop(0, 'rgba(255,255,255,0.65)');
+  hg.addColorStop(1, 'rgba(255,255,255,0)');
+  ctx.fillStyle = hg;
+  ctx.beginPath();
+  ctx.ellipse(x-r*.18, y-r*.22, r*.31, r*.17, 0, 0, Math.PI*2);
+  ctx.fill();
+
+  // Specular spot
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.beginPath();
+  ctx.arc(x-r*.28, y-r*.30, r*.085, 0, Math.PI*2);
+  ctx.fill();
+
+  ctx.restore();
 }
 
 function drawProjectiles(ctx: CanvasRenderingContext2D, state: GameState) {
@@ -645,23 +732,59 @@ function drawProjectiles(ctx: CanvasRenderingContext2D, state: GameState) {
   }
 }
 
+const BONUS_ICON_STYLES: Record<BonusType, { bg: string; border: string; glow: string; sym: string; label: string }> = {
+  argent:    { bg: '#0C2240', border: '#FFD700', glow: '#FFD700', sym: '+500',  label: 'ARGENT' },
+  rtt:       { bg: '#200A14', border: '#FF4444', glow: '#FF4444', sym: '+RTT',  label: 'RTT' },
+  temps:     { bg: '#041820', border: '#00C8BE', glow: '#00C8BE', sym: '+15s',  label: 'TEMPS' },
+  cafe:      { bg: '#2A1000', border: '#C87A3C', glow: '#C87A3C', sym: 'CAFE',  label: 'SPEED' },
+  biere:     { bg: '#0A1400', border: '#90C840', glow: '#90C840', sym: 'BIER',  label: 'SLOW' },
+  pilule:    { bg: '#1A0628', border: '#CC22FF', glow: '#CC22FF', sym: 'x2',    label: 'PILULE' },
+  stagiaire: { bg: '#001830', border: '#5B9BD5', glow: '#5B9BD5', sym: '+TIR',  label: 'STAG.' },
+  cgt:       { bg: '#041800', border: '#27C93F', glow: '#27C93F', sym: 'CGT',   label: 'SHIELD' },
+};
+
 function drawBonusItems(ctx: CanvasRenderingContext2D, state: GameState) {
-  const bonusSize = 30;
   for (const b of state.bonuses) {
     if (!b.active) continue;
-    const sprite = assets?.bonuses.get(b.type);
-    if (sprite) {
-      ctx.drawImage(sprite, b.x - bonusSize / 2, b.y - bonusSize / 2, bonusSize, bonusSize);
-    } else {
-      // Fallback
-      ctx.fillStyle = '#FFD700';
-      ctx.fillRect(b.x - bonusSize / 2, b.y - bonusSize / 2, bonusSize, bonusSize);
-      ctx.fillStyle = '#000';
-      ctx.font = '10px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.fillText(b.type.slice(0, 3), b.x, b.y + 4);
-    }
+    drawBonusIcon(ctx, b.x, b.y, b.type);
   }
+}
+
+function drawBonusIcon(ctx: CanvasRenderingContext2D, x: number, y: number, type: BonusType) {
+  const st = BONUS_ICON_STYLES[type] || { bg: '#1A1A2E', border: '#FFFFFF', glow: '#FFFFFF', sym: '?', label: '?' };
+  const r = 18;
+  ctx.save();
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 14;
+  ctx.beginPath();
+  ctx.arc(x, y, r, 0, Math.PI * 2);
+  const grad = ctx.createRadialGradient(x, y - r * 0.3, 1, x, y, r);
+  grad.addColorStop(0, st.bg + 'EE');
+  grad.addColorStop(1, st.bg);
+  ctx.fillStyle = grad;
+  ctx.fill();
+  ctx.strokeStyle = st.border;
+  ctx.lineWidth = 2.5;
+  ctx.stroke();
+  ctx.shadowBlur = 0;
+  const symLen = st.sym.length;
+  const symSize = symLen <= 2 ? Math.round(r * 0.95) : symLen <= 3 ? Math.round(r * 0.7) : Math.round(r * 0.58);
+  ctx.font = 'bold ' + symSize + 'px "Orbitron", monospace';
+  ctx.textAlign = 'center';
+  ctx.textBaseline = 'middle';
+  ctx.fillStyle = st.border;
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 8;
+  ctx.fillText(st.sym, x, y + 1);
+  ctx.shadowBlur = 0;
+  ctx.font = 'bold 7px "Orbitron", monospace';
+  ctx.fillStyle = st.border;
+  ctx.shadowColor = st.glow;
+  ctx.shadowBlur = 5;
+  ctx.textBaseline = 'top';
+  ctx.fillText(st.label, x, y + r + 3);
+  ctx.shadowBlur = 0;
+  ctx.restore();
 }
 
 function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
@@ -673,13 +796,16 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   const walkVideo = assets?.player.walkVideo;
   const idleImg = assets?.player.idle;
   const isMoving = player.direction === 'left' || player.direction === 'right';
-
+  // Show idle/front-facing when shooting (has active projectile)
+  const isShooting = state.projectiles.some(p => p.active);
+  // Use walk animation only when moving AND not shooting
+  const useWalk = isMoving;
   // Manage video play/pause
   if (walkVideo && walkVideo.readyState >= 2) {
-    if (isMoving && !walkVideoPlaying) {
+    if (useWalk && !walkVideoPlaying) {
       walkVideo.play().catch(() => {});
       walkVideoPlaying = true;
-    } else if (!isMoving && walkVideoPlaying) {
+    } else if (!useWalk && walkVideoPlaying) {
       walkVideo.pause();
       walkVideoPlaying = false;
     }
@@ -687,19 +813,22 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
 
   ctx.save();
 
-  if (isMoving && walkVideo && walkVideo.readyState >= 2) {
-    // Draw video frame — video is natively facing left
-    // For right movement: flip horizontally
-    if (player.direction === 'right') {
-      ctx.translate(player.x, player.y - player.height);
+  if (useWalk && walkVideo && walkVideo.readyState >= 2) {
+    // Draw video frame — video is natively facing left (1280×720), trimmed from 1.0s
+    // Character occupies x=356..935 (sw=579) of the full hflipped frame
+    const sx = 30, sy = 30, sw = 505, sh = 607;
+    const drawW = Math.round(player.height * sw / sh);
+    if (player.direction === 'left') {
+      // Flip horizontally for right movement
+      ctx.translate(player.x + drawW / 2, player.y - player.height);
       ctx.scale(-1, 1);
-      ctx.drawImage(walkVideo, -player.width / 2, 0, player.width, player.height);
+      ctx.drawImage(walkVideo, sx, sy, sw, sh, -drawW, 0, drawW, player.height);
     } else {
       // Left = native direction
-      ctx.drawImage(walkVideo, player.x - player.width / 2, player.y - player.height, player.width, player.height);
+      ctx.drawImage(walkVideo, sx, sy, sw, sh, player.x - drawW / 2, player.y - player.height, drawW, player.height);
     }
   } else if (idleImg) {
-    // Idle: draw static image
+    // Idle or shooting: draw face-forward static image
     ctx.drawImage(idleImg, player.x - player.width / 2, player.y - player.height, player.width, player.height);
   } else {
     // Fallback rectangle
@@ -731,23 +860,6 @@ function drawParticles(ctx: CanvasRenderingContext2D) {
   ctx.globalAlpha = 1;
 }
 
-function drawLevelComplete(ctx: CanvasRenderingContext2D, state: GameState) {
-  const { canvasWidth: w, canvasHeight: h } = state;
-  ctx.fillStyle = 'rgba(10,26,18,0.5)';
-  ctx.fillRect(0, 0, w, h);
-
-  ctx.fillStyle = '#00C9C8';
-  ctx.font = 'bold 32px "Orbitron", sans-serif';
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  ctx.fillText('DOSSIER CLASSE !', w / 2, h / 2 - 15);
-
-  ctx.fillStyle = '#fff';
-  ctx.font = '16px "Share Tech Mono", monospace';
-  ctx.fillText(`Etage ${state.level} termine`, w / 2, h / 2 + 20);
-  ctx.textBaseline = 'alphabetic';
-}
-
 function drawBurnout(ctx: CanvasRenderingContext2D, w: number, h: number, state: GameState) {
   // Red flash
   const alpha = state.burnoutTimer > 30 ? 0.4 : 0.2;
@@ -762,7 +874,33 @@ function drawBurnout(ctx: CanvasRenderingContext2D, w: number, h: number, state:
   ctx.fillText('BURN OUT !', w / 2, h / 2);
 
   ctx.fillStyle = '#fff';
-  ctx.font = '18px "Share Tech Mono", monospace';
+  ctx.font = '18px "Orbitron", sans-serif';
   ctx.fillText(`RTT restants : ${state.player.lives}`, w / 2, h / 2 + 40);
   ctx.textBaseline = 'alphabetic';
+}
+// ===== FLOATING TEXT =====
+function updateFloatingTexts(state: GameState) {
+  for (const ft of state.floatingTexts) {
+    ft.y += ft.vy;
+    ft.life--;
+    ft.opacity = ft.life / ft.maxLife;
+  }
+  state.floatingTexts = state.floatingTexts.filter(ft => ft.life > 0);
+}
+
+function drawFloatingTexts(ctx: CanvasRenderingContext2D, state: GameState) {
+  for (const ft of state.floatingTexts) {
+    ctx.save();
+    ctx.globalAlpha = ft.opacity;
+    const scale = 1 + (1 - ft.life / ft.maxLife) * 0.4;
+    ctx.font = `bold ${Math.round(14 * scale)}px "Orbitron", monospace`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+    ctx.lineWidth = 3;
+    ctx.strokeText(ft.text, ft.x, ft.y);
+    ctx.fillStyle = ft.color;
+    ctx.fillText(ft.text, ft.x, ft.y);
+    ctx.restore();
+  }
 }

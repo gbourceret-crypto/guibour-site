@@ -1,44 +1,24 @@
 'use client';
-
 import { useEffect, useState } from 'react';
-import Logo, { GlobeSVG } from './Logo';
-import GuibourCharacter from './GuibourCharacter';
+import GlobeO from './GlobeO';
 
 interface LoadingScreenProps {
   onComplete: () => void;
 }
 
-const BOOT_LINES = [
-  { text: 'C:\\GUIBOUR\\SYSTEM> init.exe', color: '#1A3A6A', delay: 400 },
-  { text: '✓ Chargement des dossiers administratifs...', color: '#00A89D', delay: 800 },
-  { text: '✓ Module RTT initialisé — 3 unités disponibles', color: '#00A89D', delay: 1400 },
-  { text: '✓ Connexion Guibour Corp. établie', color: '#00A89D', delay: 2000 },
-  { text: '▶ Préparation de l\'espace de travail...', color: '#1A3A6A', delay: 2600, cursor: true },
-];
-
 export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0);
-  const [visibleLines, setVisibleLines] = useState(0);
   const [fadeOut, setFadeOut] = useState(false);
 
   useEffect(() => {
     const interval = setInterval(() => {
       setProgress(prev => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          return 100;
-        }
+        if (prev >= 100) { clearInterval(interval); return 100; }
         return prev + 1;
       });
-    }, 35);
-
-    BOOT_LINES.forEach((line, i) => {
-      setTimeout(() => setVisibleLines(i + 1), line.delay);
-    });
-
-    const fadeTimer = setTimeout(() => setFadeOut(true), 3800);
-    const completeTimer = setTimeout(() => onComplete(), 4300);
-
+    }, 18);
+    const fadeTimer = setTimeout(() => setFadeOut(true), 2000);
+    const completeTimer = setTimeout(() => onComplete(), 2500);
     return () => {
       clearInterval(interval);
       clearTimeout(fadeTimer);
@@ -48,151 +28,136 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
   return (
     <div style={{
-      position: 'fixed',
-      inset: 0,
-      zIndex: 9999,
-      background: '#0A1520',
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
+      position: 'fixed', inset: 0, zIndex: 9999,
+      background: '#1A3F78',
+      display: 'flex', flexDirection: 'column',
+      alignItems: 'center', justifyContent: 'center',
       opacity: fadeOut ? 0 : 1,
       transition: 'opacity 0.5s ease-out',
+      overflow: 'hidden',
     }}>
-      {/* Subtle paper grain texture */}
+      {/* Grid background */}
       <div style={{
-        position: 'absolute',
-        inset: 0,
-        backgroundImage: `
-          url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E"),
-          linear-gradient(rgba(0,71,171,0.05) 1px, transparent 1px),
-          linear-gradient(90deg, rgba(0,71,171,0.05) 1px, transparent 1px)
-        `,
-        backgroundSize: '256px 256px, 52px 32px, 52px 32px',
+        position: 'absolute', inset: 0,
+        backgroundImage: 'linear-gradient(rgba(0,72,171,.09) 1px, transparent 1px), linear-gradient(90deg, rgba(0,72,171,.09) 1px, transparent 1px)',
+        backgroundSize: '52px 32px', pointerEvents: 'none',
       }} />
 
-      {/* Scanlines */}
-      <div className="scanlines" style={{ position: 'absolute', inset: 0 }} />
-
-      {/* Logo top-left */}
-      <div style={{ position: 'absolute', top: 24, left: 28 }}>
-        <Logo variant="dark" size="sm" />
+      {/* Excel formula bar at top */}
+      <div style={{
+        position: 'absolute', top: 0, left: 0, right: 0, height: '32px',
+        background: '#0C2A62', borderBottom: '1px solid #1A3E7A',
+        display: 'flex', alignItems: 'center',
+      }}>
+        <div style={{
+          width: '34px', height: '100%', borderRight: '1px solid #1A3E7A',
+          display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0,
+        }}>
+          <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '12px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
+        </div>
+        <span style={{
+          fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
+          color: '#5B9BD5', padding: '0 12px', letterSpacing: '1px',
+        }}>
+          {'=LOADING("GUIBOUR_SYSTEM") // ' + progress + '%'}
+        </span>
       </div>
 
       {/* Center content */}
       <div style={{ position: 'relative', zIndex: 10, textAlign: 'center' }}>
-        {/* White backdrop behind logo */}
+
+        {/* Employee ID */}
         <div style={{
-          background: 'rgba(255,255,255,0.95)',
-          borderRadius: '16px',
-          padding: '32px 48px',
-          boxShadow: '0 4px 30px rgba(0,0,0,0.2)',
-          display: 'inline-block',
-          animation: 'logoPulse 3s ease-in-out infinite',
+          fontFamily: "'Orbitron', sans-serif", fontSize: '10px',
+          color: '#5B9BD5', letterSpacing: '4px', marginBottom: '28px',
         }}>
-          <div style={{ marginBottom: 16, display: 'flex', justifyContent: 'center' }}>
-            <GlobeSVG size={90} color="#0047AB" accentColor="#00A89D" glowColor="#00A89D" />
-          </div>
+          EMPLOYEE ID: GS-4891 // W.O.W // 2026
+        </div>
 
-          <span style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '72px',
-            fontWeight: 800,
-            color: '#0A1520',
-            letterSpacing: '2px',
-            display: 'block',
-            lineHeight: 1,
-          }}>
-            GUIBOUR
-          </span>
-
-          {/* Separator */}
+        {/* GUIBOUR logo — same layout as main page */}
+        <div style={{ textAlign: 'center', marginBottom: '4px' }}>
           <div style={{
-            width: '320px',
-            height: '1px',
-            background: 'linear-gradient(90deg, transparent, #0047AB, #00A89D, transparent)',
-            margin: '16px auto',
-            boxShadow: '0 0 8px #00A89D',
-          }} />
-
-          <span style={{
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '14px',
-            fontWeight: 300,
-            color: '#0047AB',
-            letterSpacing: '18px',
-            display: 'block',
+            fontSize: 'clamp(52px, 10vw, 90px)', lineHeight: 1,
+            display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0,
           }}>
-            SYSTEM
-          </span>
+            <span style={{
+              fontFamily: "'Lilita One', cursive", color: '#FFFFFF',
+              letterSpacing: '3px', animation: 'glowWhite3D 3s ease-in-out infinite',
+            }}>GUIB</span>
+            <GlobeO />
+            <span style={{
+              fontFamily: "'Lilita One', cursive", color: '#FFFFFF',
+              letterSpacing: '3px', animation: 'glowWhite3D 3s ease-in-out infinite',
+            }}>UR</span>
+          </div>
+          <div style={{
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: 'clamp(11px, 1.8vw, 16px)', color: '#00FFEE',
+            letterSpacing: '8px', fontWeight: 700,
+            textShadow: '0 0 14px rgba(0,255,238,.5)', marginTop: '4px',
+          }}>
+            S Y S T E M
+          </div>
+        </div>
+
+        {/* Subtitle */}
+        <div style={{
+          fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
+          color: '#5B9BD5', letterSpacing: '3px', marginTop: '14px',
+        }}>
+          WORK OR WINDOW // GRIMPE LES 25 ÉTAGES
         </div>
 
         {/* Progress bar */}
-        <div style={{
-          width: '320px',
-          margin: '40px auto 0',
-          background: 'rgba(0,71,171,0.15)',
-          border: '1px solid #0047AB',
-          padding: '4px',
-        }}>
+        <div style={{ width: 'clamp(280px, 40vw, 420px)', marginTop: '36px' }}>
           <div style={{
-            height: '10px',
-            width: `${progress}%`,
-            background: 'linear-gradient(90deg, #0047AB, #00A89D)',
-            boxShadow: '0 0 8px #00A89D',
-            transition: 'width 0.1s linear',
-          }} />
-        </div>
-        <span style={{
-          fontFamily: "'Share Tech Mono', monospace",
-          fontSize: '9px',
-          color: '#00A89D',
-          letterSpacing: '3px',
-          marginTop: '8px',
-          display: 'block',
-        }}>
-          INITIALISATION... {progress}%
-        </span>
-      </div>
-
-      {/* Walking character */}
-      <div style={{
-        position: 'absolute',
-        bottom: 80,
-        left: 0,
-        right: 0,
-        overflow: 'hidden',
-        height: '100px',
-        zIndex: 10,
-      }}>
-        <GuibourCharacter size={80} animate={true} />
-      </div>
-
-      {/* Terminal boot text - bottom left */}
-      <div style={{
-        position: 'absolute',
-        bottom: 40,
-        left: 28,
-        zIndex: 10,
-      }}>
-        {BOOT_LINES.slice(0, visibleLines).map((line, i) => (
-          <div key={i} style={{
-            fontFamily: "'Share Tech Mono', monospace",
-            fontSize: '9px',
-            color: line.color,
-            lineHeight: '1.8',
-            animation: 'bootLine 0.3s ease-out',
+            background: '#0C2A62', border: '1px solid #1A3E7A',
+            padding: '6px 12px', display: 'flex', alignItems: 'center',
+            gap: '10px', borderRadius: '3px',
           }}>
-            {line.text}
-            {line.cursor && (
-              <span style={{
-                color: '#00A89D',
-                animation: 'cursorBlink 1s infinite',
-                marginLeft: '4px',
-              }}>█</span>
-            )}
+            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '13px', color: '#00D4CC', fontWeight: 700 }}>fx</span>
+            <div style={{
+              flex: 1, background: '#1C3660',
+              border: '1px solid #1E3F6E', height: '14px',
+              borderRadius: '2px', overflow: 'hidden',
+            }}>
+              <div style={{
+                height: '100%', width: progress + '%',
+                background: 'linear-gradient(90deg, #0047AB, #00A89D)',
+                borderRadius: '2px', boxShadow: '0 0 8px rgba(0,71,171,.5)',
+                transition: 'width 0.1s linear',
+              }} />
+            </div>
           </div>
-        ))}
+          <div style={{
+            fontFamily: "'Orbitron', sans-serif", fontSize: '10px',
+            color: '#2B5090', textAlign: 'center', marginTop: '6px', letterSpacing: '2px',
+          }}>
+            =LOADING(&quot;SYSTEM_BOOT&quot;) // {progress}%
+          </div>
+        </div>
+      </div>
+
+      {/* Badge employé — bottom right */}
+      <div style={{
+        position: 'absolute', right: '36px', bottom: '24px',
+        zIndex: 10, display: 'flex', flexDirection: 'column', alignItems: 'center',
+      }}>
+        <div style={{ width: '2px', height: '20px', background: '#1A3E7A' }} />
+        <div style={{
+          width: '60px', height: '80px',
+          background: 'linear-gradient(135deg, #fff, #E8EEF4)',
+          borderRadius: '7px', border: '3px solid #0047AB',
+          boxShadow: '0 4px 16px rgba(0,0,0,.5), 0 0 12px rgba(0,71,171,.25)',
+          animation: 'swing 3s ease-in-out infinite',
+          transformOrigin: 'top center',
+          display: 'flex', flexDirection: 'column',
+          alignItems: 'center', justifyContent: 'center', gap: '4px',
+        }}>
+          <div style={{ fontSize: '20px' }}>🌐</div>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '6px', color: '#0C2A62', letterSpacing: '1px' }}>GUIBOUR</div>
+          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '5px', color: '#607888' }}>GS-4891</div>
+        </div>
       </div>
     </div>
   );
