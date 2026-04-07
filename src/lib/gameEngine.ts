@@ -52,10 +52,6 @@ let particles: Particle[] = [];
 let walkLeftPlaying = false;
 let walkRightPlaying = false;
 
-// ── Offscreen canvas for green-screen removal (chroma key) ──
-let chromaCanvas: HTMLCanvasElement | null = null;
-let chromaCtx: CanvasRenderingContext2D | null = null;
-
 // ===== ASSETS (set from component) =====
 let assets: GameAssets | null = null;
 
@@ -798,47 +794,6 @@ function drawBonusIcon(ctx: CanvasRenderingContext2D, x: number, y: number, type
   ctx.restore();
 }
 
-/**
- * Dessine une frame vidéo avec suppression du fond vert (chroma key).
- * Utilise un offscreen canvas à la taille rendue (dw×dh) pour ne traiter
- * que ~7 000 pixels/frame au lieu de 400 000.
- */
-function drawVideoChromaKey(
-  ctx: CanvasRenderingContext2D,
-  video: HTMLVideoElement,
-  dx: number, dy: number, dw: number, dh: number,
-) {
-  const idw = Math.max(1, Math.round(dw));
-  const idh = Math.max(1, Math.round(dh));
-
-  if (!chromaCanvas) {
-    chromaCanvas = document.createElement('canvas');
-  }
-  if (chromaCanvas.width !== idw || chromaCanvas.height !== idh) {
-    chromaCanvas.width = idw;
-    chromaCanvas.height = idh;
-    chromaCtx = chromaCanvas.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
-  }
-  if (!chromaCtx) return;
-
-  const vw = video.videoWidth || 600;
-  const vh = video.videoHeight || 668;
-  chromaCtx.clearRect(0, 0, idw, idh);
-  chromaCtx.drawImage(video, 0, 0, vw, vh, 0, 0, idw, idh);
-
-  const imgData = chromaCtx.getImageData(0, 0, idw, idh);
-  const d = imgData.data;
-  for (let i = 0; i < d.length; i += 4) {
-    const r = d[i], g = d[i + 1], b = d[i + 2];
-    // Supprime le fond vert chroma key (~52,194,27)
-    if (g > 80 && g > r * 1.4 && g > b * 1.4) {
-      d[i + 3] = 0;
-    }
-  }
-  chromaCtx.putImageData(imgData, 0, 0);
-  ctx.drawImage(chromaCanvas, Math.round(dx), Math.round(dy));
-}
-
 function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   const { player } = state;
 
@@ -877,11 +832,11 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   ctx.save();
 
   if (useWalk && activeWalkVideo && activeWalkVideo.readyState >= 2) {
-    // Plein frame vidéo (600×668) — le fond vert est supprimé par chroma key
-    const vw = activeWalkVideo.videoWidth || 600;
-    const vh = activeWalkVideo.videoHeight || 668;
+    // Vidéo VP9 avec canal alpha — fond transparent, dessin direct
+    const vw = activeWalkVideo.videoWidth || 504;
+    const vh = activeWalkVideo.videoHeight || 607;
     const drawW = Math.round(player.height * vw / vh);
-    drawVideoChromaKey(ctx, activeWalkVideo, player.x - drawW / 2, player.y - player.height, drawW, player.height);
+    ctx.drawImage(activeWalkVideo, player.x - drawW / 2, player.y - player.height, drawW, player.height);
   } else if (idleImg) {
     // Idle : respecter le ratio naturel de l'image (has alpha transparency)
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
