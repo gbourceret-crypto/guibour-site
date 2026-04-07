@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useRef, useEffect, useCallback } from 'react';
+import { usePathname } from 'next/navigation';
 
 interface Message {
   role: 'user' | 'assistant';
@@ -17,6 +18,7 @@ const QUICK_TOPICS = [
 ];
 
 export default function GuibourChat() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
   const [showBubble, setShowBubble] = useState(false);
   const [messages, setMessages] = useState<Message[]>([
@@ -78,6 +80,9 @@ export default function GuibourChat() {
     timer = setTimeout(() => tick(true), 3000);
     return () => clearTimeout(timer);
   }, [open]);
+
+  // Ne pas afficher sur la page d'accueil/jeu (/)
+  if (pathname === '/') return null;
 
   return (
     <>

@@ -462,17 +462,22 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
             <div style={{ position: 'absolute', top: '12px', right: '12px', zIndex: 20 }}>
               <button
                 onClick={handleToggleMute}
-                className="pointer-events-auto cursor-pointer"
+                className="pointer-events-auto cursor-pointer thumb-btn"
                 style={{
-                  background: 'rgba(12,42,98,.85)',
-                  border: `1px solid ${isMuted ? 'rgba(255,68,68,.4)' : 'rgba(0,200,190,.35)'}`,
+                  width: '56px', height: '44px',
+                  background: isMuted ? 'rgba(180,0,0,.22)' : 'rgba(0,200,190,.18)',
+                  border: `2px solid ${isMuted ? 'rgba(255,68,68,.75)' : 'rgba(0,200,190,.75)'}`,
                   borderRadius: '10px',
-                  padding: '8px 14px',
-                  fontSize: '18px',
+                  fontSize: '20px',
                   color: isMuted ? '#FF4444' : '#00C8BE',
                   cursor: 'pointer',
-                  boxShadow: '0 2px 10px rgba(0,0,0,.5)',
+                  boxShadow: isMuted
+                    ? '0 4px 14px rgba(0,0,0,.5), 0 0 10px rgba(255,68,68,.25)'
+                    : '0 4px 14px rgba(0,0,0,.5), 0 0 10px rgba(0,200,190,.25)',
                   lineHeight: 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
                 }}
               >
                 {isMuted ? '🔇' : '🔊'}
@@ -547,7 +552,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
                   <div style={{ display: 'flex', gap: '6px' }}>
                     <button
                       className="thumb-btn"
-                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.10)', border: '2px solid rgba(0,200,190,.35)', borderRadius: '10px', color: '#00C8BE', fontSize: '30px', boxShadow: '0 4px 12px rgba(0,0,0,.4)' }}
+                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.22)', border: '2px solid rgba(0,200,190,.8)', borderRadius: '10px', color: '#00FFEE', fontSize: '32px', boxShadow: '0 4px 14px rgba(0,0,0,.5), 0 0 12px rgba(0,200,190,.35)', textShadow: '0 0 10px rgba(0,255,238,.6)' }}
                       onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
                       onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
                       onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
@@ -557,7 +562,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
                     >◀</button>
                     <button
                       className="thumb-btn"
-                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.10)', border: '2px solid rgba(0,200,190,.35)', borderRadius: '10px', color: '#00C8BE', fontSize: '30px', boxShadow: '0 4px 12px rgba(0,0,0,.4)' }}
+                      style={{ width: '76px', height: '64px', background: 'rgba(0,200,190,.22)', border: '2px solid rgba(0,200,190,.8)', borderRadius: '10px', color: '#00FFEE', fontSize: '32px', boxShadow: '0 4px 14px rgba(0,0,0,.5), 0 0 12px rgba(0,200,190,.35)', textShadow: '0 0 10px rgba(0,255,238,.6)' }}
                       onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
                       onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
                       onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
@@ -571,7 +576,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
                 /* ── Étages 1+ — boutons discrets sans labels ── */
                 <>
                   <div style={{ position: 'absolute', bottom: '12px', left: '10px', display: 'flex', gap: '6px', zIndex: 15 }}>
-                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.08)', border: '1px solid rgba(0,200,190,.25)', borderRadius: '10px', color: '#00C8BE', fontSize: '26px' }}
+                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.20)', border: '2px solid rgba(0,200,190,.70)', borderRadius: '10px', color: '#00FFEE', fontSize: '28px', boxShadow: '0 4px 12px rgba(0,0,0,.5), 0 0 10px rgba(0,200,190,.3)', textShadow: '0 0 8px rgba(0,255,238,.5)' }}
                       onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = true; }}
                       onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
                       onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchLeft = false; }}
@@ -579,7 +584,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
                       onMouseUp={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
                       onMouseLeave={() => { if(stateRef.current) stateRef.current.touchLeft = false; }}
                     >◀</button>
-                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.08)', border: '1px solid rgba(0,200,190,.25)', borderRadius: '10px', color: '#00C8BE', fontSize: '26px' }}
+                    <button className="thumb-btn" style={{ width: '64px', height: '64px', background: 'rgba(0,200,190,.20)', border: '2px solid rgba(0,200,190,.70)', borderRadius: '10px', color: '#00FFEE', fontSize: '28px', boxShadow: '0 4px 12px rgba(0,0,0,.5), 0 0 10px rgba(0,200,190,.3)', textShadow: '0 0 8px rgba(0,255,238,.5)' }}
                       onTouchStart={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = true; }}
                       onTouchEnd={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}
                       onTouchCancel={e => { e.preventDefault(); if(stateRef.current) stateRef.current.touchRight = false; }}

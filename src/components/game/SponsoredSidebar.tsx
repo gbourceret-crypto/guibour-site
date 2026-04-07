@@ -114,7 +114,7 @@ function SponsoredSidebar({ currentLevel, totalLevels, assets }: Props) {
             position: 'absolute',
             inset: 0,
             width: '100%',
-            height: '60%',
+            height: '100%',
             objectFit: 'cover',
             opacity: 0.12,
             pointerEvents: 'none',

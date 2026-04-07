@@ -23,8 +23,8 @@ const SIZE_CONFIG: Record<BubbleSize, {
   5: { radius: 48, bounceVy: -9.0,  speedX: 1.2, divisionVy: -7.0, score: 150 },
   4: { radius: 36, bounceVy: -8.0,  speedX: 1.4, divisionVy: -6.5, score: 250 },
   3: { radius: 26, bounceVy: -7.0,  speedX: 1.6, divisionVy: -6.0, score: 400 },
-  2: { radius: 16, bounceVy: -6.0,  speedX: 1.8, divisionVy: -5.5, score: 600 },
-  1: { radius: 10, bounceVy: -5.2,  speedX: 2.0, divisionVy: 0,    score: 1000 },
+  2: { radius: 16, bounceVy: -8.0,  speedX: 1.8, divisionVy: -5.5, score: 600 },
+  1: { radius: 10, bounceVy: -7.5,  speedX: 2.0, divisionVy: 0,    score: 1000 },
 };
 
 const SPLIT_MAP: Record<BubbleSize, BubbleSize | null> = {
@@ -49,7 +49,8 @@ interface Particle {
 }
 
 let particles: Particle[] = [];
-let walkVideoPlaying = false;
+let walkLeftPlaying = false;
+let walkRightPlaying = false;
 
 // ===== ASSETS (set from component) =====
 let assets: GameAssets | null = null;
@@ -61,7 +62,8 @@ export function setGameAssets(a: GameAssets) {
 // ===== INIT =====
 export function createInitialState(cw: number, ch: number): GameState {
   particles = [];
-  walkVideoPlaying = false;
+  walkLeftPlaying = false;
+  walkRightPlaying = false;
   return {
     status: 'idle',
     level: 0,
@@ -329,7 +331,7 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight - 15; // center bonus 15px above floor so fully visible
+  const floorY = state.canvasHeight - 22; // center bonus 22px above floor so icon+label fully visible
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
@@ -585,6 +587,11 @@ export function renderGame(ctx: CanvasRenderingContext2D, state: GameState) {
     }
 
 
+    // 10. Red alarm flash when time is running low
+    if (state.status === 'playing' && state.timer.remaining <= 10) {
+      drawLowTimeAlarm(ctx, w, h, state);
+    }
+
     // 11. BURN OUT flash
     if (state.status === 'burnout') {
       drawBurnout(ctx, w, h, state);
@@ -793,43 +800,48 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
   // Blinking when invincible
   if (player.invincible > 0 && state.frameCount % 8 < 4) return;
 
-  const walkVideo = assets?.player.walkVideo;
+  const walkLeft = assets?.player.walkLeft;
+  const walkRight = assets?.player.walkRight;
   const idleImg = assets?.player.idle;
   const isMoving = player.direction === 'left' || player.direction === 'right';
-  // Show idle/front-facing when shooting (has active projectile)
-  const isShooting = state.projectiles.some(p => p.active);
-  // Use walk animation only when moving AND not shooting
   const useWalk = isMoving;
-  // Manage video play/pause
-  if (walkVideo && walkVideo.readyState >= 2) {
-    if (useWalk && !walkVideoPlaying) {
-      walkVideo.play().catch(() => {});
-      walkVideoPlaying = true;
-    } else if (!useWalk && walkVideoPlaying) {
-      walkVideo.pause();
-      walkVideoPlaying = false;
+
+  // Manage video play/pause for each video independently
+  const activeWalkVideo = player.direction === 'left' ? walkLeft : walkRight;
+  const inactiveWalkVideo = player.direction === 'left' ? walkRight : walkLeft;
+
+  if (walkLeft && walkLeft.readyState >= 2) {
+    if (player.direction === 'left' && useWalk && !walkLeftPlaying) {
+      walkLeft.play().catch(() => {});
+      walkLeftPlaying = true;
+    } else if ((player.direction !== 'left' || !useWalk) && walkLeftPlaying) {
+      walkLeft.pause();
+      walkLeftPlaying = false;
+    }
+  }
+  if (walkRight && walkRight.readyState >= 2) {
+    if (player.direction === 'right' && useWalk && !walkRightPlaying) {
+      walkRight.play().catch(() => {});
+      walkRightPlaying = true;
+    } else if ((player.direction !== 'right' || !useWalk) && walkRightPlaying) {
+      walkRight.pause();
+      walkRightPlaying = false;
     }
   }
 
   ctx.save();
 
-  if (useWalk && walkVideo && walkVideo.readyState >= 2) {
-    // Draw video frame — video is natively facing left (1280×720), trimmed from 1.0s
-    // Character occupies x=356..935 (sw=579) of the full hflipped frame
+  if (useWalk && activeWalkVideo && activeWalkVideo.readyState >= 2) {
+    // Crop au personnage dans la vidéo — même région pour les deux vidéos
     const sx = 30, sy = 30, sw = 505, sh = 607;
+    // Conserver les proportions sw/sh
     const drawW = Math.round(player.height * sw / sh);
-    if (player.direction === 'left') {
-      // Flip horizontally for right movement
-      ctx.translate(player.x + drawW / 2, player.y - player.height);
-      ctx.scale(-1, 1);
-      ctx.drawImage(walkVideo, sx, sy, sw, sh, -drawW, 0, drawW, player.height);
-    } else {
-      // Left = native direction
-      ctx.drawImage(walkVideo, sx, sy, sw, sh, player.x - drawW / 2, player.y - player.height, drawW, player.height);
-    }
+    ctx.drawImage(activeWalkVideo, sx, sy, sw, sh, player.x - drawW / 2, player.y - player.height, drawW, player.height);
   } else if (idleImg) {
-    // Idle or shooting: draw face-forward static image
-    ctx.drawImage(idleImg, player.x - player.width / 2, player.y - player.height, player.width, player.height);
+    // Idle : respecter le ratio naturel de l'image pour ne pas déformer
+    const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
+    const idleDrawW = Math.round(player.height * idleAR);
+    ctx.drawImage(idleImg, player.x - idleDrawW / 2, player.y - player.height, idleDrawW, player.height);
   } else {
     // Fallback rectangle
     ctx.fillStyle = '#00C9C8';
@@ -858,6 +870,39 @@ function drawParticles(ctx: CanvasRenderingContext2D) {
     ctx.fillRect(p.x - p.size / 2, p.y - p.size / 2, p.size, p.size);
   }
   ctx.globalAlpha = 1;
+}
+
+function drawLowTimeAlarm(ctx: CanvasRenderingContext2D, w: number, h: number, state: GameState) {
+  // Clignotement rouge — fréquence accélère quand proche de 0
+  const remaining = state.timer.remaining;
+  // Plus le temps est court, plus le clignotement est rapide
+  const blinkFreq = remaining <= 5 ? 15 : 30; // en frames
+  const isOn = state.frameCount % blinkFreq < blinkFreq / 2;
+  if (!isOn) return;
+
+  // Intensité proportionnelle à l'urgence
+  const intensity = remaining <= 5 ? 0.30 : 0.15;
+  ctx.save();
+  ctx.fillStyle = `rgba(255,0,0,${intensity})`;
+  ctx.fillRect(0, 0, w, h);
+
+  // Bordure rouge clignotante
+  ctx.strokeStyle = `rgba(255,60,60,${remaining <= 5 ? 0.85 : 0.55})`;
+  ctx.lineWidth = remaining <= 5 ? 5 : 3;
+  ctx.strokeRect(2, 2, w - 4, h - 4);
+
+  // Label "⚠ TEMPS !" en bas au centre si <= 5s
+  if (remaining <= 5) {
+    ctx.font = 'bold 18px "Orbitron", sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    ctx.fillStyle = '#FF4444';
+    ctx.shadowColor = '#FF0000';
+    ctx.shadowBlur = 12;
+    ctx.fillText('⚠ TEMPS !', w / 2, h - 6);
+    ctx.shadowBlur = 0;
+  }
+  ctx.restore();
 }
 
 function drawBurnout(ctx: CanvasRenderingContext2D, w: number, h: number, state: GameState) {

@@ -11,7 +11,8 @@ export interface GameAssets {
   };
   player: {
     idle: HTMLImageElement;
-    walkVideo: HTMLVideoElement; // motion design walk (left direction)
+    walkLeft: HTMLVideoElement;  // marche vers la gauche (VP9 alpha)
+    walkRight: HTMLVideoElement; // marche vers la droite (VP9 alpha)
   };
 }
 
@@ -54,9 +55,9 @@ export async function loadAllAssets(
   onProgress?: (loaded: number, total: number) => void
 ): Promise<GameAssets> {
   let loaded = 0;
-  // 7 bubbles + 9 bonuses + 1 player idle + 1 player video + 1 tower = 19
+  // 7 bubbles + 9 bonuses + 1 player idle + 2 player videos + 1 tower = 20
   // Backgrounds: 25, Audio: 4
-  const total = 19 + 25 + 4;
+  const total = 20 + 25 + 4;
 
   const tick = () => {
     loaded++;
@@ -79,9 +80,11 @@ export async function loadAllAssets(
     loadImage(`/game/bonuses/${name}.png`).then(img => { bonusMap.set(name, img); tick(); })
   );
 
-  // Priority: player idle image + walk video (WebM VP9 with alpha channel)
+  // Priority: player idle image + walk videos (WebM VP9 with alpha channel)
   const playerIdlePromise = loadImage('/game/player/guibour-idle.png').then(img => { tick(); return img; });
-  const playerWalkPromise = loadVideo('/game/player/guibour-walk-right.webm?v=3').then(v => { tick(); return v; })
+  const playerWalkLeftPromise = loadVideo('/game/player/guibour-walk-left-v3.webm').then(v => { tick(); return v; })
+    .catch(() => { tick(); return document.createElement('video'); });
+  const playerWalkRightPromise = loadVideo('/game/player/guibour-walk-right.webm?v=3').then(v => { tick(); return v; })
     .catch(() => { tick(); return document.createElement('video'); });
 
   // Priority: tower
@@ -90,7 +93,8 @@ export async function loadAllAssets(
   // Wait for priority assets
   await Promise.all([...bubblePromises, ...bonusPromises]);
   const playerIdle = await playerIdlePromise;
-  const walkVideo = await playerWalkPromise;
+  const walkLeft = await playerWalkLeftPromise;
+  const walkRight = await playerWalkRightPromise;
   const tower = await towerPromise;
 
   // Audio
@@ -123,6 +127,6 @@ export async function loadAllAssets(
     bonuses: bonusMap,
     tower,
     audio: { gameplay, gameover, bonusArgent, bonusCgt },
-    player: { idle: playerIdle, walkVideo },
+    player: { idle: playerIdle, walkLeft, walkRight },
   };
 }
