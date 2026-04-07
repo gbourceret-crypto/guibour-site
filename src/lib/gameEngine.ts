@@ -851,7 +851,8 @@ function drawVideoMagentaKey(
   const imgData = chromaCtx.getImageData(0, 0, idw, idh);
   const d = imgData.data;
   for (let i = 0; i < d.length; i += 4) {
-    if (d[i] > 180 && d[i + 1] < 70 && d[i + 2] > 180) d[i + 3] = 0;
+    // Magenta key: R≈B >> G (catches pure #FF00FF and slightly compressed variants)
+    if (d[i] > 140 && d[i + 1] < 80 && d[i + 2] > 140 && Math.abs(d[i] - d[i + 2]) < 50) d[i + 3] = 0;
   }
   chromaCtx.putImageData(imgData, 0, 0);
   ctx.drawImage(chromaCanvas, Math.round(dx), Math.round(dy));
