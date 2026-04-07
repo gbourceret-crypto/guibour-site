@@ -17,6 +17,7 @@ const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
 import Link from 'next/link';
 import Countdown from '@/components/ui/Countdown';
 import GlobeO from '@/components/ui/GlobeO';
+import GuibourChat from '@/components/ui/GuibourChat';
 
 function WowSpan() {
   return (
@@ -276,5 +277,6 @@ export default function Home() {
         {theme.accentLabel}
       </div>
     </div>
+      <GuibourChat />
   );
 }
