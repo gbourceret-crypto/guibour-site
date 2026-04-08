@@ -261,10 +261,15 @@ export default function CharacterSelect({ onSelect, onBack }: CharacterSelectPro
 
           {/* Divider if existing identity */}
           {existingIdentity && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '16px' }}>
-              <div style={{ flex: 1, height: '1px', background: '#1A3E7A' }} />
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#2B5090', letterSpacing: '2px' }}>NOUVEAU PROFIL</span>
-              <div style={{ flex: 1, height: '1px', background: '#1A3E7A' }} />
+            <div style={{ marginBottom: '16px' }}>
+              <div style={{ textAlign: 'center', fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#5B9BD5', letterSpacing: '2px', marginBottom: '8px' }}>
+                C&apos;EST TOI ? NON ?
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(0,200,190,.3)' }} />
+                <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', color: '#A8D8FF', letterSpacing: '3px' }}>NOUVEAU PROFIL</span>
+                <div style={{ flex: 1, height: '1px', background: 'rgba(0,200,190,.3)' }} />
+              </div>
             </div>
           )}
 

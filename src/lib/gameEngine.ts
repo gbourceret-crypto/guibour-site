@@ -911,17 +911,30 @@ function drawVideoChromaKey(
   const d = imgData.data;
   for (let i = 0; i < d.length; i += 4) {
     const r = d[i], g = d[i + 1], b = d[i + 2];
-    // Green screen key: G is dominant, R and B are significantly lower
-    // Handles pure green (#3bc321) AND VP9-compressed variants
-    // Condition: g > 100, g > r * 1.3, g > b * 1.3
+
+    // === GREEN screen key (new V5 videos) ===
+    // G is dominant, R and B are significantly lower
     if (g > 100 && g > r * 1.3 && g > b * 1.3) {
-      d[i + 3] = 0; // fully transparent
+      d[i + 3] = 0;
     }
-    // Soft edge: partial transparency for near-green pixels (anti-aliasing)
+    // Soft edge green
     else if (g > 80 && g > r * 1.1 && g > b * 1.1) {
       const greenness = (g - Math.max(r, b)) / g;
       if (greenness > 0.15) {
         d[i + 3] = Math.round(255 * (1 - greenness * 2));
+      }
+    }
+
+    // === MAGENTA screen key (old V4 videos / cached) ===
+    // R≈B >> G — catches #FF00FF AND dark VP9-compressed variants
+    else if (r > 80 && b > 80 && g < r * 0.5 && g < b * 0.5 && Math.abs(r - b) < 60) {
+      d[i + 3] = 0;
+    }
+    // Soft edge magenta
+    else if (r > 60 && b > 60 && g < r * 0.65 && g < b * 0.65 && Math.abs(r - b) < 80) {
+      const magentaness = 1 - (g / ((r + b) / 2));
+      if (magentaness > 0.3) {
+        d[i + 3] = Math.round(255 * (1 - magentaness));
       }
     }
   }
