@@ -922,8 +922,8 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     spriteFrameCounter = 0;
   }
 
-  // Active sprite sheet = the one matching the current direction
-  const activeSprite = player.direction === 'left' ? walkLeft : walkRight;
+  // Active sprite sheet (swapped: "COURT VERS SA DROITE" video = right-arrow key = walkRight)
+  const activeSprite = player.direction === 'left' ? walkRight : walkLeft;
 
   ctx.save();
 
@@ -939,10 +939,13 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const drawW = Math.round(drawH * ar);
     drawSpriteFrame(ctx, activeSprite, frameIndex, player.x - drawW / 2, drawY, drawW, drawH);
   } else if (idleImg) {
-    // Idle: respect natural aspect ratio (already has alpha transparency)
+    // Idle: scale up slightly to match walk sprite visual size
+    const idleScale = 1.15;
+    const idleH = Math.round(drawH * idleScale);
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
-    const idleDrawW = Math.round(drawH * idleAR);
-    ctx.drawImage(idleImg, player.x - idleDrawW / 2, drawY, idleDrawW, drawH);
+    const idleW = Math.round(idleH * idleAR);
+    const idleY = player.y - idleH;
+    ctx.drawImage(idleImg, player.x - idleW / 2, idleY, idleW, idleH);
   } else {
     // Fallback rectangle
     ctx.fillStyle = '#00C9C8';
