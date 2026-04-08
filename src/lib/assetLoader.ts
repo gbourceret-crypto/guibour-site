@@ -100,10 +100,10 @@ export async function loadAllAssets(
   // Player: idle PNG + walk sprite sheets (pre-rendered with alpha, no chroma key needed)
   const playerIdlePromise = loadImage('/game/player/guibour-idle-v5.png').then(img => { tick(); return img; });
   // Sprite sheets: 65 frames each, 372x451 per frame, 8 columns, 12 fps
-  const walkRightPromise = loadSpriteSheet('/game/player/walk-right-sprite.png', 372, 451, 65, 8, 12)
+  const walkRightPromise = loadSpriteSheet('/game/player/walk-right-v2.png', 372, 451, 65, 8, 12)
     .then(s => { tick(); return s; })
     .catch(() => { tick(); return emptySpriteSheet(); });
-  const walkLeftPromise = loadSpriteSheet('/game/player/walk-left-sprite.png', 372, 451, 65, 8, 12)
+  const walkLeftPromise = loadSpriteSheet('/game/player/walk-left-v2.png', 372, 451, 65, 8, 12)
     .then(s => { tick(); return s; })
     .catch(() => { tick(); return emptySpriteSheet(); });
 
