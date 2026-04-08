@@ -909,33 +909,25 @@ function drawVideoChromaKey(
   chromaCtx.drawImage(video, 0, 0, video.videoWidth || 504, video.videoHeight || 607, 0, 0, idw, idh);
   const imgData = chromaCtx.getImageData(0, 0, idw, idh);
   const d = imgData.data;
+
+  // Target green-screen color: #3bc321 = RGB(59, 195, 33)
+  const keyR = 59, keyG = 195, keyB = 33;
+
   for (let i = 0; i < d.length; i += 4) {
     const r = d[i], g = d[i + 1], b = d[i + 2];
 
-    // === GREEN screen key (new V5 videos) ===
-    // G is dominant, R and B are significantly lower
-    if (g > 100 && g > r * 1.3 && g > b * 1.3) {
-      d[i + 3] = 0;
-    }
-    // Soft edge green
-    else if (g > 80 && g > r * 1.1 && g > b * 1.1) {
-      const greenness = (g - Math.max(r, b)) / g;
-      if (greenness > 0.15) {
-        d[i + 3] = Math.round(255 * (1 - greenness * 2));
-      }
-    }
+    // Color distance from the exact green-screen color
+    const dr = r - keyR, dg = g - keyG, db = b - keyB;
+    const dist = Math.sqrt(dr * dr + dg * dg + db * db);
 
-    // === MAGENTA screen key (old V4 videos / cached) ===
-    // R≈B >> G — catches #FF00FF AND dark VP9-compressed variants
-    else if (r > 80 && b > 80 && g < r * 0.5 && g < b * 0.5 && Math.abs(r - b) < 60) {
+    // Hard removal: pixels very close to the green screen color
+    if (dist < 80) {
       d[i + 3] = 0;
     }
-    // Soft edge magenta
-    else if (r > 60 && b > 60 && g < r * 0.65 && g < b * 0.65 && Math.abs(r - b) < 80) {
-      const magentaness = 1 - (g / ((r + b) / 2));
-      if (magentaness > 0.3) {
-        d[i + 3] = Math.round(255 * (1 - magentaness));
-      }
+    // Soft edge: gradual fade for compressed/blended border pixels
+    else if (dist < 130) {
+      const alpha = Math.round(255 * ((dist - 80) / 50));
+      d[i + 3] = Math.min(d[i + 3], alpha);
     }
   }
   chromaCtx.putImageData(imgData, 0, 0);
