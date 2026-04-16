@@ -30,7 +30,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
     }}>
 
       {/* Logo GUIBOUR SYSTEM — centré, imposant, respire */}
-      <div style={{ textAlign: 'center', position: 'relative', zIndex: 2 }}>
+      <h1 aria-label="GUIBOUR SYSTEM" style={{ textAlign: 'center', position: 'relative', zIndex: 2, margin: 0 }}>
         <div style={{
           fontSize: 'clamp(60px, 12vw, 110px)',
           lineHeight: 1,
@@ -65,7 +65,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         }}>
           S Y S T E M
         </div>
-      </div>
+      </h1>
 
       {/* Tagline — discret */}
       <div style={{

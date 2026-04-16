@@ -382,7 +382,7 @@ export default function ShoppingPage() {
               padding: '8px 18px', border: '1px solid rgba(0,255,235,.08)',
               background: 'rgba(0,255,235,.02)', letterSpacing: '2px',
             }}>
-              =ORDER_REF("{orderRef}") // STATUS: PROCESSING
+              {`=ORDER_REF("${orderRef}") // STATUS: PROCESSING`}
             </div>
             <button
               onClick={() => { setScreen('shop'); setCart([]); setShowCart(false); }}

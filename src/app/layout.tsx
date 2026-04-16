@@ -1,6 +1,14 @@
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import GuibourChat from '@/components/ui/GuibourChat';
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 1,
+  viewportFit: 'cover',
+  themeColor: '#00C8BE',
+};
 
 export const metadata: Metadata = {
   title: 'GUIBOUR SYSTEM — W.O.W 2026',
@@ -30,35 +38,20 @@ export const metadata: Metadata = {
   keywords: ['jeu', 'game', 'guibour', 'bureaucratie', 'WOW', 'work or window', 'excel', 'open space'],
   authors: [{ name: 'Guibour', url: 'https://guibour.fr' }],
   robots: 'index, follow',
-  themeColor: '#00C8BE',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="fr">
       <head>
-        {/* PWA manifest */}
-        <link rel="manifest" href="/manifest.json" />
-
-        {/* iOS PWA meta tags */}
-        <meta name="apple-mobile-web-app-capable" content="yes" />
-        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-        <meta name="apple-mobile-web-app-title" content="W.O.W" />
         <link rel="apple-touch-icon" href="/icon-192.png" />
         <link rel="icon" type="image/svg+xml" href="/favicon-globe.svg" />
-
-        {/* Viewport — full screen on mobile, no zoom */}
-        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover" />
-
-        {/* Theme color for browser chrome */}
-        <meta name="theme-color" content="#00C8BE" />
-        <meta name="msapplication-TileColor" content="#1A3F78" />
 
         {/* Preconnect pour Google Fonts */}
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Luckiest+Guy&family=Orbitron:wght@400;700;900&display=block"
+          href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Luckiest+Guy&family=Orbitron:wght@400;700;900&display=swap"
           rel="stylesheet"
         />
       </head>

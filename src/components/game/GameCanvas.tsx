@@ -47,6 +47,7 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
   const recorderRef = useRef<MediaRecorder | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const [replayUrl, setReplayUrl] = useState<string | null>(null);
+  const replayUrlRef = useRef<string | null>(null);
 
   // Load assets on mount
   useEffect(() => {
@@ -60,11 +61,12 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     });
   }, []);
 
-  // Stop all audio when leaving the game page
+  // Stop all audio and revoke replay URL when leaving the game page
   useEffect(() => {
     return () => {
       audioManager.stop('gameplay');
       audioManager.stop('gameover');
+      if (replayUrlRef.current) URL.revokeObjectURL(replayUrlRef.current);
     };
   }, []);
 
@@ -289,6 +291,11 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
   };
 
   const handleRestart = () => {
+    if (replayUrlRef.current) {
+      URL.revokeObjectURL(replayUrlRef.current);
+      replayUrlRef.current = null;
+      setReplayUrl(null);
+    }
     const canvas = canvasRef.current!;
     stateRef.current = createInitialState(canvas.width, canvas.height);
     youtubeShownRef.current = false;
@@ -347,7 +354,10 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     recorder.onstop = () => {
       const blob = new Blob(chunksRef.current, { type: 'video/webm' });
       if (blob.size > 0) {
-        setReplayUrl(URL.createObjectURL(blob));
+        if (replayUrlRef.current) URL.revokeObjectURL(replayUrlRef.current);
+        const url = URL.createObjectURL(blob);
+        replayUrlRef.current = url;
+        setReplayUrl(url);
       }
     };
     recorder.stop();

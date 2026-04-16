@@ -23,6 +23,7 @@ export function playClick(): void {
     const audio = getClickAudio();
     if (!audio) return;
     const clone = audio.cloneNode() as HTMLAudioElement;
+    clone.addEventListener('ended', () => clone.remove(), { once: true });
     clone.volume = 0.45;
     clone.playbackRate = 1.0; // no pitch shift — use original file exactly
     clone.play().catch(() => {});
@@ -78,6 +79,7 @@ export function playBonusSound(type: BonusType): void {
     const audio = getBonusAudio(src);
     if (!audio) return;
     const clone = audio.cloneNode() as HTMLAudioElement;
+    clone.addEventListener('ended', () => clone.remove(), { once: true });
     clone.volume = 0.55;
     clone.playbackRate = BONUS_PITCH_MAP[type] ?? 1.0;
     clone.play().catch(() => {});

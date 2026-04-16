@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { checkRateLimit } from '@/lib/rateLimit';
 
 export const runtime = 'nodejs';
 
@@ -33,6 +34,11 @@ async function redisSet(key: string, value: string): Promise<void> {
 
 // GET /api/photo?ids=EMP1,EMP2,EMP3
 export async function GET(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!checkRateLimit(ip, 10, 60000)) {
+    return NextResponse.json({ error: 'Trop de requêtes' }, { status: 429 });
+  }
+
   const ids = req.nextUrl.searchParams.get('ids');
   if (!ids) return NextResponse.json({}, { headers: { 'Cache-Control': 'no-store' } });
 
@@ -49,6 +55,11 @@ export async function GET(req: NextRequest) {
 
 // POST /api/photo  { employeeId, photo: base64DataUrl }
 export async function POST(req: NextRequest) {
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
+  if (!checkRateLimit(ip, 10, 60000)) {
+    return NextResponse.json({ error: 'Trop de requêtes' }, { status: 429 });
+  }
+
   try {
     const { employeeId, photo } = await req.json() as { employeeId?: string; photo?: string };
 

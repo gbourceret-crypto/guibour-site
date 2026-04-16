@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { escapeHtml } from '@/lib/sanitize';
 
 // ──────────────────────────────────────────────────────────────
 //  CONFIGURATION FOURNISSEUR (à remplir quand tu as les coordonnées)
@@ -47,9 +48,15 @@ function generateOrderId(): string {
 }
 
 function buildCustomerEmail(orderId: string, payload: OrderPayload): string {
+  const safeName = escapeHtml(payload.customer.name);
+  const safeAddress = escapeHtml(payload.customer.address);
+  const safePostalCode = escapeHtml(payload.customer.postalCode);
+  const safeCity = escapeHtml(payload.customer.city);
+  const safeCountry = escapeHtml(payload.customer.country);
+
   const linesHtml = payload.lines
     .map(l => `<tr>
-      <td style="padding:8px;border-bottom:1px solid #eee;">${l.name}</td>
+      <td style="padding:8px;border-bottom:1px solid #eee;">${escapeHtml(l.name)}</td>
       <td style="padding:8px;border-bottom:1px solid #eee;text-align:center;">${l.qty}</td>
       <td style="padding:8px;border-bottom:1px solid #eee;text-align:right;">${(l.unitPrice * l.qty).toFixed(2)} €</td>
     </tr>`)
@@ -66,7 +73,7 @@ function buildCustomerEmail(orderId: string, payload: OrderPayload): string {
       <p style="color:#00C8BE;font-size:10px;letter-spacing:3px;margin:4px 0 0;">CONFIRMATION DE COMMANDE</p>
     </div>
     <div style="padding:28px;">
-      <p style="color:#0D2B5E;font-size:13px;">Bonjour <strong>${payload.customer.name}</strong>,</p>
+      <p style="color:#0D2B5E;font-size:13px;">Bonjour <strong>${safeName}</strong>,</p>
       <p style="color:#607888;font-size:12px;">Votre commande a bien été reçue. Elle sera traitée et expédiée sous 3 à 5 jours ouvrés.</p>
 
       <div style="background:#EEF3F8;padding:12px 16px;border-left:3px solid #00C8BE;margin:20px 0;">
@@ -93,10 +100,10 @@ function buildCustomerEmail(orderId: string, payload: OrderPayload): string {
 
       <div style="margin-top:24px;padding:16px;background:#F7FAFD;border:1px solid #C8D8E8;">
         <p style="margin:0 0 4px;font-size:10px;color:#8FA5B8;letter-spacing:2px;">LIVRAISON À</p>
-        <p style="margin:0;font-size:13px;color:#1A2B40;">${payload.customer.name}<br>
-        ${payload.customer.address}<br>
-        ${payload.customer.postalCode} ${payload.customer.city}<br>
-        ${payload.customer.country}</p>
+        <p style="margin:0;font-size:13px;color:#1A2B40;">${safeName}<br>
+        ${safeAddress}<br>
+        ${safePostalCode} ${safeCity}<br>
+        ${safeCountry}</p>
       </div>
 
       <p style="margin-top:24px;font-size:11px;color:#8FA5B8;">
@@ -111,7 +118,7 @@ function buildCustomerEmail(orderId: string, payload: OrderPayload): string {
 
 function buildSupplierEmail(orderId: string, payload: OrderPayload): string {
   const linesTxt = payload.lines
-    .map(l => `  - ${l.ref} | ${l.name} | QTÉ: ${l.qty} | PU: ${l.unitPrice}€`)
+    .map(l => `  - ${escapeHtml(l.ref)} | ${escapeHtml(l.name)} | QTÉ: ${l.qty} | PU: ${l.unitPrice}€`)
     .join('\n');
 
   return `NOUVELLE COMMANDE GUIBOUR SYSTEM
@@ -125,13 +132,13 @@ ${linesTxt}
 TOTAL : ${payload.total.toFixed(2)} €
 
 LIVRAISON À :
-  Nom     : ${payload.customer.name}
-  Email   : ${payload.customer.email}
-  Tél     : ${payload.customer.phone}
-  Adresse : ${payload.customer.address}
-  CP/Ville: ${payload.customer.postalCode} ${payload.customer.city}
-  Pays    : ${payload.customer.country}
-${payload.notes ? `\nNOTES : ${payload.notes}` : ''}
+  Nom     : ${escapeHtml(payload.customer.name)}
+  Email   : ${escapeHtml(payload.customer.email)}
+  Tél     : ${escapeHtml(payload.customer.phone)}
+  Adresse : ${escapeHtml(payload.customer.address)}
+  CP/Ville: ${escapeHtml(payload.customer.postalCode)} ${escapeHtml(payload.customer.city)}
+  Pays    : ${escapeHtml(payload.customer.country)}
+${payload.notes ? `\nNOTES : ${escapeHtml(payload.notes)}` : ''}
 
 ========================================
 Merci de procéder à l'expédition sous 48h ouvrées.
