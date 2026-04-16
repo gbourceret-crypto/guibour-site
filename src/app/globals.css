@@ -374,6 +374,39 @@ html, body {
   transform: scale(0.94);
 }
 
+/* ===== EASTER EGG: DEMISSION ===== */
+@keyframes easterShake {
+  0%   { transform: translate(0, 0) rotate(0); }
+  20%  { transform: translate(-8px, 4px) rotate(-1.5deg); }
+  40%  { transform: translate(6px, -3px) rotate(1deg); }
+  60%  { transform: translate(-4px, 6px) rotate(-0.5deg); }
+  80%  { transform: translate(7px, -2px) rotate(1.5deg); }
+  100% { transform: translate(0, 0) rotate(0); }
+}
+@keyframes easterFlash {
+  0%   { opacity: 1; }
+  100% { opacity: 0; }
+}
+
+/* ===== EASTER EGG: DISCO MODE ===== */
+@keyframes discoRainbow {
+  0%   { color: #FF0055; text-shadow: 0 0 20px #FF0055; }
+  16%  { color: #FF8800; text-shadow: 0 0 20px #FF8800; }
+  33%  { color: #FFEE00; text-shadow: 0 0 20px #FFEE00; }
+  50%  { color: #00FF88; text-shadow: 0 0 20px #00FF88; }
+  66%  { color: #0088FF; text-shadow: 0 0 20px #0088FF; }
+  83%  { color: #AA00FF; text-shadow: 0 0 20px #AA00FF; }
+  100% { color: #FF0055; text-shadow: 0 0 20px #FF0055; }
+}
+@keyframes discoPulse {
+  0%,100% { opacity: 0.15; }
+  50%     { opacity: 0.4; }
+}
+@keyframes discoSpin {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
 /* ===== ACCESSIBILITY — Reduced motion ===== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {

@@ -7,6 +7,18 @@ interface Message {
   content: string;
 }
 
+interface LiveFeedEvent {
+  pseudo: string;
+  event: string;
+  level: number;
+  timestamp: number;
+}
+
+interface LiveBubble extends LiveFeedEvent {
+  id: string;
+  visible: boolean;
+}
+
 const WELCOME = "GUIBOT EN LIGNE. Comment puis-je orienter votre demande ?";
 
 const QUICK_TOPICS = [
@@ -37,6 +49,66 @@ export default function GuibourChat() {
   const [loading, setLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // ── Live Feed ──────────────────────────────────────────────────────────
+  const [liveBubbles, setLiveBubbles] = useState<LiveBubble[]>([]);
+  const chatActiveRef = useRef(false); // true when user is chatting
+
+  // Track chat activity: pause live feed when user interacts
+  useEffect(() => {
+    chatActiveRef.current = open && (messages.length > 1 || loading);
+  }, [open, messages, loading]);
+
+  // SSE connection for live feed
+  useEffect(() => {
+    let eventSource: EventSource | null = null;
+    let mounted = true;
+
+    try {
+      eventSource = new EventSource('/api/live-feed');
+      eventSource.onmessage = (e) => {
+        if (!mounted) return;
+        try {
+          const events: LiveFeedEvent[] = JSON.parse(e.data);
+          if (events.length === 0) return;
+          // Don't show if user is chatting
+          if (chatActiveRef.current) return;
+
+          // Add new bubbles (max 3 visible)
+          const newBubbles: LiveBubble[] = events.slice(-3).map((ev, i) => ({
+            ...ev,
+            id: `${ev.timestamp}-${i}`,
+            visible: true,
+          }));
+
+          setLiveBubbles(prev => {
+            const merged = [...prev.filter(b => b.visible), ...newBubbles].slice(-3);
+            return merged;
+          });
+
+          // Auto-remove after 4 seconds
+          newBubbles.forEach(b => {
+            setTimeout(() => {
+              if (!mounted) return;
+              setLiveBubbles(prev =>
+                prev.map(pb => pb.id === b.id ? { ...pb, visible: false } : pb)
+              );
+              // Clean up after fade
+              setTimeout(() => {
+                if (!mounted) return;
+                setLiveBubbles(prev => prev.filter(pb => pb.id !== b.id));
+              }, 500);
+            }, 4000);
+          });
+        } catch { /* ignore parse errors */ }
+      };
+    } catch { /* SSE not available */ }
+
+    return () => {
+      mounted = false;
+      eventSource?.close();
+    };
+  }, []);
 
   useEffect(() => {
     if (open) {
@@ -137,6 +209,46 @@ export default function GuibourChat() {
             borderRight: '6px solid transparent',
             borderTop: '9px solid #0E2660',
           }} />
+        </div>
+      )}
+
+      {/* Live feed bubbles — events from other players */}
+      {!open && liveBubbles.length > 0 && (
+        <div style={{
+          position: 'fixed',
+          bottom: '88px',
+          right: '24px',
+          zIndex: 9997,
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '6px',
+          alignItems: 'flex-end',
+          pointerEvents: 'none',
+        }}>
+          {liveBubbles.map((b) => (
+            <div key={b.id} style={{
+              background: '#0A1E40',
+              color: '#A8D8FF',
+              padding: '8px 12px',
+              borderRadius: '10px',
+              boxShadow: '0 2px 12px rgba(0,0,0,0.4), 0 0 10px rgba(0,120,255,0.12)',
+              fontSize: '10px',
+              fontFamily: "'Orbitron', sans-serif",
+              fontWeight: 600,
+              letterSpacing: '0.5px',
+              maxWidth: '240px',
+              lineHeight: '1.4',
+              border: '1px solid rgba(0,150,255,0.25)',
+              animation: b.visible ? 'liveFeedPop 0.35s ease-out' : 'liveFeedFade 0.5s ease-out forwards',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}>
+              <span style={{ marginRight: '4px' }}>🏢</span>
+              <span style={{ color: '#00C8BE', fontWeight: 700 }}>{b.pseudo}</span>
+              {' '}{b.event}
+            </div>
+          ))}
         </div>
       )}
 
@@ -454,6 +566,14 @@ export default function GuibourChat() {
         @keyframes bubblePop {
           from { opacity: 0; transform: scale(0.8) translateY(8px); }
           to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes liveFeedPop {
+          from { opacity: 0; transform: scale(0.7) translateY(10px); }
+          to   { opacity: 1; transform: scale(1) translateY(0); }
+        }
+        @keyframes liveFeedFade {
+          from { opacity: 1; transform: translateY(0); }
+          to   { opacity: 0; transform: translateY(-8px); }
         }
       `}</style>
     </>

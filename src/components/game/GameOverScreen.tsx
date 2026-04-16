@@ -4,13 +4,15 @@ import React from 'react';
 
 import { GameState } from '@/lib/gameTypes';
 
-import { addScore, formatDuration, formatSalary, getShareText } from '@/lib/leaderboard';
+import { addScore, formatSalary } from '@/lib/leaderboard';
 
 import { useEffect, useState, useRef } from 'react';
 
 import { PlayerIdentity } from '@/components/ui/CharacterSelect';
 
 import { playClick } from '@/lib/sounds';
+
+import { launchConfetti } from '@/lib/confetti';
 
 /** Real chroma-key: draws video frame-by-frame on a canvas, replacing green pixels with transparency */
 function ChromaKeyVideo({ src, width }: { src: string; width: number }) {
@@ -103,19 +105,6 @@ function updateProfile(patch: Partial<PlayerProfile>): PlayerProfile {
   return p;
 }
 
-/** Determine the single CTA to show based on player profile */
-type CTAType = 'email' | 'whatsapp' | 'instagram' | 'diploma' | 'image';
-
-function pickCTA(profile: PlayerProfile): CTAType {
-  // Priority: collect data first, then engagement
-  if (!profile.email) return 'email';
-  if (!profile.waShared) return 'whatsapp';
-  if (!profile.igShared) return 'instagram';
-  if (!profile.diplomaDownloaded) return 'diploma';
-  // All done — cycle through share options
-  const cycle: CTAType[] = ['whatsapp', 'instagram', 'image'];
-  return cycle[profile.defeatCount % cycle.length];
-}
 
 // ── Instagram share image via Canvas ────────────────────────────────────────────────────
 
@@ -275,99 +264,104 @@ return canvas.toDataURL('image/png');
 
 }
 
-/** Single CTA component — renders one action based on type */
-function SmartCTA({ type, onEmail, onWhatsApp, onInstagram, onDiploma, onImage }: {
-  type: CTAType;
-  onEmail: (input: HTMLInputElement | null) => void;
-  onWhatsApp: () => void;
-  onInstagram: () => void;
-  onDiploma: () => void;
-  onImage: () => void;
-}) {
+/** Email CTA component */
+function EmailCTA({ onEmail }: { onEmail: (input: HTMLInputElement | null) => void }) {
   const emailRef = useRef<HTMLInputElement>(null);
+  return (
+    <div style={{ padding: '16px', borderRadius: '4px', animation: 'fadeIn 0.4s ease-out', background: 'rgba(26,16,0,.6)', border: '1px solid #5A4400' }}>
+      <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '16px', color: '#FFE033', letterSpacing: '1px', marginBottom: '6px' }}>
+        GAGNE +1 RTT MAINTENANT
+      </div>
+      <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#C8A040', letterSpacing: '1px', marginBottom: '12px', lineHeight: 1.6 }}>
+        Laisse ton email et debloque un jour de RTT bonus sur cette partie !
+      </div>
+      <div style={{ display: 'flex', gap: '6px' }}>
+        <input ref={emailRef} type="email" placeholder="ton@email.com" style={{
+          flex: 1, padding: '12px 14px', fontFamily: "'Orbitron', sans-serif", fontSize: '12px',
+          background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none', borderRadius: '4px',
+        }} />
+        <button onClick={() => onEmail(emailRef.current)} style={{
+          padding: '12px 20px', background: '#FFE033', color: '#0A1520', border: 'none', cursor: 'pointer',
+          fontFamily: "'Lilita One', cursive", fontSize: '16px', fontWeight: 700, borderRadius: '4px',
+        }}>OK</button>
+      </div>
+    </div>
+  );
+}
 
-  const boxStyle: React.CSSProperties = {
-    padding: '16px', borderRadius: '4px',
-    animation: 'fadeIn 0.4s ease-out',
+/** Share buttons grid */
+function ShareButtons({ pseudo, level, score, shareImageUrl, onDiploma }: {
+  pseudo: string; level: number; score: number;
+  shareImageUrl: string | null; onDiploma: () => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  const siteUrl = 'https://guibour.fr';
+  const scoreCardUrl = `${siteUrl}/api/score-card?pseudo=${encodeURIComponent(pseudo)}&score=${score}&level=${level}`;
+  const shareText = `J'ai atteint l'etage ${level} avec ${score.toLocaleString('fr-FR')} points sur GUIBOUR SYSTEM W.O.W ! 🏢 Bats mon score → guibour.fr`;
+
+  const btnBase: React.CSSProperties = {
+    width: '100%', padding: '10px 12px', borderRadius: '4px', cursor: 'pointer',
+    fontFamily: "'Orbitron', sans-serif", fontSize: '10px', letterSpacing: '2px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '8px',
+    transition: 'all .2s', border: 'none',
   };
 
-  if (type === 'email') {
-    return (
-      <div style={{ ...boxStyle, background: 'rgba(26,16,0,.6)', border: '1px solid #5A4400' }}>
-        <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '16px', color: '#FFE033', letterSpacing: '1px', marginBottom: '6px' }}>
-          GAGNE +1 RTT MAINTENANT
-        </div>
-        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#C8A040', letterSpacing: '1px', marginBottom: '12px', lineHeight: 1.6 }}>
-          Laisse ton email et debloque un jour de RTT bonus sur cette partie !
-        </div>
-        <div style={{ display: 'flex', gap: '6px' }}>
-          <input ref={emailRef} type="email" placeholder="ton@email.com" style={{
-            flex: 1, padding: '12px 14px', fontFamily: "'Orbitron', sans-serif", fontSize: '12px',
-            background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none', borderRadius: '4px',
-          }} />
-          <button onClick={() => onEmail(emailRef.current)} style={{
-            padding: '12px 20px', background: '#FFE033', color: '#0A1520', border: 'none', cursor: 'pointer',
-            fontFamily: "'Lilita One', cursive", fontSize: '16px', fontWeight: 700, borderRadius: '4px',
-          }}>OK</button>
-        </div>
-      </div>
-    );
-  }
+  const handleTwitter = () => {
+    playClick();
+    const tweetUrl = `https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}&url=${encodeURIComponent(scoreCardUrl)}`;
+    window.open(tweetUrl, '_blank');
+  };
 
-  if (type === 'whatsapp') {
-    return (
-      <button onClick={onWhatsApp} style={{
-        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
-        background: '#25D366', border: '2px solid #1DAA53', color: '#fff',
-        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
-      }}>
-        INVITE UN AMI SUR WHATSAPP
-        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', opacity: 0.8, letterSpacing: '1px' }}>
-          Partage ton score et defie tes potes
-        </div>
+  const handleWhatsApp = () => {
+    playClick();
+    const waText = `${shareText}\n${scoreCardUrl}`;
+    window.open(`https://wa.me/?text=${encodeURIComponent(waText)}`, '_blank');
+  };
+
+  const handleCopyLink = async () => {
+    playClick();
+    try {
+      await navigator.clipboard.writeText(scoreCardUrl);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    } catch { /* fallback */ }
+  };
+
+  const handleDownload = () => {
+    playClick();
+    if (!shareImageUrl) return;
+    const link = document.createElement('a');
+    link.href = shareImageUrl;
+    link.download = `guibour-wow-${pseudo.toLowerCase()}-lvl${level}.png`;
+    link.click();
+  };
+
+  return (
+    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '6px', animation: 'fadeIn 0.4s ease-out' }}>
+      {/* Twitter/X */}
+      <button onClick={handleTwitter} style={{ ...btnBase, background: '#000', color: '#fff', border: '1px solid #333' }}>
+        PARTAGER SUR X
       </button>
-    );
-  }
-
-  if (type === 'instagram') {
-    return (
-      <button onClick={onInstagram} style={{
-        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
-        background: 'linear-gradient(135deg,#C13584,#E1306C)', border: 'none', color: '#fff',
-        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
-      }}>
-        PARTAGE SUR INSTAGRAM
-        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', opacity: 0.8, letterSpacing: '1px' }}>
-          Telecharge ton image de score et poste-la
-        </div>
+      {/* WhatsApp */}
+      <button onClick={handleWhatsApp} style={{ ...btnBase, background: '#25D366', color: '#fff' }}>
+        WHATSAPP
       </button>
-    );
-  }
-
-  if (type === 'diploma') {
-    return (
+      {/* Copy link */}
+      <button onClick={handleCopyLink} style={{ ...btnBase, background: copied ? '#00C8BE' : 'rgba(0,71,171,0.3)', color: copied ? '#0A1520' : '#A8D8FF', border: '1px solid #1A3E7A' }}>
+        {copied ? 'LIEN COPIE !' : 'COPIER LE LIEN'}
+      </button>
+      {/* Download image */}
+      <button onClick={handleDownload} style={{ ...btnBase, background: 'rgba(0,71,171,0.3)', color: '#A8D8FF', border: '1px solid #1A3E7A' }}>
+        TELECHARGER IMAGE
+      </button>
+      {/* Diploma — full width */}
       <button onClick={onDiploma} style={{
-        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
-        background: 'rgba(58,42,0,0.4)', border: '2px solid #5A4400', color: '#FFE033',
-        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
+        ...btnBase, gridColumn: '1 / -1',
+        background: 'rgba(58,42,0,0.4)', color: '#FFE033', border: '1px solid #5A4400',
       }}>
         TELECHARGE TON DIPLOME
-        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', color: '#C8A040', letterSpacing: '1px' }}>
-          Certificat officiel de fin de carriere
-        </div>
       </button>
-    );
-  }
-
-  // image
-  return (
-    <button onClick={onImage} style={{
-      ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
-      background: 'rgba(0,71,171,0.2)', border: '1px solid #1A3E7A', color: '#A8D8FF',
-      fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
-    }}>
-      TELECHARGE TON SCORE EN IMAGE
-    </button>
+    </div>
   );
 }
 
@@ -382,13 +376,10 @@ const [saved, setSaved] = useState(false);
 const [showContent, setShowContent] = useState(false);
 const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
 const canvasGenerated = useRef(false);
+const confettiCanvasRef = useRef<HTMLCanvasElement>(null);
+const confettiFired = useRef(false);
 const [profile, setProfile] = useState<PlayerProfile>({ defeatCount: 0 });
 const [ctaDone, setCtaDone] = useState(false);
-const currentCTA = pickCTA(profile);
-
-const durationMs = state.endTime && state.startTime ? state.endTime - state.startTime : 0;
-
-const durationText = formatDuration(durationMs);
 
 const pseudo = playerIdentity?.pseudo || player.name || 'EMPLOYÉ';
 
@@ -452,6 +443,21 @@ useEffect(() => {
   setProfile(updated);
 }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
+// Launch confetti on victory (stage 25) or top 10 leaderboard
+useEffect(() => {
+  if (!showContent || confettiFired.current) return;
+  const shouldFire = isVictory || (rank > 0 && rank <= 10);
+  if (!shouldFire) return;
+
+  confettiFired.current = true;
+  const canvas = confettiCanvasRef.current;
+  if (canvas) {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    launchConfetti(canvas);
+  }
+}, [showContent, rank, isVictory]);
+
 useEffect(() => {
   if (showContent && !canvasGenerated.current) {
     canvasGenerated.current = true;
@@ -476,31 +482,6 @@ const handleCTAEmail = (inputEl: HTMLInputElement | null) => {
   fetch('/api/email-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: inputEl.value, pseudo, source: 'rtt-bonus' }) }).catch(() => {});
 };
 
-const handleCTAWhatsApp = () => {
-  playClick();
-  const text = encodeURIComponent(
-    `J'ai joue a W.O.W (Work Or Window) de Guibour !\n` +
-    `Etage ${level} | ${formatSalary(player.score)} de salaire\n` +
-    `Bats mon score → guibour.fr`
-  );
-  window.open(`https://wa.me/?text=${text}`, '_blank');
-  const updated = updateProfile({ waShared: true });
-  setProfile(updated);
-  setCtaDone(true);
-};
-
-const handleCTAInstagram = () => {
-  playClick();
-  if (!shareImageUrl) return;
-  const link = document.createElement('a');
-  link.href = shareImageUrl;
-  link.download = `guibour-wow-${pseudo.toLowerCase()}-lvl${level}.png`;
-  link.click();
-  setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 500);
-  const updated = updateProfile({ igShared: true });
-  setProfile(updated);
-  setCtaDone(true);
-};
 
 const handleCTADiploma = async () => {
   playClick();
@@ -511,20 +492,25 @@ const handleCTADiploma = async () => {
   setCtaDone(true);
 };
 
-const handleCTAImage = () => {
-  playClick();
-  if (!shareImageUrl) return;
-  const link = document.createElement('a');
-  link.href = shareImageUrl;
-  link.download = 'guibour-wow-score.png';
-  link.click();
-  setCtaDone(true);
-};
 
 return (
 
 <div className="absolute inset-0 z-30 flex flex-col items-center justify-center"
   style={{ background: isVictory ? 'rgba(0,8,20,0.65)' : 'rgba(4,0,0,0.60)', backdropFilter: 'blur(4px)', overflowY: 'auto', gap: '0px' }}>
+
+  {/* Confetti canvas overlay */}
+  <canvas
+    ref={confettiCanvasRef}
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100%',
+      height: '100%',
+      pointerEvents: 'none',
+      zIndex: 50,
+    }}
+  />
 
   {/* ── TITLE — outside the card, full width, scary ── */}
   {!isVictory ? (
@@ -664,28 +650,30 @@ return (
           transition: 'all .2s',
         }}>REJOUER</button>
 
-        {/* ── Single smart CTA — changes based on profile ── */}
-        {!isVictory && !ctaDone && (
-          <SmartCTA
-            type={currentCTA}
-            onEmail={handleCTAEmail}
-            onWhatsApp={handleCTAWhatsApp}
-            onInstagram={handleCTAInstagram}
-            onDiploma={handleCTADiploma}
-            onImage={handleCTAImage}
-          />
+        {/* ── Email CTA (if no email yet) ── */}
+        {!isVictory && !profile.email && !ctaDone && (
+          <EmailCTA onEmail={handleCTAEmail} />
         )}
 
-        {ctaDone && !isVictory && (
+        {ctaDone && !profile.email && !isVictory && (
           <div style={{
             textAlign: 'center', fontFamily: "'Lilita One', cursive", fontSize: '15px',
             color: '#00C8BE', padding: '14px', border: '1px solid rgba(0,200,190,.3)',
             borderRadius: '4px', letterSpacing: '2px',
             animation: 'fadeIn 0.3s ease-out',
           }}>
-            {currentCTA === 'email' ? 'BONUS +1 RTT ACTIVÉ' : 'MERCI'}
+            BONUS +1 RTT ACTIVE
           </div>
         )}
+
+        {/* ── Share buttons — always visible ── */}
+        <ShareButtons
+          pseudo={pseudo}
+          level={level}
+          score={player.score}
+          shareImageUrl={shareImageUrl}
+          onDiploma={handleCTADiploma}
+        />
       </div>
     )}
 

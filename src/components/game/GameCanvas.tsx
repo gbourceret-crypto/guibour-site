@@ -11,6 +11,15 @@ import GameOverScreen from './GameOverScreen';
 import { PlayerIdentity } from '@/components/ui/CharacterSelect';
 import { playClick } from '@/lib/sounds';
 
+// Fire-and-forget POST to live feed
+function postLiveFeed(pseudo: string, event: string, level: number) {
+  fetch('/api/live-feed', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ pseudo, event, level }),
+  }).catch(() => {});
+}
+
 interface GameCanvasProps {
   characterName?: string;
   playerIdentity?: PlayerIdentity | null;
@@ -169,6 +178,10 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
           setTimeout(() => setShowPhrase(false), 3000);
           // Switch to level-specific music (easter egg)
           audioManager.setLevelMusic(lc.musicOverride);
+        }
+        // Live feed: announce floor reached
+        if (s.level > 0) {
+          postLiveFeed(playerName || 'Anonyme', `a atteint l'etage ${s.level + 1}`, s.level);
         }
         // YouTube popup once between level 8-12
         if (s.level >= 8 && s.level <= 12 && !youtubeShownRef.current) {
@@ -363,15 +376,17 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     recorder.stop();
   }, [gameStatus]);
 
-  // Stop gameplay music on game over/victory
+  // Stop gameplay music on game over/victory + live feed
   useEffect(() => {
     if (gameStatus === 'gameOver') {
       audioManager.stop('gameplay');
       audioManager.play('gameover');
+      postLiveFeed(playerName || 'Anonyme', 'vient de se faire licencier', currentLevel);
     } else if (gameStatus === 'victory') {
       audioManager.stop('gameplay');
+      postLiveFeed(playerName || 'Anonyme', 'est arrive au sommet !', 25);
     }
-  }, [gameStatus]);
+  }, [gameStatus]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const handleToggleMute = () => {
     playClick();

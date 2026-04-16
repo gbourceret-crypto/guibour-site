@@ -91,7 +91,7 @@ export interface BubbleConfig {
 export interface LevelConfig {
   id: number;           // 0-24
   name: string;         // "Etage 00 — Accueil" etc.
-  background: string;   // "/game/backgrounds/bg-00.png"
+  background: string;   // "/game/backgrounds/bg-00.webp"
   phrase: string;       // satirical phrase shown at start
   bubbles: BubbleConfig[];
   timeLimit: number;    // seconds

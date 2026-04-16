@@ -2,7 +2,10 @@
 
 import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
+import dynamic from 'next/dynamic';
 import { useState } from 'react';
+
+const AudioReactiveGrid = dynamic(() => import('@/components/ui/AudioReactiveGrid'), { ssr: false });
 
 // ── CATALOGUE ────────────────────────────────────────────────────────────────
 const TRACKS = [
@@ -56,8 +59,11 @@ export default function JukeboxPage() {
     setSaved(prev => ({ ...prev, [trackId]: true }));
   };
 
+  const gridActive = activeTrack.released && !!(activeTrack.spotifyId || activeTrack.youtubeId);
+
   return (
     <div className="min-h-screen" style={{ background: '#0E2660' }}>
+      <AudioReactiveGrid active={gridActive} bpm={activeTrack.bpm ?? 120} />
       <ExcelNav />
       <ExcelChrome formulaText='=PLAY("GUIBOUR_EP","VIDEO_MUSIC_BOX_2026") → BROADCAST_MODE_ON'>
         {/* global dark grid bg */}

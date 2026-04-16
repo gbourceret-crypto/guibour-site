@@ -1,9 +1,11 @@
 'use client';
 
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
+import { useCallback } from 'react';
 import GlobeIcon from './GlobeIcon';
 import { playClick } from '@/lib/sounds';
+import { useTransitionContext } from './PageTransition';
 
 const mainTabs = [
   { href: '/',          label: 'JOUER À W.O.W'  },
@@ -92,6 +94,19 @@ const legalLinks = [
 
 export default function ExcelNav() {
   const pathname = usePathname();
+  const router = useRouter();
+  const { triggerTransition, isTransitioning } = useTransitionContext();
+
+  const handleNavClick = useCallback((e: React.MouseEvent<HTMLAnchorElement>, href: string) => {
+    if (href === pathname) return; // Already on this page
+    e.preventDefault();
+    playClick();
+    triggerTransition(href);
+    // Navigate after doors close (300ms) — the content changes behind closed doors
+    setTimeout(() => {
+      router.push(href);
+    }, 300);
+  }, [pathname, router, triggerTransition]);
 
   return (
     <nav
@@ -109,7 +124,7 @@ export default function ExcelNav() {
       onMouseLeave={e => { e.currentTarget.style.width = '48px'; }}
     >
       {/* Logo */}
-      <a href="/" onClick={playClick} style={{
+      <a href="/" onClick={(e) => handleNavClick(e, '/')} style={{
         padding: '12px 0', borderBottom: '1px solid #1B3A6B',
         display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px',
         flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap',
@@ -128,7 +143,7 @@ export default function ExcelNav() {
           const active = pathname === tab.href;
           const isWow = tab.label === 'JOUER À W.O.W';
           return (
-            <Link key={tab.href} href={tab.href} onClick={playClick} style={{
+            <Link key={tab.href} href={tab.href} onClick={(e) => handleNavClick(e, tab.href)} style={{
               display: 'flex', alignItems: 'center', gap: '12px',
               padding: '10px 0 10px 11px',
               fontFamily: "'Lilita One', cursive", fontSize: '13px', letterSpacing: '2px',
@@ -160,7 +175,7 @@ export default function ExcelNav() {
       {/* Legal links — very discreet, icon-only when collapsed */}
       <div style={{ borderTop: '1px solid #1B3A6B', padding: '6px 0', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
         {legalLinks.map(link => (
-          <Link key={link.href} href={link.href} onClick={playClick} style={{
+          <Link key={link.href} href={link.href} onClick={(e) => handleNavClick(e, link.href)} style={{
             display: 'block', padding: '5px 14px',
             fontFamily: "'Orbitron', sans-serif", fontSize: '8px', letterSpacing: '2px',
             color: '#1E3F6E', textDecoration: 'none', overflow: 'hidden',

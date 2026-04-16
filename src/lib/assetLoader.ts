@@ -143,7 +143,7 @@ export async function loadAllAssets(
     for (let i = batch * 5; i < Math.min((batch + 1) * 5, 25); i++) {
       const idx = i;
       batchPromises.push(
-        loadImage(`/game/backgrounds/bg-${String(idx).padStart(2, '0')}.png`)
+        loadImage(`/game/backgrounds/bg-${String(idx).padStart(2, '0')}.webp`)
           .then(img => { backgrounds.set(idx, img); tick(); })
           .catch(() => { tick(); })
       );

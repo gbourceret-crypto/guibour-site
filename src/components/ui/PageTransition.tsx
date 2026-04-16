@@ -1,0 +1,239 @@
+'use client';
+
+import React, { createContext, useContext } from 'react';
+import { usePageTransition, type TransitionPhase } from '@/hooks/usePageTransition';
+
+// Context to expose triggerTransition to ExcelNav
+type TransitionContextType = {
+  triggerTransition: (targetPath: string) => void;
+  isTransitioning: boolean;
+  phase: TransitionPhase;
+};
+
+const TransitionContext = createContext<TransitionContextType>({
+  triggerTransition: () => {},
+  isTransitioning: false,
+  phase: 'idle',
+});
+
+export const useTransitionContext = () => useContext(TransitionContext);
+
+export default function PageTransition({ children }: { children: React.ReactNode }) {
+  const { phase, isTransitioning, floorLabel, floorNumber, triggerTransition } = usePageTransition();
+
+  return (
+    <TransitionContext.Provider value={{ triggerTransition, isTransitioning, phase }}>
+      {children}
+      {isTransitioning && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 100,
+            pointerEvents: 'all',
+            overflow: 'hidden',
+          }}
+        >
+          {/* Left door */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              left: 0,
+              width: '50%',
+              background: 'linear-gradient(135deg, #0D2B5E 0%, #091D40 50%, #0D2B5E 100%)',
+              borderRight: '2px solid #00C8BE',
+              transform:
+                phase === 'closing'
+                  ? 'translateX(-100%)'
+                  : phase === 'display'
+                  ? 'translateX(0)'
+                  : phase === 'opening'
+                  ? 'translateX(-100%)'
+                  : 'translateX(-100%)',
+              transition:
+                phase === 'closing'
+                  ? 'none'
+                  : phase === 'opening'
+                  ? 'transform 0.3s ease-in'
+                  : 'none',
+              boxShadow: '4px 0 20px rgba(0, 200, 190, 0.2)',
+              ...(phase === 'closing' ? {} : {}),
+            }}
+            ref={(el) => {
+              if (el && phase === 'closing') {
+                // Force reflow then animate
+                el.style.transform = 'translateX(-100%)';
+                el.getBoundingClientRect();
+                el.style.transition = 'transform 0.3s ease-out';
+                el.style.transform = 'translateX(0)';
+              }
+            }}
+          >
+            {/* Metallic texture lines */}
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(0,200,190,0.03) 48px, rgba(0,200,190,0.03) 50px)',
+            }} />
+          </div>
+
+          {/* Right door */}
+          <div
+            style={{
+              position: 'absolute',
+              top: 0,
+              bottom: 0,
+              right: 0,
+              width: '50%',
+              background: 'linear-gradient(225deg, #0D2B5E 0%, #091D40 50%, #0D2B5E 100%)',
+              borderLeft: '2px solid #00C8BE',
+              transform:
+                phase === 'closing'
+                  ? 'translateX(100%)'
+                  : phase === 'display'
+                  ? 'translateX(0)'
+                  : phase === 'opening'
+                  ? 'translateX(100%)'
+                  : 'translateX(100%)',
+              transition:
+                phase === 'closing'
+                  ? 'none'
+                  : phase === 'opening'
+                  ? 'transform 0.3s ease-in'
+                  : 'none',
+              boxShadow: '-4px 0 20px rgba(0, 200, 190, 0.2)',
+            }}
+            ref={(el) => {
+              if (el && phase === 'closing') {
+                el.style.transform = 'translateX(100%)';
+                el.getBoundingClientRect();
+                el.style.transition = 'transform 0.3s ease-out';
+                el.style.transform = 'translateX(0)';
+              }
+            }}
+          >
+            <div style={{
+              position: 'absolute', inset: 0,
+              background: 'repeating-linear-gradient(90deg, transparent, transparent 48px, rgba(0,200,190,0.03) 48px, rgba(0,200,190,0.03) 50px)',
+            }} />
+          </div>
+
+          {/* Center content — floor display */}
+          {(phase === 'display' || phase === 'opening') && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 101,
+                opacity: phase === 'opening' ? 0 : 1,
+                transition: 'opacity 0.2s ease',
+                pointerEvents: 'none',
+              }}
+            >
+              {/* Floor number — big */}
+              <div
+                style={{
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontSize: 'clamp(64px, 15vw, 140px)',
+                  fontWeight: 900,
+                  color: '#00C8BE',
+                  textShadow: '0 0 40px rgba(0,200,190,0.6), 0 0 80px rgba(0,200,190,0.3)',
+                  lineHeight: 1,
+                  letterSpacing: '8px',
+                  animation: phase === 'display' ? 'floorSlideIn 0.3s ease-out' : 'none',
+                }}
+              >
+                {floorNumber}
+              </div>
+
+              {/* Floor label */}
+              <div
+                style={{
+                  fontFamily: "'Orbitron', sans-serif",
+                  fontSize: 'clamp(12px, 2.5vw, 20px)',
+                  fontWeight: 400,
+                  color: '#7AAFD4',
+                  letterSpacing: '6px',
+                  marginTop: '16px',
+                  textTransform: 'uppercase',
+                  animation: phase === 'display' ? 'floorFadeIn 0.3s ease-out 0.1s both' : 'none',
+                }}
+              >
+                {floorLabel}
+              </div>
+
+              {/* Decorative line */}
+              <div
+                style={{
+                  width: 'clamp(100px, 30vw, 300px)',
+                  height: '2px',
+                  background: 'linear-gradient(90deg, transparent, #00C8BE, transparent)',
+                  marginTop: '20px',
+                  animation: phase === 'display' ? 'lineExpand 0.3s ease-out 0.15s both' : 'none',
+                }}
+              />
+
+              {/* Elevator indicator dots */}
+              <div style={{
+                display: 'flex',
+                gap: '12px',
+                marginTop: '24px',
+              }}>
+                {['RDC', '1', '2', '3', '4'].map((num) => (
+                  <div
+                    key={num}
+                    style={{
+                      width: '10px',
+                      height: '10px',
+                      borderRadius: '50%',
+                      background: num === floorNumber ? '#00C8BE' : 'rgba(122,175,212,0.2)',
+                      boxShadow: num === floorNumber ? '0 0 12px rgba(0,200,190,0.8)' : 'none',
+                      transition: 'all 0.2s ease',
+                    }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+
+          {/* Done phase — fade out overlay */}
+          {phase === 'done' && (
+            <div
+              style={{
+                position: 'absolute',
+                inset: 0,
+                background: 'rgba(9, 29, 64, 0.3)',
+                animation: 'fadeOut 0.2s ease-out forwards',
+              }}
+            />
+          )}
+
+          {/* Keyframe animations injected via style tag */}
+          <style>{`
+            @keyframes floorSlideIn {
+              from { transform: translateY(20px); opacity: 0; }
+              to { transform: translateY(0); opacity: 1; }
+            }
+            @keyframes floorFadeIn {
+              from { opacity: 0; }
+              to { opacity: 1; }
+            }
+            @keyframes lineExpand {
+              from { transform: scaleX(0); opacity: 0; }
+              to { transform: scaleX(1); opacity: 1; }
+            }
+            @keyframes fadeOut {
+              from { opacity: 1; }
+              to { opacity: 0; }
+            }
+          `}</style>
+        </div>
+      )}
+    </TransitionContext.Provider>
+  );
+}

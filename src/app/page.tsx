@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import dynamic from 'next/dynamic';
 import ExcelNav from '@/components/ui/ExcelNav';
 import ExcelChrome from '@/components/ui/ExcelChrome';
 import LoadingScreen from '@/components/ui/LoadingScreen';
 import CharacterSelect, { CharacterData, PlayerIdentity } from '@/components/ui/CharacterSelect';
-import { useDayNight, getDayNightTheme } from '@/hooks/useDayNight';
+import { useDayNight, getDayNightTheme, DayNightTheme } from '@/hooks/useDayNight';
 import { playClick } from '@/lib/sounds';
 
 const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
@@ -17,20 +17,65 @@ const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
 import Countdown from '@/components/ui/Countdown';
 import GlobeO from '@/components/ui/GlobeO';
 
-function HeroContent({ onPlay }: { onPlay: () => void }) {
-  return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      justifyContent: 'center',
-      minHeight: 'calc(100vh - 120px)',
-      padding: '0 20px',
-      position: 'relative',
-    }}>
+function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightTheme }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const logoRef = useRef<HTMLHeadingElement>(null);
+  const systemRef = useRef<HTMLDivElement>(null);
+  const isTouchDevice = useRef(false);
 
-      {/* Logo GUIBOUR SYSTEM — centré, imposant, respire */}
-      <h1 aria-label="GUIBOUR SYSTEM" style={{ textAlign: 'center', position: 'relative', zIndex: 2, margin: 0 }}>
+  useEffect(() => {
+    isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
+
+  const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (isTouchDevice.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    const dx = (e.clientX - cx) / (rect.width / 2);  // -1 to 1
+    const dy = (e.clientY - cy) / (rect.height / 2);
+
+    // Logo: opposite direction, max 15px
+    if (logoRef.current) {
+      logoRef.current.style.transform = `translate3d(${-dx * 15}px, ${-dy * 15}px, 0)`;
+    }
+    // SYSTEM text: opposite direction, max 8px (deeper)
+    if (systemRef.current) {
+      systemRef.current.style.transform = `translate3d(${-dx * 8}px, ${-dy * 8}px, 0)`;
+    }
+  }, []);
+
+  const handleMouseLeave = useCallback(() => {
+    if (logoRef.current) logoRef.current.style.transform = 'translate3d(0,0,0)';
+    if (systemRef.current) systemRef.current.style.transform = 'translate3d(0,0,0)';
+  }, []);
+
+  return (
+    <div
+      ref={containerRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        minHeight: 'calc(100vh - 120px)',
+        padding: '0 20px',
+        position: 'relative',
+      }}
+    >
+
+      {/* Logo GUIBOUR SYSTEM -- centre, imposant, respire */}
+      <h1
+        ref={logoRef}
+        aria-label="GUIBOUR SYSTEM"
+        style={{
+          textAlign: 'center', position: 'relative', zIndex: 2, margin: 0,
+          transition: 'transform 0.15s ease-out',
+          willChange: 'transform',
+        }}
+      >
         <div style={{
           fontSize: 'clamp(60px, 12vw, 110px)',
           lineHeight: 1,
@@ -54,20 +99,25 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
           }}>UR</span>
         </div>
 
-        <div style={{
-          fontFamily: "'Orbitron', sans-serif",
-          fontSize: 'clamp(12px, 2vw, 18px)',
-          color: '#00FFEE',
-          letterSpacing: '10px',
-          fontWeight: 700,
-          textShadow: '0 0 14px rgba(0,255,238,.5)',
-          marginTop: '6px',
-        }}>
+        <div
+          ref={systemRef}
+          style={{
+            fontFamily: "'Orbitron', sans-serif",
+            fontSize: 'clamp(12px, 2vw, 18px)',
+            color: '#00FFEE',
+            letterSpacing: '10px',
+            fontWeight: 700,
+            textShadow: theme.neonTextShadow,
+            marginTop: '6px',
+            transition: 'transform 0.15s ease-out, text-shadow 2s ease',
+            willChange: 'transform',
+          }}
+        >
           S Y S T E M
         </div>
       </h1>
 
-      {/* Tagline — discret */}
+      {/* Tagline -- discret */}
       <div style={{
         fontFamily: "'Orbitron', sans-serif",
         fontSize: '10px',
@@ -80,7 +130,7 @@ function HeroContent({ onPlay }: { onPlay: () => void }) {
         WORK OR WINDOW
       </div>
 
-      {/* CTA JOUER — gros, seul, central */}
+      {/* CTA JOUER -- gros, seul, central */}
       <button
         onClick={() => { playClick(); onPlay(); }}
         style={{
@@ -210,8 +260,13 @@ export default function Home() {
     <>
     <div className="min-h-screen" style={{ background: theme.bg, transition: 'background 2s ease' }}>
       <ExcelNav />
-      <ExcelChrome formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2026") → WELCOME_TO_THE_SYSTEM'>
-        <HeroContent onPlay={handlePlay} />
+      <ExcelChrome
+        formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2026") → WELCOME_TO_THE_SYSTEM'
+        gridColor={theme.gridColor}
+        gridOpacity={theme.gridOpacity}
+        chromeBg={theme.chromeBg}
+      >
+        <HeroContent onPlay={handlePlay} theme={theme} />
       </ExcelChrome>
       {/* Countdown fixed en bas — concert privé */}
       <Countdown />

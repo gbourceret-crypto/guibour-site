@@ -1,6 +1,8 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import GuibourChat from '@/components/ui/GuibourChat';
+import CursorParticles from '@/components/ui/CursorParticles';
+import PageTransition from '@/components/ui/PageTransition';
 
 export const viewport: Viewport = {
   width: 'device-width',
@@ -56,13 +58,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         />
       </head>
       <body>
+        <PageTransition>
         {children}
+        </PageTransition>
         {/* Plausible Analytics — privacy-first, no cookies */}
         <script
           defer
           data-domain="guibour.fr"
           src="https://plausible.io/js/script.js"
         />
+      <CursorParticles />
       <GuibourChat />
       </body>
     </html>

@@ -1,20 +1,20 @@
 {
   "headers": [
     {
-      "source": "/game/:path*",
+      "source": "/game/(.*)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     },
     {
-      "source": "/(.*\\.png|.*\\.jpg|.*\\.mp4|.*\\.mp3|.*\\.webp)",
+      "source": "/(.*\\.png|.*\\.jpg|.*\\.mp4|.*\\.mp3|.*\\.webp|.*\\.webm)",
       "headers": [
         {
           "key": "Cache-Control",
-          "value": "public, max-age=2592000, stale-while-revalidate=86400"
+          "value": "public, max-age=31536000, immutable"
         }
       ]
     }
