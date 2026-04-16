@@ -15,15 +15,20 @@ const PLAYER_W = 75;
 // Visual draw scale (draw character larger than physics hitbox for better appearance)
 const PLAYER_DRAW_SCALE = 1.55;
 
-// ===== HITBOX (precise capsule — fractions of player.height, 0=feet, 1=top) =====
-// Tightened to match the visual sprite more closely — reduces unfair "phantom" hits
-const HB = {
-  headFrac: 0.88,    // head circle center Y (fraction from bottom)
-  headR:    7,       // head radius (px) — tighter around actual head
-  bodyTopFrac: 0.72, // body capsule top endpoint Y fraction — starts below neck
-  bodyBotFrac: 0.10, // body capsule bottom endpoint Y fraction — closer to feet
-  bodyR:    10,      // body capsule half-width (px) — narrower = more precise
-};
+// ===== HITBOX (multi-zone circles matching visual sprite contour) =====
+// Based on sprite analysis: zones cover the full VISUAL body, not just the physics box.
+// Radii are ~85% of actual visual width at each height for fair-feeling collisions.
+// Fractions are relative to visual height (PLAYER_H * PLAYER_DRAW_SCALE).
+const HB_ZONES = [
+  { frac: 0.92, r: 14 },  // Top of head
+  { frac: 0.82, r: 17 },  // Head/face
+  { frac: 0.70, r: 22 },  // Shoulders
+  { frac: 0.58, r: 25 },  // Chest (widest)
+  { frac: 0.45, r: 23 },  // Torso
+  { frac: 0.32, r: 21 },  // Hips
+  { frac: 0.18, r: 16 },  // Upper legs
+  { frac: 0.06, r: 12 },  // Feet
+];
 
 // 7 bubble sizes: radius, bounceVy, speedX, divisionVy, score
 // SPEC: plus la balle est grosse, MOINS elle rebondit (bounceVy proche de 0 = rebond faible)
@@ -439,25 +444,21 @@ function spawnHitParticles(x: number, y: number, color: string) {
 
 // ===== COLLISIONS =====
 /**
- * Tests if a circle (cx, cy, cr) intersects the player's compound hitbox.
- * Hitbox = head circle + body capsule (vertical segment with radius).
- * Much more precise than a single bounding circle.
+ * Tests if a circle (cx, cy, cr) intersects the player's multi-zone hitbox.
+ * Uses stacked circles that follow the visual sprite contour (head → shoulders → torso → legs).
+ * Zones are sized relative to the VISUAL draw dimensions, not the physics box.
  */
 function playerCircleCollision(player: Player, cx: number, cy: number, cr: number): boolean {
-  const px = player.x, py = player.y, ph = player.height;
+  const px = player.x;
+  const py = player.y; // feet position
+  const visualH = player.height * PLAYER_DRAW_SCALE; // match the drawn sprite height
 
-  // 1. Head circle
-  const headY = py - ph * HB.headFrac;
-  const dh2 = (px - cx) ** 2 + (headY - cy) ** 2;
-  if (dh2 < (cr + HB.headR) ** 2) return true;
-
-  // 2. Body capsule: vertical segment from capTop to capBot with radius HB.bodyR
-  const capTop = py - ph * HB.bodyTopFrac;
-  const capBot = py - ph * HB.bodyBotFrac;
-  // Closest point on segment to circle center
-  const clampedY = Math.max(capTop, Math.min(capBot, cy));
-  const db2 = (px - cx) ** 2 + (clampedY - cy) ** 2;
-  if (db2 < (cr + HB.bodyR) ** 2) return true;
+  for (const zone of HB_ZONES) {
+    const zoneY = py - visualH * zone.frac;
+    const dx = px - cx;
+    const dy = zoneY - cy;
+    if (dx * dx + dy * dy < (cr + zone.r) ** 2) return true;
+  }
 
   return false;
 }
@@ -537,14 +538,11 @@ function checkCollisions(state: GameState) {
     }
   }
 
-  // Player vs Bonus — generous collection zone (cylinder centered on torso)
+  // Player vs Bonus — use visual hitbox zones for consistent feel
   for (let i = bonuses.length - 1; i >= 0; i--) {
     const b = bonuses[i];
     if (!b.active) continue;
-    const bCenterY = player.y - player.height * 0.45;
-    const dx = player.x - b.x;
-    const dy = bCenterY - b.y;
-    if (dx * dx + dy * dy < 38 * 38) {
+    if (playerCircleCollision(player, b.x, b.y, 12)) {
       b.active = false;
       applyBonus(state, b.type, b.x, b.y);
     }
@@ -1095,7 +1093,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const victH = Math.round(drawH * idleScale);
     const ar = victorySpr.frameWidth / victorySpr.frameHeight;
     const victW = Math.round(victH * ar);
-    const victY = player.y - victH + Math.round(victH * 0.06);
+    const victY = player.y - victH + Math.round(victH * 0.10);
     drawSpriteFrame(ctx, victorySpr, frameIndex, player.x - victW / 2, victY, victW, victH);
   } else if (isMoving && activeSprite && activeSprite.totalFrames > 1) {
     // Compute which frame to show based on sprite FPS vs game FPS (60)
@@ -1103,7 +1101,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const frameIndex = Math.floor(spriteFrameCounter / gameFramesPerSpriteFrame) % activeSprite.totalFrames;
     const ar = activeSprite.frameWidth / activeSprite.frameHeight;
     const drawW = Math.round(drawH * ar);
-    const drawY = player.y - drawH;
+    const drawY = player.y - drawH + Math.round(drawH * 0.04);
     drawSpriteFrame(ctx, activeSprite, frameIndex, player.x - drawW / 2, drawY, drawW, drawH);
   } else if (idleImg) {
     // Idle: scale up so Guibour's feet touch the ground bar and looks imposing
@@ -1111,8 +1109,8 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const idleH = Math.round(drawH * idleScale);
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
     const idleW = Math.round(idleH * idleAR);
-    // Align feet exactly with the floor bar (same baseline as running sprite)
-    const idleY = player.y - idleH + Math.round(idleH * 0.13);
+    // Align feet with the floor — offset increased to lower the character slightly
+    const idleY = player.y - idleH + Math.round(idleH * 0.17);
     ctx.drawImage(idleImg, player.x - idleW / 2, idleY, idleW, idleH);
   } else {
     // Fallback rectangle
@@ -1130,7 +1128,8 @@ function drawCgtShield(ctx: CanvasRenderingContext2D, state: GameState) {
   ctx.lineWidth = 2;
   ctx.globalAlpha = 0.5 + 0.3 * Math.sin(state.frameCount * 0.1);
   ctx.beginPath();
-  ctx.arc(player.x, player.y - player.height / 2, player.height / 2 + 8, 0, Math.PI * 2);
+  const visualH = player.height * PLAYER_DRAW_SCALE;
+  ctx.arc(player.x, player.y - visualH / 2, visualH / 2 + 8, 0, Math.PI * 2);
   ctx.stroke();
   ctx.restore();
 }
