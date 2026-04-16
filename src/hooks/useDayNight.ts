@@ -15,7 +15,8 @@ function getMode(): TimeMode {
  * Re-evaluates at the top of every hour (or on mount).
  */
 export function useDayNight(): TimeMode {
-  const [mode, setMode] = useState<TimeMode>('night');
+  // Default to 'day' to avoid dark flash on SSR/hydration
+  const [mode, setMode] = useState<TimeMode>('day');
 
   useEffect(() => {
     setMode(getMode());
@@ -72,15 +73,15 @@ export function getDayNightTheme(mode: TimeMode): DayNightTheme {
     };
   }
   return {
-    bg: '#060E1A',
-    bg2: '#040A14',
-    gridOpacity: 0.08,
+    bg: '#0E1E38',
+    bg2: '#0A1628',
+    gridOpacity: 0.10,
     neonGlow: 'strong',
     accentLabel: '🌙 MODE NUIT',
-    navBg: '#060E1A',
-    navBorder: '#0E1E3A',
-    gridColor: 'rgba(60,130,240,.10)',
+    navBg: '#0A1628',
+    navBorder: '#1A3060',
+    gridColor: 'rgba(60,130,240,.12)',
     neonTextShadow: '0 0 20px rgba(0,255,238,.7), 0 0 40px rgba(0,255,238,.3)',
-    chromeBg: '#050C18',
+    chromeBg: '#0C1A30',
   };
 }
