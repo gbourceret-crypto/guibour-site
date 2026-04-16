@@ -76,26 +76,45 @@ replayUrl?: string | null;
 
 }
 
-// ── WhatsApp share RTT tracker ────────────────────────────────────────────────────────────────────────────────
+// ── Player profile tracker (localStorage) ─────────────────────────────────────
 
-const WA_SHARE_KEY = 'guibour-wa-shares';
+const PROFILE_KEY = 'guibour-player-profile';
 
-function getWaShares(): number {
-
-if (typeof window === 'undefined') return 0;
-
-return parseInt(localStorage.getItem(WA_SHARE_KEY) ?? '0', 10);
-
+interface PlayerProfile {
+  email?: string;
+  phone?: string;
+  waShared?: boolean;
+  igShared?: boolean;
+  diplomaDownloaded?: boolean;
+  defeatCount: number;
 }
 
-function incWaShares(): number {
+function getProfile(): PlayerProfile {
+  if (typeof window === 'undefined') return { defeatCount: 0 };
+  try {
+    const raw = localStorage.getItem(PROFILE_KEY);
+    return raw ? JSON.parse(raw) : { defeatCount: 0 };
+  } catch { return { defeatCount: 0 }; }
+}
 
-const n = Math.min(getWaShares() + 1, 3);
+function updateProfile(patch: Partial<PlayerProfile>): PlayerProfile {
+  const p = { ...getProfile(), ...patch };
+  localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+  return p;
+}
 
-localStorage.setItem(WA_SHARE_KEY, String(n));
+/** Determine the single CTA to show based on player profile */
+type CTAType = 'email' | 'whatsapp' | 'instagram' | 'diploma' | 'image';
 
-return n;
-
+function pickCTA(profile: PlayerProfile): CTAType {
+  // Priority: collect data first, then engagement
+  if (!profile.email) return 'email';
+  if (!profile.waShared) return 'whatsapp';
+  if (!profile.igShared) return 'instagram';
+  if (!profile.diplomaDownloaded) return 'diploma';
+  // All done — cycle through share options
+  const cycle: CTAType[] = ['whatsapp', 'instagram', 'image'];
+  return cycle[profile.defeatCount % cycle.length];
 }
 
 // ── Instagram share image via Canvas ────────────────────────────────────────────────────
@@ -256,6 +275,102 @@ return canvas.toDataURL('image/png');
 
 }
 
+/** Single CTA component — renders one action based on type */
+function SmartCTA({ type, onEmail, onWhatsApp, onInstagram, onDiploma, onImage }: {
+  type: CTAType;
+  onEmail: (input: HTMLInputElement | null) => void;
+  onWhatsApp: () => void;
+  onInstagram: () => void;
+  onDiploma: () => void;
+  onImage: () => void;
+}) {
+  const emailRef = useRef<HTMLInputElement>(null);
+
+  const boxStyle: React.CSSProperties = {
+    padding: '16px', borderRadius: '4px',
+    animation: 'fadeIn 0.4s ease-out',
+  };
+
+  if (type === 'email') {
+    return (
+      <div style={{ ...boxStyle, background: 'rgba(26,16,0,.6)', border: '1px solid #5A4400' }}>
+        <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '16px', color: '#FFE033', letterSpacing: '1px', marginBottom: '6px' }}>
+          GAGNE +1 RTT MAINTENANT
+        </div>
+        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#C8A040', letterSpacing: '1px', marginBottom: '12px', lineHeight: 1.6 }}>
+          Laisse ton email et debloque un jour de RTT bonus sur cette partie !
+        </div>
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <input ref={emailRef} type="email" placeholder="ton@email.com" style={{
+            flex: 1, padding: '12px 14px', fontFamily: "'Orbitron', sans-serif", fontSize: '12px',
+            background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none', borderRadius: '4px',
+          }} />
+          <button onClick={() => onEmail(emailRef.current)} style={{
+            padding: '12px 20px', background: '#FFE033', color: '#0A1520', border: 'none', cursor: 'pointer',
+            fontFamily: "'Lilita One', cursive", fontSize: '16px', fontWeight: 700, borderRadius: '4px',
+          }}>OK</button>
+        </div>
+      </div>
+    );
+  }
+
+  if (type === 'whatsapp') {
+    return (
+      <button onClick={onWhatsApp} style={{
+        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
+        background: '#25D366', border: '2px solid #1DAA53', color: '#fff',
+        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
+      }}>
+        INVITE UN AMI SUR WHATSAPP
+        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', opacity: 0.8, letterSpacing: '1px' }}>
+          Partage ton score et defie tes potes
+        </div>
+      </button>
+    );
+  }
+
+  if (type === 'instagram') {
+    return (
+      <button onClick={onInstagram} style={{
+        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
+        background: 'linear-gradient(135deg,#C13584,#E1306C)', border: 'none', color: '#fff',
+        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
+      }}>
+        PARTAGE SUR INSTAGRAM
+        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', opacity: 0.8, letterSpacing: '1px' }}>
+          Telecharge ton image de score et poste-la
+        </div>
+      </button>
+    );
+  }
+
+  if (type === 'diploma') {
+    return (
+      <button onClick={onDiploma} style={{
+        ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
+        background: 'rgba(58,42,0,0.4)', border: '2px solid #5A4400', color: '#FFE033',
+        fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
+      }}>
+        TELECHARGE TON DIPLOME
+        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '9px', marginTop: '4px', color: '#C8A040', letterSpacing: '1px' }}>
+          Certificat officiel de fin de carriere
+        </div>
+      </button>
+    );
+  }
+
+  // image
+  return (
+    <button onClick={onImage} style={{
+      ...boxStyle, width: '100%', textAlign: 'center', cursor: 'pointer',
+      background: 'rgba(0,71,171,0.2)', border: '1px solid #1A3E7A', color: '#A8D8FF',
+      fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '2px',
+    }}>
+      TELECHARGE TON SCORE EN IMAGE
+    </button>
+  );
+}
+
 function GameOverScreen({ state, onRestart, playerIdentity, replayUrl }: Props) {
 
 const { player, level, status } = state;
@@ -263,22 +378,13 @@ const { player, level, status } = state;
 const isVictory = status === 'victory';
 
 const [rank, setRank] = useState(0);
-
 const [saved, setSaved] = useState(false);
-
-const [copied, setCopied] = useState(false);
-
 const [showContent, setShowContent] = useState(false);
-
-const [showRTTPanel, setShowRTTPanel] = useState(false);
-
-const [waShareCount, setWaShareCount] = useState(0);
-
-const [emailGiven, setEmailGiven] = useState(false);
-
 const [shareImageUrl, setShareImageUrl] = useState<string | null>(null);
-
 const canvasGenerated = useRef(false);
+const [profile, setProfile] = useState<PlayerProfile>({ defeatCount: 0 });
+const [ctaDone, setCtaDone] = useState(false);
+const currentCTA = pickCTA(profile);
 
 const durationMs = state.endTime && state.startTime ? state.endTime - state.startTime : 0;
 
@@ -336,152 +442,83 @@ return () => clearTimeout(t1);
 
 }, []);
 
+// Load profile + increment defeat count on mount
 useEffect(() => {
-
-if (!isVictory && showContent) {
-
-const t = setTimeout(() => {
-
-setShowRTTPanel(true);
-
-setWaShareCount(getWaShares());
-
-}, 600);
-
-return () => clearTimeout(t);
-
-}
-
-}, [isVictory, showContent]);
+  const p = getProfile();
+  // Carry over email from playerIdentity if we have it
+  if (playerIdentity?.email && !p.email) p.email = playerIdentity.email;
+  if (!isVictory) p.defeatCount = (p.defeatCount || 0) + 1;
+  const updated = updateProfile(p);
+  setProfile(updated);
+}, []); // eslint-disable-line react-hooks/exhaustive-deps
 
 useEffect(() => {
-
-if (showContent && !canvasGenerated.current) {
-
-canvasGenerated.current = true;
-
-try {
-
-const url = generateShareImage(pseudo, level, player.score);
-
-setShareImageUrl(url);
-
-} catch (_) {}
-
-}
-
+  if (showContent && !canvasGenerated.current) {
+    canvasGenerated.current = true;
+    try {
+      const url = generateShareImage(pseudo, level, player.score);
+      setShareImageUrl(url);
+    } catch (_) {}
+  }
 }, [showContent, pseudo, level, player.score]);
 
-useEffect(() => {
+// ── CTA handlers ──
 
-if (playerIdentity) {
-
-setEmailGiven(!!(playerIdentity.email));
-
-}
-
-}, [playerIdentity]);
-
-const handleDownloadCertificate = async () => {
-
-playClick();
-
-const { generateCertificate } = await import('@/lib/generateCertificate');
-
-await generateCertificate({
-
-pseudo,
-
-employeeId: playerIdentity?.employeeId || 'GS-000000',
-
-level,
-
-score: player.score,
-
-rank: rank > 0 ? rank : undefined,
-
-});
-
+const handleCTAEmail = (inputEl: HTMLInputElement | null) => {
+  playClick();
+  if (!inputEl?.value?.includes('@')) return;
+  const updated = updateProfile({ email: inputEl.value });
+  setProfile(updated);
+  setCtaDone(true);
+  // Also store in identity
+  const stored = localStorage.getItem('guibour-identity');
+  if (stored) { const id = JSON.parse(stored); id.email = inputEl.value; id.bonusRTT = (id.bonusRTT ?? 0) + 1; localStorage.setItem('guibour-identity', JSON.stringify(id)); }
+  fetch('/api/email-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: inputEl.value, pseudo, source: 'rtt-bonus' }) }).catch(() => {});
 };
 
-const handleShare = async () => {
-
-playClick();
-
-const text = getShareText(pseudo, level, player.score, durationMs);
-
-if (navigator.share) {
-
-try { await navigator.share({ text }); } catch {}
-
-} else {
-
-await navigator.clipboard.writeText(text);
-
-setCopied(true);
-
-setTimeout(() => setCopied(false), 2000);
-
-}
-
+const handleCTAWhatsApp = () => {
+  playClick();
+  const text = encodeURIComponent(
+    `J'ai joue a W.O.W (Work Or Window) de Guibour !\n` +
+    `Etage ${level} | ${formatSalary(player.score)} de salaire\n` +
+    `Bats mon score → guibour.fr`
+  );
+  window.open(`https://wa.me/?text=${text}`, '_blank');
+  const updated = updateProfile({ waShared: true });
+  setProfile(updated);
+  setCtaDone(true);
 };
 
-const handleWhatsAppShare = () => {
-
-playClick();
-
-if (waShareCount >= 3) return;
-
-const text = encodeURIComponent(
-
-`🎮 J'ai joué à W.O.W (Work Or Window) de Guibour !\n` +
-
-`Étage ${level} | ${formatSalary(player.score)} de salaire\n` +
-
-`Bats mon score → guibour.fr`
-
-);
-
-window.open(`https://wa.me/?text=${text}`, '_blank');
-
-const newCount = incWaShares();
-
-setWaShareCount(newCount);
-
+const handleCTAInstagram = () => {
+  playClick();
+  if (!shareImageUrl) return;
+  const link = document.createElement('a');
+  link.href = shareImageUrl;
+  link.download = `guibour-wow-${pseudo.toLowerCase()}-lvl${level}.png`;
+  link.click();
+  setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 500);
+  const updated = updateProfile({ igShared: true });
+  setProfile(updated);
+  setCtaDone(true);
 };
 
-const handleInstagramShare = () => {
-
-playClick();
-
-if (!shareImageUrl) return;
-
-const link = document.createElement('a');
-
-link.href = shareImageUrl;
-
-link.download = `guibour-wow-${pseudo.toLowerCase()}-lvl${level}.png`;
-
-link.click();
-
-setTimeout(() => window.open('https://www.instagram.com/', '_blank'), 500);
-
+const handleCTADiploma = async () => {
+  playClick();
+  const { generateCertificate } = await import('@/lib/generateCertificate');
+  await generateCertificate({ pseudo, employeeId: playerIdentity?.employeeId || 'GS-000000', level, score: player.score, rank: rank > 0 ? rank : undefined });
+  const updated = updateProfile({ diplomaDownloaded: true });
+  setProfile(updated);
+  setCtaDone(true);
 };
 
-const handleDownloadImage = () => {
-
-playClick();
-
-if (!shareImageUrl) return;
-
-const link = document.createElement('a');
-
-link.href = shareImageUrl;
-
-link.download = 'guibour-wow-score.png';
-
-link.click();
-
+const handleCTAImage = () => {
+  playClick();
+  if (!shareImageUrl) return;
+  const link = document.createElement('a');
+  link.href = shareImageUrl;
+  link.download = 'guibour-wow-score.png';
+  link.click();
+  setCtaDone(true);
 };
 
 return (
@@ -612,85 +649,41 @@ return (
           </div>
         </div>
 
-        {/* Action buttons — text labels, no emojis */}
-        <div style={{ display: 'flex', gap: '8px' }}>
-          <button onClick={() => { playClick(); onRestart(); }} style={{
-            flex: 1,
-            fontFamily: "'Lilita One', cursive",
-            fontSize: '17px',
-            letterSpacing: '3px',
-            color: '#fff',
-            background: 'linear-gradient(135deg,#0047AB,#007B8A)',
-            border: '2px solid #00C8BE',
-            padding: '14px',
-            cursor: 'pointer',
-            borderRadius: '4px',
-            transition: 'all .2s',
-          }}>REJOUER</button>
-          <button onClick={handleShare} style={{
-            padding: '14px 16px',
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '10px',
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#00C8BE',
-            background: 'rgba(0,71,171,0.2)',
-            border: '1px solid #1A3E7A',
-            cursor: 'pointer',
-            borderRadius: '4px',
-          }}>{copied ? 'COPIÉ' : 'COPIER'}</button>
-          <button onClick={handleDownloadCertificate} style={{
-            padding: '14px 14px',
-            fontFamily: "'Orbitron', sans-serif",
-            fontSize: '10px',
-            fontWeight: 700,
-            letterSpacing: '1px',
-            color: '#FFE033',
-            background: 'rgba(58,42,0,0.3)',
-            border: '1px solid #3A2A00',
-            cursor: 'pointer',
-            borderRadius: '4px',
-          }}>DIPLÔME</button>
-        </div>
+        {/* REJOUER — always visible */}
+        <button onClick={() => { playClick(); onRestart(); }} style={{
+          width: '100%',
+          fontFamily: "'Lilita One', cursive",
+          fontSize: '20px',
+          letterSpacing: '4px',
+          color: '#fff',
+          background: 'linear-gradient(135deg,#0047AB,#007B8A)',
+          border: '2px solid #00C8BE',
+          padding: '16px',
+          cursor: 'pointer',
+          borderRadius: '4px',
+          transition: 'all .2s',
+        }}>REJOUER</button>
 
-        {/* Share row — clear text labels */}
-        {shareImageUrl && (
-          <div style={{ padding: '12px 14px', background: 'rgba(10,24,40,.6)', border: '1px solid #1A3E7A', borderRadius: '4px' }}>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#A8D8FF', letterSpacing: '2px', marginBottom: '10px', fontWeight: 700 }}>PARTAGER TON SCORE</div>
-            <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap' }}>
-              <button onClick={handleInstagramShare} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', fontWeight: 700, padding: '8px 14px', background: 'linear-gradient(135deg,#C13584,#E1306C)', color: '#fff', border: 'none', cursor: 'pointer', borderRadius: '4px', letterSpacing: '1px' }}>INSTAGRAM</button>
-              <button onClick={handleWhatsAppShare} disabled={waShareCount >= 3} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', fontWeight: 700, padding: '8px 14px', background: waShareCount >= 3 ? '#1A3E7A' : '#25D366', color: '#fff', border: 'none', cursor: waShareCount >= 3 ? 'not-allowed' : 'pointer', borderRadius: '4px', opacity: waShareCount >= 3 ? 0.5 : 1, letterSpacing: '1px' }}>WHATSAPP</button>
-              <button onClick={handleDownloadImage} style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', fontWeight: 700, padding: '8px 14px', background: 'transparent', color: '#5B9BD5', border: '1px solid #1A3E7A', cursor: 'pointer', borderRadius: '4px', letterSpacing: '1px' }}>IMAGE</button>
-            </div>
-          </div>
+        {/* ── Single smart CTA — changes based on profile ── */}
+        {!isVictory && !ctaDone && (
+          <SmartCTA
+            type={currentCTA}
+            onEmail={handleCTAEmail}
+            onWhatsApp={handleCTAWhatsApp}
+            onInstagram={handleCTAInstagram}
+            onDiploma={handleCTADiploma}
+            onImage={handleCTAImage}
+          />
         )}
 
-        {/* RTT bonus email input — clearer messaging */}
-        {showRTTPanel && !isVictory && !emailGiven && (
-          <div style={{ background: 'rgba(26,16,0,.6)', border: '1px solid #5A4400', padding: '14px 16px', borderRadius: '4px' }}>
-            <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '15px', color: '#FFE033', letterSpacing: '1px', marginBottom: '4px' }}>BONUS +1 RTT</div>
-            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '10px', color: '#C8A040', letterSpacing: '1px', marginBottom: '10px', lineHeight: 1.5 }}>
-              Laisse ton email pour débloquer un jour de RTT bonus à ta prochaine partie !
-            </div>
-            <div style={{ display: 'flex', gap: '6px' }}>
-              <input type="email" placeholder="ton@email.com" id="rtt-email-input" style={{ flex: 1, padding: '10px 12px', fontFamily: "'Orbitron', sans-serif", fontSize: '11px', background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none', borderRadius: '4px' }} />
-              <button onClick={() => {
-                playClick();
-                const input = document.getElementById('rtt-email-input') as HTMLInputElement;
-                if (input?.value?.includes('@')) {
-                  const stored = localStorage.getItem('guibour-identity');
-                  if (stored) { const id = JSON.parse(stored); id.email = input.value; id.bonusRTT = (id.bonusRTT ?? 0) + 1; localStorage.setItem('guibour-identity', JSON.stringify(id)); }
-                  fetch('/api/email-collect', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email: input.value, pseudo, source: 'rtt-bonus' }) }).catch(() => {});
-                  setEmailGiven(true);
-                }
-              }} style={{ padding: '10px 18px', background: '#FFE033', color: '#0A1520', border: 'none', cursor: 'pointer', fontFamily: "'Lilita One', cursive", fontSize: '14px', fontWeight: 700, borderRadius: '4px' }}>OK</button>
-            </div>
-          </div>
-        )}
-
-        {emailGiven && !isVictory && (
-          <div style={{ textAlign: 'center', fontFamily: "'Lilita One', cursive", fontSize: '14px', color: '#00C8BE', padding: '12px', border: '1px solid rgba(0,200,190,.3)', borderRadius: '4px', letterSpacing: '1px' }}>
-            EMAIL ENREGISTRÉ — +1 RTT AU PROCHAIN RUN
+        {ctaDone && !isVictory && (
+          <div style={{
+            textAlign: 'center', fontFamily: "'Lilita One', cursive", fontSize: '15px',
+            color: '#00C8BE', padding: '14px', border: '1px solid rgba(0,200,190,.3)',
+            borderRadius: '4px', letterSpacing: '2px',
+            animation: 'fadeIn 0.3s ease-out',
+          }}>
+            {currentCTA === 'email' ? 'BONUS +1 RTT ACTIVÉ' : 'MERCI'}
           </div>
         )}
       </div>
