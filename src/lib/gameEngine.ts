@@ -1101,7 +1101,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const frameIndex = Math.floor(spriteFrameCounter / gameFramesPerSpriteFrame) % activeSprite.totalFrames;
     const ar = activeSprite.frameWidth / activeSprite.frameHeight;
     const drawW = Math.round(drawH * ar);
-    const drawY = player.y - drawH + Math.round(drawH * 0.04);
+    const drawY = player.y - drawH + Math.round(drawH * 0.02);
     drawSpriteFrame(ctx, activeSprite, frameIndex, player.x - drawW / 2, drawY, drawW, drawH);
   } else if (idleImg) {
     // Idle: scale up so Guibour's feet touch the ground bar and looks imposing
@@ -1110,7 +1110,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
     const idleW = Math.round(idleH * idleAR);
     // Align feet with the floor — offset increased to lower the character slightly
-    const idleY = player.y - idleH + Math.round(idleH * 0.17);
+    const idleY = player.y - idleH + Math.round(idleH * 0.14);
     ctx.drawImage(idleImg, player.x - idleW / 2, idleY, idleW, idleH);
   } else {
     // Fallback rectangle
