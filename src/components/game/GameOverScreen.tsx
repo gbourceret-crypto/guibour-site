@@ -276,7 +276,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
 
   // ── Share image generation ──
   useEffect(() => {
-    if (defeatStep !== 'results' && !isVictory) return;
+    if (defeatStep !== 'share' && !isVictory) return;
     if (canvasGenerated.current) return;
     canvasGenerated.current = true;
     try { setShareImageUrl(generateShareImage(pseudo, level, player.score)); } catch {}
