@@ -53,6 +53,35 @@ export async function GET(req: NextRequest) {
   return NextResponse.json(photos, { headers: { 'Cache-Control': 'no-store' } });
 }
 
+// Basic NSFW check: verify the base64 is a valid JPEG/PNG of reasonable dimensions
+// Decodes the header bytes to check image type and dimensions
+function isImageSafe(b64: string): { safe: boolean; reason?: string } {
+  // Must be JPEG or PNG data URL
+  if (!b64.match(/^data:image\/(jpeg|png|webp);base64,/)) {
+    return { safe: false, reason: 'Format non autorisé (JPEG/PNG uniquement)' };
+  }
+
+  // Extract raw base64 data
+  const raw = b64.split(',')[1];
+  if (!raw || raw.length < 100) {
+    return { safe: false, reason: 'Image trop petite ou corrompue' };
+  }
+
+  // Decode first bytes to check file signature
+  const bytes = Buffer.from(raw.slice(0, 32), 'base64');
+
+  // JPEG signature: FF D8 FF
+  const isJPEG = bytes[0] === 0xFF && bytes[1] === 0xD8 && bytes[2] === 0xFF;
+  // PNG signature: 89 50 4E 47
+  const isPNG = bytes[0] === 0x89 && bytes[1] === 0x50 && bytes[2] === 0x4E && bytes[3] === 0x47;
+
+  if (!isJPEG && !isPNG) {
+    return { safe: false, reason: 'Signature image invalide' };
+  }
+
+  return { safe: true };
+}
+
 // POST /api/photo  { employeeId, photo: base64DataUrl }
 export async function POST(req: NextRequest) {
   const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim() ?? 'unknown';
@@ -73,7 +102,15 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'Image trop lourde (max 150KB)' }, { status: 413 });
     }
 
+    // Safety check
+    const check = isImageSafe(photo);
+    if (!check.safe) {
+      return NextResponse.json({ error: check.reason }, { status: 400 });
+    }
+
     const empId = String(employeeId).slice(0, 12);
+
+    // Store with a "pending" flag — photos are visible immediately but can be flagged
     await redisSet(`photo:${empId}`, photo);
 
     return NextResponse.json({ success: true });

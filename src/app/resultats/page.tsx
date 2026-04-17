@@ -206,12 +206,17 @@ export default function ResultatsPage() {
       if (Array.isArray(data.entries)) {
         setBoard(data.entries);
         setLastUpdate(new Date().toLocaleTimeString('fr-FR'));
-        // Fetch photos for top 3
-        const ids = data.entries.slice(0, 3).map((e: LeaderboardEntry) => e.employeeId).filter(Boolean);
-        if (ids.length > 0) {
-          const pRes = await fetch(`/api/photo?ids=${ids.join(',')}`, { cache: 'no-store' });
-          const pData = await pRes.json() as Record<string, string>;
-          setPhotos(pData);
+        // Fetch photos for all players (batched by 10)
+        const allIds = data.entries.map((e: LeaderboardEntry) => e.employeeId).filter(Boolean);
+        if (allIds.length > 0) {
+          const allPhotos: Record<string, string> = {};
+          for (let i = 0; i < allIds.length; i += 10) {
+            const batch = allIds.slice(i, i + 10);
+            const pRes = await fetch(`/api/photo?ids=${batch.join(',')}`, { cache: 'no-store' });
+            const pData = await pRes.json() as Record<string, string>;
+            Object.assign(allPhotos, pData);
+          }
+          setPhotos(allPhotos);
         }
       }
     } catch { /* silently fail */ } finally { setLoading(false); }
@@ -258,6 +263,14 @@ export default function ResultatsPage() {
 
   return (
     <div className="min-h-screen" style={{ background: '#0E2660' }}>
+      {/* Hidden file input for photo upload */}
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/jpeg,image/png,image/webp"
+        style={{ display: 'none' }}
+        onChange={handleFileChange}
+      />
       <ExcelNav />
       <ExcelChrome formulaText={`=RANK(JOUEURS) // TOTAL:${board.length} // W.O.W_LEADERBOARD`} breadcrumb="ETAGE 1 > CLASSEMENT">
 
@@ -330,7 +343,7 @@ export default function ResultatsPage() {
                 }}>
                   PODIUM
                   <span style={{ flex: 1, height: '1px', background: 'linear-gradient(to right,rgba(0,255,235,.2),transparent)' }} />
-                  {myEmpId && board.slice(0,3).some(e => e.employeeId === myEmpId) && (
+                  {myEmpId && (
                     <span style={{
                       fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
                       color: '#00FFEE', letterSpacing: '2px', opacity: .75,
@@ -436,9 +449,9 @@ export default function ResultatsPage() {
                           display: 'flex', alignItems: 'center',
                         }}>{i + 1}</div>
 
-                        {/* Pseudo */}
+                        {/* Pseudo + Photo */}
                         <div style={{
-                          padding: '12px 14px',
+                          padding: '8px 14px',
                           fontFamily: "'Orbitron', sans-serif", fontSize: '12px',
                           color: isCurrentPlayer ? '#00FFEE' : isMedal ? '#E0F0FF' : '#4A6A88',
                           fontWeight: i === 0 ? 700 : 400,
@@ -446,8 +459,27 @@ export default function ResultatsPage() {
                           display: 'flex', alignItems: 'center', gap: '8px',
                           textShadow: isCurrentPlayer ? '0 0 8px rgba(0,255,235,.5)' : 'none',
                         }}>
+                          {/* Avatar / photo */}
+                          <div style={{
+                            width: '32px', height: '32px', borderRadius: '50%', flexShrink: 0,
+                            border: `2px solid ${isMedal ? rc! : isCurrentPlayer ? '#00C8BE' : '#1A3E7A'}`,
+                            overflow: 'hidden', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            background: 'rgba(14,38,96,.6)',
+                            cursor: isCurrentPlayer ? 'pointer' : 'default',
+                          }}
+                            onClick={() => isCurrentPlayer && handleUploadPhoto(i + 1)}
+                            title={isCurrentPlayer ? 'Ajouter ta photo' : undefined}
+                          >
+                            {entry.employeeId && photos[entry.employeeId] ? (
+                              <img src={photos[entry.employeeId]} alt="" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                            ) : (
+                              <span style={{ fontSize: '14px', opacity: 0.4 }}>
+                                {isCurrentPlayer ? '📷' : '👤'}
+                              </span>
+                            )}
+                          </div>
                           {i === 0 && <span>👑</span>}
-                          {isCurrentPlayer && <span style={{ fontSize: '10px' }}>▶</span>}
+                          {isCurrentPlayer && !photos[myEmpId!] && <span style={{ fontSize: '11px', opacity: 0.5 }}>📷</span>}
                           {entry.name}
                         </div>
 
