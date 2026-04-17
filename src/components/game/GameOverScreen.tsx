@@ -357,6 +357,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
               background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px', cursor: 'pointer', borderRadius: '4px',
             }}>REJOUER</button>
             <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />
+            <ReferralChallenge pseudo={pseudo} />
           </div>
           <div style={{ background: '#004D48', padding: '6px 14px', display: 'flex', justifyContent: 'space-between' }}>
             <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,.5)' }}>guibour.fr</span>
@@ -589,6 +590,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
                 cursor: 'pointer', borderRadius: '4px',
               }}>REJOUER</button>
               <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />
+              <ReferralChallenge pseudo={pseudo} />
             </div>
             <div style={{ background: '#5A0000', padding: '6px 14px', display: 'flex', justifyContent: 'space-between' }}>
               <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: 'rgba(255,255,255,.5)' }}>guibour.fr</span>
@@ -630,6 +632,86 @@ function RTTOptionEmail({ onSubmit }: { onSubmit: (email: string) => void }) {
           fontFamily: "'Lilita One', cursive", fontSize: '14px', borderRadius: '4px',
         }}>OK</button>
       </div>
+    </div>
+  );
+}
+
+// ── Referral Challenge sub-component ──────────────────────────────────────────
+
+function ReferralChallenge({ pseudo }: { pseudo: string }) {
+  const inputRef = useRef<HTMLInputElement>(null);
+  const [status, setStatus] = useState<'idle' | 'sending' | 'sent' | 'error'>('idle');
+
+  const handleSend = async () => {
+    playClick();
+    const email = inputRef.current?.value?.trim();
+    if (!email || !email.includes('@') || !email.includes('.')) return;
+    setStatus('sending');
+    try {
+      const res = await fetch('/api/referral', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ referrerPseudo: pseudo, friendEmail: email }),
+      });
+      if (res.ok) {
+        setStatus('sent');
+      } else {
+        setStatus('error');
+        setTimeout(() => setStatus('idle'), 3000);
+      }
+    } catch {
+      setStatus('error');
+      setTimeout(() => setStatus('idle'), 3000);
+    }
+  };
+
+  return (
+    <div style={{
+      marginTop: '10px',
+      padding: '14px',
+      background: 'rgba(40,25,0,.4)',
+      border: '1px solid #8B6508',
+      borderRadius: '4px',
+      animation: 'fadeIn 0.4s ease-out',
+    }}>
+      <div style={{ textAlign: 'center', marginBottom: '10px' }}>
+        <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '14px', color: '#FFB347', letterSpacing: '2px' }}>
+          ⚔️ DÉFIE UN COLLÈGUE
+        </div>
+        <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '8px', color: '#C8A040', letterSpacing: '1px', marginTop: '4px' }}>
+          ENVOIE UN DÉFI PAR EMAIL — GAGNE +1 RTT SI TON AMI JOUE
+        </div>
+      </div>
+      {status === 'sent' ? (
+        <div style={{ textAlign: 'center', padding: '10px', color: '#00C8BE', fontFamily: "'Orbitron', sans-serif", fontSize: '10px', letterSpacing: '1px' }}>
+          ✅ DÉFI ENVOYÉ ! RTT DÉBLOQUÉ QUAND IL JOUE
+        </div>
+      ) : (
+        <div style={{ display: 'flex', gap: '6px' }}>
+          <input
+            ref={inputRef}
+            type="email"
+            placeholder="email-du-collegue@enterprise.com"
+            style={{
+              flex: 1, padding: '10px 12px', fontFamily: "'Orbitron', sans-serif", fontSize: '10px',
+              background: '#091E4A', color: '#fff', border: '1px solid #1A3E7A', outline: 'none', borderRadius: '4px',
+              minWidth: 0,
+            }}
+          />
+          <button
+            onClick={handleSend}
+            disabled={status === 'sending'}
+            style={{
+              padding: '10px 16px', background: status === 'sending' ? '#5A4400' : '#FFB347', color: '#0A1520',
+              border: 'none', cursor: status === 'sending' ? 'wait' : 'pointer',
+              fontFamily: "'Lilita One', cursive", fontSize: '11px', borderRadius: '4px', whiteSpace: 'nowrap',
+              letterSpacing: '1px',
+            }}
+          >
+            {status === 'sending' ? '...' : status === 'error' ? 'ERREUR' : 'ENVOYER LE DÉFI'}
+          </button>
+        </div>
+      )}
     </div>
   );
 }

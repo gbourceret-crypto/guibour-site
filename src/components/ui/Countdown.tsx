@@ -23,123 +23,127 @@ function computeTimeLeft(): TimeLeft {
 
 function pad(n: number) { return String(n).padStart(2, '0'); }
 
-function Digit({ value, urgent }: { value: string; urgent: boolean }) {
-  return (
-    <span style={{ position: 'relative', display: 'inline-block' }}>
-      <span style={{
-        fontFamily: "'DSEG7', monospace",
-        fontSize: 'clamp(18px, 2.6vw, 32px)',
-        color: 'rgba(255,34,34,0.10)',
-        letterSpacing: '1px',
-        position: 'absolute', top: 0, left: 0,
-        userSelect: 'none',
-      }}>88</span>
-      <span style={{
-        fontFamily: "'DSEG7', monospace",
-        fontSize: 'clamp(18px, 2.6vw, 32px)',
-        color: urgent ? '#FF0000' : '#FF2222',
-        letterSpacing: '1px',
-        textShadow: urgent
-          ? '0 0 14px rgba(255,0,0,.9), 0 0 30px rgba(255,0,0,.6)'
-          : '0 0 10px rgba(255,34,34,.8), 0 0 24px rgba(255,34,34,.4)',
-        position: 'relative', zIndex: 1,
-        animation: urgent ? 'urgentPulse 0.8s ease-in-out infinite' : undefined,
-      }}>{value}</span>
-    </span>
-  );
-}
-
-function Sep({ urgent }: { urgent: boolean }) {
-  return (
-    <span style={{
-      fontFamily: "'DSEG7', monospace",
-      fontSize: 'clamp(18px, 2.6vw, 32px)',
-      color: urgent ? '#FF0000' : '#FF2222',
-      textShadow: '0 0 10px rgba(255,34,34,.7)',
-      opacity: 0.65,
-      userSelect: 'none',
-      margin: '0 2px',
-    }}>:</span>
-  );
-}
-
 export default function Countdown() {
   const [t, setT] = useState<TimeLeft | null>(null);
+  const [closed, setClosed] = useState(false);
+  const [visible, setVisible] = useState(false);
 
   useEffect(() => {
+    // Check sessionStorage for dismissal
+    if (typeof window !== 'undefined' && sessionStorage.getItem('concert-banner-closed')) {
+      setClosed(true);
+    }
     setT(computeTimeLeft());
     const id = setInterval(() => setT(computeTimeLeft()), 1000);
-    return () => clearInterval(id);
+    // Slide-up animation with 0.5s delay
+    const timer = setTimeout(() => setVisible(true), 500);
+    return () => { clearInterval(id); clearTimeout(timer); };
   }, []);
 
-  if (!t || t.expired) return null;
+  if (!t || t.expired || closed) return null;
 
-  const urgent = t.days < 7;
+  const handleClose = () => {
+    setClosed(true);
+    sessionStorage.setItem('concert-banner-closed', 'true');
+  };
 
   return (
-    <div style={{
-      position: 'fixed',
-      bottom: '28px',
-      left: '48px',
-      right: 0,
-      zIndex: 30,
-      display: 'flex',
-      flexDirection: 'column',
-      alignItems: 'center',
-      gap: '6px',
-      pointerEvents: 'auto',
-    }}>
-      <style>{`@keyframes urgentPulse {
-        0%, 100% { opacity: 1; }
-        50% { opacity: 0.5; }
-      }`}</style>
-
-      {/* Label */}
+    <>
+      <style>{`
+        @keyframes concertSlideUp {
+          from { transform: translateY(100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
       <div style={{
-        fontFamily: "'Orbitron', sans-serif",
-        fontWeight: 700,
-        fontSize: 'clamp(8px, 1vw, 11px)',
-        color: urgent ? '#FF0000' : '#FF3333',
-        letterSpacing: '6px',
-        textShadow: '0 0 10px rgba(255,34,34,.65), 0 0 22px rgba(255,34,34,.25)',
-        animation: urgent ? 'urgentPulse 1s ease-in-out infinite' : undefined,
+        position: 'fixed',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        zIndex: 45,
+        background: 'linear-gradient(90deg, #8B0000, #CC0000, #8B0000)',
+        padding: '10px 16px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '16px',
+        flexWrap: 'wrap',
+        transform: visible ? 'translateY(0)' : 'translateY(100%)',
+        opacity: visible ? 1 : 0,
+        animation: visible ? 'concertSlideUp 0.4s ease-out' : undefined,
+        transition: 'transform 0.4s ease-out, opacity 0.4s ease-out',
+        boxShadow: '0 -4px 20px rgba(0,0,0,.5)',
       }}>
-        {urgent ? 'CONCERT DANS :' : 'FIN DU JEU — CONCERT LA BOULE NOIRE :'}
-      </div>
+        {/* Close button */}
+        <button
+          onClick={handleClose}
+          aria-label="Fermer"
+          style={{
+            position: 'absolute',
+            top: '4px',
+            right: '8px',
+            background: 'none',
+            border: 'none',
+            color: 'rgba(255,255,255,.6)',
+            fontSize: '16px',
+            cursor: 'pointer',
+            padding: '4px',
+            lineHeight: 1,
+          }}
+        >
+          ✕
+        </button>
 
-      {/* Chiffres */}
-      <div style={{ display: 'flex', alignItems: 'center', gap: '4px', lineHeight: 1 }}>
-        <Digit value={pad(t.days)} urgent={urgent} />
-        <Sep urgent={urgent} />
-        <Digit value={pad(t.hours)} urgent={urgent} />
-        <Sep urgent={urgent} />
-        <Digit value={pad(t.minutes)} urgent={urgent} />
-        <Sep urgent={urgent} />
-        <Digit value={pad(t.seconds)} urgent={urgent} />
-      </div>
+        {/* Concert info */}
+        <div style={{
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: 'clamp(9px, 1.4vw, 12px)',
+          color: '#FFFFFF',
+          letterSpacing: '2px',
+          fontWeight: 700,
+          textShadow: '0 0 10px rgba(0,0,0,.5)',
+          textAlign: 'center',
+        }}>
+          🎫 CONCERT LA BOULE NOIRE — 24 JUIN — PLACES LIMITÉES
+        </div>
 
-      {/* CTA Billetterie */}
-      <a
-        href={BILLETTERIE_URL}
-        target="_blank"
-        rel="noopener noreferrer"
-        style={{
-          fontFamily: "'Lilita One', cursive",
-          fontSize: 'clamp(10px, 1.3vw, 14px)',
-          letterSpacing: '3px',
-          color: '#fff',
-          background: urgent ? 'linear-gradient(135deg, #CC0000, #880000)' : 'linear-gradient(135deg, #8B0000, #5A0000)',
-          border: '1px solid rgba(255,68,68,.5)',
-          padding: '6px 20px',
-          borderRadius: '3px',
-          textDecoration: 'none',
-          textShadow: '1px 1px 0 rgba(0,0,0,.5)',
-          transition: 'all 0.2s',
-          animation: urgent ? 'urgentPulse 1.5s ease-in-out infinite' : undefined,
-        }}
-      >
-        RÉSERVER MA PLACE
-      </a>
-    </div>
+        {/* Countdown compact */}
+        <div style={{
+          fontFamily: "'Orbitron', sans-serif",
+          fontSize: 'clamp(10px, 1.4vw, 13px)',
+          color: '#FFD700',
+          letterSpacing: '1px',
+          fontWeight: 700,
+          textShadow: '0 0 8px rgba(255,215,0,.5)',
+          whiteSpace: 'nowrap',
+        }}>
+          J-{t.days} {pad(t.hours)}:{pad(t.minutes)}:{pad(t.seconds)}
+        </div>
+
+        {/* CTA Button */}
+        <a
+          href={BILLETTERIE_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{
+            fontFamily: "'Lilita One', cursive",
+            fontSize: 'clamp(10px, 1.3vw, 13px)',
+            letterSpacing: '3px',
+            color: '#fff',
+            background: '#FF0000',
+            border: '1px solid rgba(255,255,255,.3)',
+            padding: '8px 20px',
+            borderRadius: '3px',
+            textDecoration: 'none',
+            textShadow: '1px 1px 0 rgba(0,0,0,.5)',
+            boxShadow: '0 0 16px rgba(255,0,0,.6), 0 0 32px rgba(255,0,0,.3)',
+            transition: 'all 0.2s',
+            whiteSpace: 'nowrap',
+          }}
+        >
+          RÉSERVER
+        </a>
+      </div>
+    </>
   );
 }

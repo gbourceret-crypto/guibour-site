@@ -12,6 +12,7 @@ import { DayNightTheme } from '@/hooks/useDayNight';
 import { useTheme } from '@/contexts/ThemeContext';
 import { playClick } from '@/lib/sounds';
 import Typewriter from '@/components/ui/Typewriter';
+import Testimonials from '@/components/ui/Testimonials';
 
 const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
   ssr: false,
@@ -21,14 +22,58 @@ const GameCanvas = dynamic(() => import('@/components/game/GameCanvas'), {
 import Countdown from '@/components/ui/Countdown';
 import GlobeO from '@/components/ui/GlobeO';
 
+function AnimatedCounter({ target }: { target: number }) {
+  const [count, setCount] = useState(0);
+
+  useEffect(() => {
+    if (target <= 0) return;
+    const duration = 1500;
+    const start = performance.now();
+    let raf: number;
+    const animate = (now: number) => {
+      const elapsed = now - start;
+      const progress = Math.min(elapsed / duration, 1);
+      const eased = 1 - Math.pow(1 - progress, 3);
+      setCount(Math.floor(eased * target));
+      if (progress < 1) raf = requestAnimationFrame(animate);
+    };
+    raf = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(raf);
+  }, [target]);
+
+  return (
+    <div style={{
+      fontFamily: "'Orbitron', sans-serif",
+      fontSize: '10px',
+      color: '#5B9BD5',
+      letterSpacing: '3px',
+      opacity: 0.7,
+      marginTop: '24px',
+      textAlign: 'center',
+      zIndex: 2,
+      position: 'relative',
+    }}>
+      🏢 {count.toLocaleString('fr-FR')} EMPLOYÉS ONT JOUÉ
+    </div>
+  );
+}
+
 function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightTheme }) {
   const containerRef = useRef<HTMLDivElement>(null);
   const logoRef = useRef<HTMLHeadingElement>(null);
   const systemRef = useRef<HTMLDivElement>(null);
   const isTouchDevice = useRef(false);
+  const [playerCount, setPlayerCount] = useState<number | null>(null);
 
   useEffect(() => {
     isTouchDevice.current = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+  }, []);
+
+  useEffect(() => {
+    fetch('/api/players')
+      .then(r => r.json())
+      .then(d => { if (typeof d.count === 'number') setPlayerCount(d.count); })
+      .catch(() => {});
   }, []);
 
   const handleMouseMove = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
@@ -172,6 +217,12 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           animation: 'shimmer 4s ease-in-out infinite',
         }} />
       </button>
+
+      {/* Social proof counter */}
+      {playerCount !== null && playerCount > 0 && <AnimatedCounter target={playerCount} />}
+
+      {/* Testimonials carousel */}
+      <Testimonials />
     </div>
   );
 }
