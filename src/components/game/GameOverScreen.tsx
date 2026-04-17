@@ -19,7 +19,7 @@ interface Props {
   replayUrl?: string | null;
 }
 
-type DefeatStep = 'crack' | 'rtt-offer' | 'rtt-options' | 'results';
+type DefeatStep = 'crack' | 'replay-offer' | 'loser' | 'share';
 
 // ── Player profile tracker (localStorage) ─────────────────────────────────────
 
@@ -240,10 +240,10 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
     }
   }, [saved, pseudo, player, level, playerIdentity]);
 
-  // ── Defeat flow: crack → rtt-offer after 2.5s ──
+  // ── Defeat flow: crack (2.5s) → replay-offer ──
   useEffect(() => {
     if (isVictory) return;
-    const t = setTimeout(() => setDefeatStep('rtt-offer'), 2500);
+    const t = setTimeout(() => setDefeatStep('replay-offer'), 2500);
     return () => clearTimeout(t);
   }, [isVictory]);
 
@@ -369,19 +369,23 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
   }
 
   // ══════════════════════════════════════════════════════════════════════════
-  // DEFEAT FLOW — Multi-step
+  // DEFEAT FLOW — 4 steps séquentiels
+  // 1) crack: fissures + "FIN DE CARRIÈRE" (2.5s, jeu visible derrière)
+  // 2) replay-offer: "VEUX-TU REJOUER ?" avec toutes les CTA pour gagner un RTT
+  // 3) loser: "TU ES UN LOSER" (s'il refuse)
+  // 4) share: partage ton score, diplôme, referral
   // ══════════════════════════════════════════════════════════════════════════
 
   return (
     <div className="absolute inset-0 z-30 flex flex-col items-center justify-center"
-      style={{ background: 'rgba(4,0,0,0.55)', overflowY: 'auto' }}>
+      style={{ background: defeatStep === 'crack' ? 'rgba(4,0,0,0.45)' : 'rgba(4,0,0,0.7)', transition: 'background 0.5s', overflowY: 'auto' }}>
 
       <canvas ref={confettiCanvasRef} style={{ position: 'fixed', top: 0, left: 0, width: '100%', height: '100%', pointerEvents: 'none', zIndex: 50 }} />
 
-      {/* Screen crack overlay — always visible during defeat */}
-      <ScreenCrack />
+      {/* Screen crack overlay — visible during crack step only */}
+      {defeatStep === 'crack' && <ScreenCrack />}
 
-      {/* ═══ STEP 1: CRACK — Just the title, game visible behind ═══ */}
+      {/* ═══ STEP 1: CRACK — Fissures + titre seul, jeu visible derrière ═══ */}
       {defeatStep === 'crack' && (
         <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease-out' }}>
           <div style={{
@@ -391,213 +395,181 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
           }}>
             FIN DE CARRIÈRE
           </div>
-          <div style={{
-            fontFamily: "'Lilita One', cursive", fontSize: 'clamp(16px, 3.5vw, 26px)', color: '#FF6666',
-            letterSpacing: '8px', marginTop: '6px', textShadow: '0 0 20px rgba(255,0,0,.5)',
-          }}>
-            TU ES UN LOSER
-          </div>
         </div>
       )}
 
-      {/* ═══ STEP 2: RTT OFFER — "Voulez-vous gagner un RTT ?" ═══ */}
-      {defeatStep === 'rtt-offer' && (
-        <>
-          <div style={{ textAlign: 'center', marginBottom: '16px', animation: 'fadeIn 0.3s ease-out' }}>
-            <div style={{
-              fontFamily: "'Lilita One', cursive", fontSize: 'clamp(28px, 7vw, 48px)', color: '#FF1111',
-              letterSpacing: '4px', lineHeight: 1,
-              textShadow: '0 0 20px rgba(255,0,0,.5), 3px 4px 0 rgba(80,0,0,.8)',
-            }}>
-              FIN DE CARRIÈRE
+      {/* ═══ STEP 2: REPLAY OFFER — "Veux-tu rejouer ?" + CTA pour gagner RTT ═══ */}
+      {defeatStep === 'replay-offer' && (
+        <Popup borderColor="#FFE033">
+          <div style={{ background: 'rgba(58,42,0,.3)', padding: '12px 16px', borderBottom: '1px solid #5A4400' }}>
+            <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FFE033', letterSpacing: '3px', textShadow: '0 0 8px rgba(255,224,51,.5)' }}>
+              SERVICE DES RESSOURCES HUMAINES
             </div>
           </div>
-
-          <Popup borderColor="#FFE033">
-            <div style={{ background: 'rgba(58,42,0,.3)', padding: '12px 16px', borderBottom: '1px solid #5A4400' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FFE033', letterSpacing: '3px', textShadow: '0 0 8px rgba(255,224,51,.5)' }}>
-                SERVICE DES RESSOURCES HUMAINES
-              </div>
-            </div>
-            <div style={{ padding: '28px 24px', textAlign: 'center' }}>
-              <div style={{ fontSize: '48px', marginBottom: '12px' }}>📋</div>
-              <div style={{
-                fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FFE033',
-                letterSpacing: '2px', marginBottom: '8px',
-              }}>
-                VOULEZ-VOUS GAGNER UN RTT ?
-              </div>
-              <div style={{
-                fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#C8A040',
-                letterSpacing: '1px', lineHeight: 1.8, marginBottom: '24px',
-              }}>
-                UN JOUR DE RTT VOUS PERMET DE CONTINUER<br />LA PARTIE DEPUIS CET ÉTAGE
-              </div>
-
-              <div style={{ display: 'flex', gap: '12px' }}>
-                <button onClick={() => { playClick(); setDefeatStep('rtt-options'); }} style={{
-                  flex: 1, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '18px',
-                  letterSpacing: '3px', color: '#000', background: '#FFE033', border: 'none',
-                  cursor: 'pointer', borderRadius: '4px', transition: 'all .2s',
-                }}>
-                  OUI
-                </button>
-                <button onClick={() => { playClick(); setDefeatStep('results'); }} style={{
-                  flex: 1, padding: '16px', fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
-                  letterSpacing: '2px', color: '#666', background: 'rgba(255,255,255,.05)',
-                  border: '1px solid #333', cursor: 'pointer', borderRadius: '4px',
-                }}>
-                  NON MERCI
-                </button>
-              </div>
-            </div>
-          </Popup>
-        </>
-      )}
-
-      {/* ═══ STEP 3a: RTT OPTIONS — Ways to earn an RTT ═══ */}
-      {defeatStep === 'rtt-options' && (
-        <>
-          <div style={{ textAlign: 'center', marginBottom: '16px' }}>
+          <div style={{ padding: '24px', textAlign: 'center' }}>
+            <div style={{ fontSize: '48px', marginBottom: '12px' }}>📋</div>
             <div style={{
-              fontFamily: "'Lilita One', cursive", fontSize: 'clamp(22px, 5vw, 36px)', color: '#FFE033',
-              letterSpacing: '3px', textShadow: '0 0 14px rgba(255,224,51,.4)',
+              fontFamily: "'Lilita One', cursive", fontSize: '24px', color: '#FFE033',
+              letterSpacing: '2px', marginBottom: '8px',
             }}>
-              GAGNEZ VOTRE RTT
+              VEUX-TU REJOUER ?
             </div>
-          </div>
-
-          <Popup borderColor="#FFE033">
-            <div style={{ background: 'rgba(58,42,0,.3)', padding: '12px 16px', borderBottom: '1px solid #5A4400' }}>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FFE033', letterSpacing: '3px' }}>
-                CHOISISSEZ UNE OPTION
-              </div>
+            <div style={{
+              fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#C8A040',
+              letterSpacing: '1px', lineHeight: 1.8, marginBottom: '24px',
+            }}>
+              GAGNE UN RTT POUR CONTINUER DEPUIS L'ÉTAGE {level}
             </div>
-            <div style={{ padding: '20px 22px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
 
-              {/* Option 1: Email */}
+            {/* CTA options pour gagner un RTT */}
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '16px', textAlign: 'left' }}>
+              {/* Email */}
               {!profile.email && !rttEarned && (
                 <RTTOptionEmail onSubmit={handleRTTEmail} />
               )}
 
-              {/* Option 2: Share on Twitter */}
+              {/* Share Twitter */}
               {!rttEarned && (
                 <button onClick={() => { playClick(); handleRTTShare('twitter'); }} style={{
-                  width: '100%', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px',
+                  width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px',
                   background: 'rgba(0,0,0,.4)', border: '1px solid #333', borderRadius: '4px', cursor: 'pointer',
                 }}>
-                  <span style={{ fontSize: '24px' }}>𝕏</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '14px', color: '#fff', letterSpacing: '1px' }}>PARTAGER SUR X</div>
-                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#666', letterSpacing: '1px' }}>TWEET POUR DÉBLOQUER +1 RTT</div>
+                  <span style={{ fontSize: '22px' }}>𝕏</span>
+                  <div>
+                    <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '13px', color: '#fff', letterSpacing: '1px' }}>PARTAGER SUR X</div>
+                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#666' }}>TWEET = +1 RTT</div>
                   </div>
                 </button>
               )}
 
-              {/* Option 3: Share on WhatsApp */}
+              {/* Share WhatsApp */}
               {!rttEarned && (
                 <button onClick={() => { playClick(); handleRTTShare('whatsapp'); }} style={{
-                  width: '100%', padding: '16px', display: 'flex', alignItems: 'center', gap: '12px',
-                  background: 'rgba(37,211,102,.1)', border: '1px solid #25D366', borderRadius: '4px', cursor: 'pointer',
+                  width: '100%', padding: '14px 16px', display: 'flex', alignItems: 'center', gap: '12px',
+                  background: 'rgba(37,211,102,.08)', border: '1px solid #25D366', borderRadius: '4px', cursor: 'pointer',
                 }}>
-                  <span style={{ fontSize: '24px' }}>💬</span>
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '14px', color: '#25D366', letterSpacing: '1px' }}>ENVOYER SUR WHATSAPP</div>
-                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#1A8A4A', letterSpacing: '1px' }}>PARTAGE POUR DÉBLOQUER +1 RTT</div>
+                  <span style={{ fontSize: '22px' }}>💬</span>
+                  <div>
+                    <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '13px', color: '#25D366', letterSpacing: '1px' }}>ENVOYER SUR WHATSAPP</div>
+                    <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#1A8A4A' }}>PARTAGE = +1 RTT</div>
                   </div>
                 </button>
               )}
 
-              {/* RTT earned confirmation */}
+              {/* RTT earned */}
               {rttEarned && (
                 <div style={{
-                  textAlign: 'center', padding: '20px', background: 'rgba(0,200,190,.08)',
-                  border: '1px solid rgba(0,200,190,.3)', borderRadius: '4px', animation: 'fadeIn 0.4s ease-out',
+                  textAlign: 'center', padding: '16px', background: 'rgba(0,200,190,.08)',
+                  border: '1px solid rgba(0,200,190,.3)', borderRadius: '4px', animation: 'fadeIn 0.3s ease-out',
                 }}>
-                  <div style={{ fontSize: '36px', marginBottom: '8px' }}>✅</div>
-                  <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '20px', color: '#00C8BE', letterSpacing: '2px' }}>
+                  <div style={{ fontSize: '32px', marginBottom: '4px' }}>✅</div>
+                  <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '18px', color: '#00C8BE', letterSpacing: '2px' }}>
                     +1 RTT DÉBLOQUÉ !
                   </div>
                 </div>
               )}
-
-              {/* Action buttons */}
-              <div style={{ display: 'flex', gap: '8px', marginTop: '6px' }}>
-                {rttEarned && (
-                  <button onClick={handleContinue} style={{
-                    flex: 2, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '16px',
-                    letterSpacing: '3px', color: '#fff',
-                    background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE',
-                    cursor: 'pointer', borderRadius: '4px',
-                  }}>
-                    CONTINUER LA PARTIE
-                  </button>
-                )}
-                <button onClick={() => { playClick(); setDefeatStep('results'); }} style={{
-                  flex: 1, padding: '16px', fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
-                  letterSpacing: '2px', color: '#666', background: 'rgba(255,255,255,.05)',
-                  border: '1px solid #333', cursor: 'pointer', borderRadius: '4px',
-                }}>
-                  {rttEarned ? 'VOIR RÉSULTATS' : 'ABANDONNER'}
-                </button>
-              </div>
             </div>
-          </Popup>
-        </>
+
+            {/* Action buttons */}
+            <div style={{ display: 'flex', gap: '8px' }}>
+              {rttEarned ? (
+                <button onClick={handleContinue} style={{
+                  flex: 2, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '18px',
+                  letterSpacing: '3px', color: '#fff',
+                  background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE',
+                  cursor: 'pointer', borderRadius: '4px',
+                }}>
+                  CONTINUER ▶
+                </button>
+              ) : (
+                <button onClick={() => { playClick(); onRestart(); }} style={{
+                  flex: 2, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '18px',
+                  letterSpacing: '3px', color: '#fff',
+                  background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE',
+                  cursor: 'pointer', borderRadius: '4px',
+                }}>
+                  REJOUER
+                </button>
+              )}
+              <button onClick={() => { playClick(); setDefeatStep('loser'); }} style={{
+                flex: 1, padding: '16px', fontFamily: "'Orbitron', sans-serif", fontSize: '11px',
+                letterSpacing: '2px', color: '#666', background: 'rgba(255,255,255,.05)',
+                border: '1px solid #333', cursor: 'pointer', borderRadius: '4px',
+              }}>
+                ABANDONNER
+              </button>
+            </div>
+          </div>
+        </Popup>
       )}
 
-      {/* ═══ STEP 4: RESULTS — Final defeat screen ═══ */}
-      {defeatStep === 'results' && (
-        <>
-          <div style={{ textAlign: 'center', marginBottom: '12px', animation: 'fadeIn 0.3s ease-out' }}>
+      {/* ═══ STEP 3: LOSER — "Tu es un loser" ═══ */}
+      {defeatStep === 'loser' && (
+        <div style={{ textAlign: 'center', animation: 'fadeIn 0.4s ease-out', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
+          <div>
             <div style={{
-              fontFamily: "'Lilita One', cursive", fontSize: 'clamp(28px, 7vw, 48px)', color: '#FF1111',
-              letterSpacing: '4px', lineHeight: 1,
-              textShadow: '0 0 20px rgba(255,0,0,.5), 3px 4px 0 rgba(80,0,0,.8)',
+              fontFamily: "'Lilita One', cursive", fontSize: 'clamp(48px, 12vw, 80px)', color: '#FF1111',
+              letterSpacing: '6px', lineHeight: 1,
+              textShadow: '0 0 40px rgba(255,0,0,.8), 0 0 80px rgba(255,0,0,.4), 4px 5px 0 rgba(80,0,0,.9)',
+              animation: 'pulse 1.5s ease-in-out infinite',
             }}>
-              LICENCIÉ
+              LOSER
             </div>
             <div style={{
-              fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FF6666',
-              letterSpacing: '4px', marginTop: '6px',
+              fontFamily: "'Orbitron', sans-serif", fontSize: '13px', color: '#FF6666',
+              letterSpacing: '6px', marginTop: '8px',
+              textShadow: '0 0 12px rgba(255,0,0,.4)',
             }}>
               MOTIF : INCOMPÉTENCE PROFESSIONNELLE
             </div>
           </div>
 
-          <Popup borderColor="#FF4444">
-            <div style={{ padding: '18px 22px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <div style={{ textAlign: 'center' }}>
-                <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '26px', color: '#FFFFFF', letterSpacing: '3px' }}>{pseudo}</div>
-              </div>
-              <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '16px', textAlign: 'center', borderRadius: '4px' }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '8px' }}>SALAIRE GAGNÉ</div>
-                <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#00C8BE', textShadow: '0 0 20px rgba(0,200,190,.4)' }}>{formatSalary(player.score)}</div>
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-                <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '12px', textAlign: 'center', borderRadius: '4px' }}>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '2px', marginBottom: '8px' }}>ÉTAGE</div>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '20px', fontWeight: 700, color: '#FFE033' }}>{String(level).padStart(2, '0')}/25</div>
-                </div>
-                <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '12px', textAlign: 'center', borderRadius: '4px' }}>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '2px', marginBottom: '8px' }}>RANG</div>
-                  <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '20px', fontWeight: 700, color: '#FF7744' }}>{rank > 0 ? `#${rank}` : '—'}</div>
-                </div>
-              </div>
-              <button onClick={() => { playClick(); onRestart(); }} style={{
-                width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '20px', letterSpacing: '4px', color: '#fff',
-                background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px',
-                cursor: 'pointer', borderRadius: '4px',
-              }}>REJOUER</button>
-              <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />
-              <ReferralChallenge pseudo={pseudo} />
+          <button onClick={() => { playClick(); setDefeatStep('share'); }} style={{
+            padding: '16px 48px', fontFamily: "'Orbitron', sans-serif", fontSize: '13px',
+            letterSpacing: '3px', color: '#FF6666', background: 'rgba(100,0,0,.3)',
+            border: '1px solid #FF4444', cursor: 'pointer', borderRadius: '4px',
+            transition: 'all .2s',
+          }}>
+            VOIR MON SCORE →
+          </button>
+        </div>
+      )}
+
+      {/* ═══ STEP 4: SHARE — Score + partage ═══ */}
+      {defeatStep === 'share' && (
+        <Popup borderColor="#FF4444">
+          <div style={{ padding: '24px', display: 'flex', flexDirection: 'column', gap: '12px' }}>
+            <div style={{ textAlign: 'center' }}>
+              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '28px', color: '#FFFFFF', letterSpacing: '3px' }}>{pseudo}</div>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FF6666', letterSpacing: '2px', marginTop: '4px' }}>LICENCIÉ</div>
             </div>
-            <div style={{ background: '#5A0000', padding: '8px 16px', display: 'flex', justifyContent: 'space-between' }}>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,.5)' }}>guibour.fr</span>
-              <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,.5)' }}>#WOW2026</span>
+            <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '16px', textAlign: 'center', borderRadius: '4px' }}>
+              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '3px', marginBottom: '8px' }}>SALAIRE GAGNÉ</div>
+              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '38px', color: '#00C8BE', textShadow: '0 0 20px rgba(0,200,190,.4)' }}>{formatSalary(player.score)}</div>
             </div>
-          </Popup>
-        </>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '12px', textAlign: 'center', borderRadius: '4px' }}>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '2px', marginBottom: '8px' }}>ÉTAGE</div>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '20px', fontWeight: 700, color: '#FFE033' }}>{String(level).padStart(2, '0')}/25</div>
+              </div>
+              <div style={{ background: '#091E4A', border: '1px solid #1A3E7A', padding: '12px', textAlign: 'center', borderRadius: '4px' }}>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#5B9BD5', letterSpacing: '2px', marginBottom: '8px' }}>RANG</div>
+                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '20px', fontWeight: 700, color: '#FF7744' }}>{rank > 0 ? `#${rank}` : '—'}</div>
+              </div>
+            </div>
+            <button onClick={() => { playClick(); onRestart(); }} style={{
+              width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '20px', letterSpacing: '4px', color: '#fff',
+              background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px',
+              cursor: 'pointer', borderRadius: '4px',
+            }}>REJOUER</button>
+            <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />
+            <ReferralChallenge pseudo={pseudo} />
+          </div>
+          <div style={{ background: '#5A0000', padding: '8px 16px', display: 'flex', justifyContent: 'space-between' }}>
+            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,.5)' }}>guibour.fr</span>
+            <span style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: 'rgba(255,255,255,.5)' }}>#WOW2026</span>
+          </div>
+        </Popup>
       )}
     </div>
   );
