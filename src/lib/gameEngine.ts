@@ -16,18 +16,30 @@ const PLAYER_W = 75;
 const PLAYER_DRAW_SCALE = 1.55;
 
 // ===== HITBOX (multi-zone circles matching visual sprite contour) =====
-// Based on sprite analysis: zones cover the full VISUAL body, not just the physics box.
-// Radii are ~85% of actual visual width at each height for fair-feeling collisions.
+// Two separate hitbox profiles: IDLE (narrower) and WALK (wider, legs spread).
+// Based on pixel analysis of actual sprites. Radii at ~85% of visual width.
 // Fractions are relative to visual height (PLAYER_H * PLAYER_DRAW_SCALE).
-const HB_ZONES = [
+
+const HB_IDLE = [
   { frac: 0.92, r: 14 },  // Top of head
   { frac: 0.82, r: 17 },  // Head/face
-  { frac: 0.70, r: 22 },  // Shoulders
-  { frac: 0.58, r: 25 },  // Chest (widest)
-  { frac: 0.45, r: 23 },  // Torso
-  { frac: 0.32, r: 21 },  // Hips
-  { frac: 0.18, r: 16 },  // Upper legs
+  { frac: 0.70, r: 21 },  // Shoulders
+  { frac: 0.58, r: 24 },  // Chest (widest in idle)
+  { frac: 0.45, r: 24 },  // Torso
+  { frac: 0.32, r: 20 },  // Hips
+  { frac: 0.18, r: 15 },  // Upper legs (close together in idle)
   { frac: 0.06, r: 12 },  // Feet
+];
+
+const HB_WALK = [
+  { frac: 0.92, r: 17 },  // Top of head (slightly wider due to tilt)
+  { frac: 0.82, r: 20 },  // Head/face
+  { frac: 0.70, r: 28 },  // Shoulders (arms extended)
+  { frac: 0.58, r: 34 },  // Chest (arms + torso, widest)
+  { frac: 0.45, r: 32 },  // Torso
+  { frac: 0.32, r: 30 },  // Hips (legs stepping)
+  { frac: 0.18, r: 34 },  // Upper legs (spread wide during walk)
+  { frac: 0.06, r: 28 },  // Feet (stride extends far)
 ];
 
 // 7 bubble sizes: radius, bounceVy, speedX, divisionVy, score
@@ -445,15 +457,17 @@ function spawnHitParticles(x: number, y: number, color: string) {
 // ===== COLLISIONS =====
 /**
  * Tests if a circle (cx, cy, cr) intersects the player's multi-zone hitbox.
- * Uses stacked circles that follow the visual sprite contour (head → shoulders → torso → legs).
- * Zones are sized relative to the VISUAL draw dimensions, not the physics box.
+ * Uses stacked circles that follow the visual sprite contour.
+ * Switches between IDLE (narrow) and WALK (wide) hitbox profiles based on movement.
  */
 function playerCircleCollision(player: Player, cx: number, cy: number, cr: number): boolean {
   const px = player.x;
   const py = player.y; // feet position
-  const visualH = player.height * PLAYER_DRAW_SCALE; // match the drawn sprite height
+  const visualH = player.height * PLAYER_DRAW_SCALE;
+  const isMoving = player.direction === 'left' || player.direction === 'right';
+  const zones = isMoving ? HB_WALK : HB_IDLE;
 
-  for (const zone of HB_ZONES) {
+  for (const zone of zones) {
     const zoneY = py - visualH * zone.frac;
     const dx = px - cx;
     const dy = zoneY - cy;
@@ -1110,7 +1124,7 @@ function drawPlayer(ctx: CanvasRenderingContext2D, state: GameState) {
     const idleAR = idleImg.naturalWidth / idleImg.naturalHeight;
     const idleW = Math.round(idleH * idleAR);
     // Align feet with the floor — offset increased to lower the character slightly
-    const idleY = player.y - idleH + Math.round(idleH * 0.14);
+    const idleY = player.y - idleH + Math.round(idleH * 0.15);
     ctx.drawImage(idleImg, player.x - idleW / 2, idleY, idleW, idleH);
   } else {
     // Fallback rectangle
