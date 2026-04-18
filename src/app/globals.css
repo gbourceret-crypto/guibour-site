@@ -3,8 +3,8 @@
 /* ===== ANTIQUE OLIVE — Logo font ===== */
 @font-face {
   font-family: 'Antique Olive';
-  src: url('/fonts/AntiqueOlive-Bold.ttf') format('truetype');
-  font-weight: 700;
+  src: url('/fonts/AntiqueOlive-Black.ttf') format('truetype');
+  font-weight: 900;
   font-style: normal;
   font-display: swap;
 }
