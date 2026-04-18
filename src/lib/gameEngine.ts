@@ -410,7 +410,7 @@ function updateBubbles(state: GameState) {
 }
 
 function updateBonusItems(state: GameState) {
-  const floorY = state.canvasHeight - 22; // center bonus 22px above floor so icon+label fully visible
+  const floorY = state.canvasHeight - 42; // center bonus above floor so icon+label fully visible
   for (const b of state.bonuses) {
     if (!b.active) continue;
     b.vy += 0.06;
@@ -538,7 +538,7 @@ function checkCollisions(state: GameState) {
   // Bubble vs Player — precise capsule hitbox (use 85% of visual bubble radius for fairer feel)
   if (player.invincible <= 0) {
     for (const b of bubbles) {
-      if (playerCircleCollision(player, b.x, b.y, b.radius * 0.75)) {
+      if (playerCircleCollision(player, b.x, b.y, b.radius * 0.90)) {
         if (state.cgtShield) {
           state.cgtShield = false;
           player.invincible = 60;

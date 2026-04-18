@@ -78,7 +78,7 @@ export default function VisitorCounter() {
   if (count === null) return null;
 
   return (
-    <div style={{
+    <div className="visitor-counter" style={{
       position: 'fixed',
       bottom: '12px',
       left: '60px',

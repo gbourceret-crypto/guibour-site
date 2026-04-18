@@ -445,6 +445,12 @@ html, body {
   padding-left: 48px;
 }
 
+/* Hide visitor counter during gameplay */
+.game-wrapper ~ .visitor-counter,
+body[data-game-active="true"] .visitor-counter {
+  display: none !important;
+}
+
 /* ===== MOBILE — full-screen game, no sidebar ===== */
 @media (max-width: 640px) {
   .game-wrapper {

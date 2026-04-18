@@ -389,9 +389,9 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
       {defeatStep === 'crack' && (
         <div style={{ textAlign: 'center', animation: 'fadeIn 0.5s ease-out' }}>
           <div style={{
-            fontFamily: "'Lilita One', cursive", fontSize: 'clamp(42px, 10vw, 72px)', color: '#FF1111',
-            letterSpacing: '6px', lineHeight: 1,
-            textShadow: '0 0 30px rgba(255,0,0,.7), 0 0 60px rgba(255,0,0,.4), 3px 4px 0 rgba(80,0,0,.8)',
+            fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(36px, 9vw, 64px)', color: '#FF1111',
+            fontWeight: 900, letterSpacing: '8px', lineHeight: 1,
+            textShadow: '0 0 30px rgba(255,0,0,.7), 0 0 60px rgba(255,0,0,.4)',
           }}>
             FIN DE CARRIÈRE
           </div>
@@ -508,16 +508,16 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
         <div style={{ textAlign: 'center', animation: 'fadeIn 0.4s ease-out', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '24px' }}>
           <div>
             <div style={{
-              fontFamily: "'Lilita One', cursive", fontSize: 'clamp(48px, 12vw, 80px)', color: '#FF1111',
-              letterSpacing: '6px', lineHeight: 1,
-              textShadow: '0 0 40px rgba(255,0,0,.8), 0 0 80px rgba(255,0,0,.4), 4px 5px 0 rgba(80,0,0,.9)',
+              fontFamily: "'Orbitron', sans-serif", fontSize: 'clamp(42px, 11vw, 72px)', color: '#FF1111',
+              fontWeight: 900, letterSpacing: '10px', lineHeight: 1,
+              textShadow: '0 0 40px rgba(255,0,0,.8), 0 0 80px rgba(255,0,0,.4)',
               animation: 'pulse 1.5s ease-in-out infinite',
             }}>
-              LOSER
+              LICENCIÉ
             </div>
             <div style={{
               fontFamily: "'Orbitron', sans-serif", fontSize: '13px', color: '#FF6666',
-              letterSpacing: '6px', marginTop: '8px',
+              fontWeight: 700, letterSpacing: '6px', marginTop: '12px',
               textShadow: '0 0 12px rgba(255,0,0,.4)',
             }}>
               MOTIF : INCOMPÉTENCE PROFESSIONNELLE

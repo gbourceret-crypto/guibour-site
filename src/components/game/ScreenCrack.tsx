@@ -219,57 +219,7 @@ export default function ScreenCrack() {
         </defs>
       </svg>
 
-      {/* "LICENCIE" text dropping in */}
-      {showText && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'flex-start',
-            paddingTop: '10vh',
-          }}
-        >
-          <div
-            style={{
-              animation: 'licensedDrop 0.8s cubic-bezier(0.22, 1, 0.36, 1) forwards',
-              transform: 'translateY(-150%)',
-            }}
-          >
-            <div
-              style={{
-                fontFamily: "'Lilita One', cursive",
-                fontSize: 'clamp(60px, 15vw, 120px)',
-                color: '#FF2222',
-                letterSpacing: '8px',
-                textShadow:
-                  '0 4px 0 #880000, 0 0 40px rgba(255,0,0,0.6), 0 0 80px rgba(255,0,0,0.3)',
-                textAlign: 'center',
-                lineHeight: 1,
-                animation: 'licensedShake 0.12s ease-in-out infinite',
-              }}
-            >
-              LICENCIÉ
-            </div>
-            <div
-              style={{
-                fontFamily: "'Orbitron', sans-serif",
-                fontSize: 'clamp(10px, 2.5vw, 16px)',
-                color: '#FF6644',
-                letterSpacing: '4px',
-                textAlign: 'center',
-                marginTop: '12px',
-                textShadow: '0 0 15px rgba(255,50,0,0.5)',
-                animation: 'fadeIn 0.4s ease-out 0.3s both',
-              }}
-            >
-              MOTIF : INCOMPÉTENCE PROFESSIONNELLE
-            </div>
-          </div>
-        </div>
-      )}
+      {/* Text removed — GameOverScreen handles defeat text in its own steps */}
     </div>
   );
 }

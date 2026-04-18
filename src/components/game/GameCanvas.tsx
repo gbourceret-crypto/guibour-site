@@ -315,6 +315,8 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
     bossShownRef.current = false;
     bonusRTTApplied.current = false;
     stateRef.current = startGame(stateRef.current, playerName.trim());
+    // Restart gives only 1 life (1 RTT), not 3
+    stateRef.current.player.lives = 1;
     setCurrentLevel(0);
     setGameStatus('playing');
     audioManager.play('gameplay');
@@ -437,11 +439,11 @@ export default function GameCanvas({ characterName = '', playerIdentity }: GameC
                 onClick={handleToggleMute}
                 className="pointer-events-auto cursor-pointer thumb-btn"
                 style={{
-                  width: '56px', height: '44px',
+                  width: '72px', height: '56px',
                   background: isMuted ? 'rgba(180,0,0,.22)' : 'rgba(0,200,190,.18)',
                   border: `2px solid ${isMuted ? 'rgba(255,68,68,.75)' : 'rgba(0,200,190,.75)'}`,
                   borderRadius: '10px',
-                  fontSize: '20px',
+                  fontSize: '26px',
                   color: isMuted ? '#FF4444' : '#00C8BE',
                   cursor: 'pointer',
                   boxShadow: isMuted
