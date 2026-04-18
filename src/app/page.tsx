@@ -144,15 +144,15 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           <span style={{
             fontFamily: "'Antique Olive', 'Lilita One', sans-serif",
             color: '#FFFFFF',
-            letterSpacing: '6px',
-            textShadow: '-1px -1px 0 rgba(0,20,60,.55), 1px -1px 0 rgba(0,20,60,.55), -1px 1px 0 rgba(0,20,60,.55), 1px 1px 0 rgba(0,20,60,.55), 3px 5px 0 rgba(0,10,40,.5), 5px 8px 4px rgba(0,0,0,.3)',
+            letterSpacing: '2px',
+            textShadow: '-1px -1px 0 rgba(0,0,0,.7), 1px -1px 0 rgba(0,0,0,.7), -1px 1px 0 rgba(0,0,0,.7), 1px 1px 0 rgba(0,0,0,.7), 2px 3px 0 rgba(0,0,0,.8), 4px 6px 0 rgba(0,0,0,.7), 6px 9px 0 rgba(0,0,0,.6), 8px 12px 8px rgba(0,0,0,.5)',
           }}>GUIB</span>
           <GlobeO />
           <span style={{
             fontFamily: "'Antique Olive', 'Lilita One', sans-serif",
             color: '#FFFFFF',
-            letterSpacing: '6px',
-            textShadow: '-1px -1px 0 rgba(0,20,60,.55), 1px -1px 0 rgba(0,20,60,.55), -1px 1px 0 rgba(0,20,60,.55), 1px 1px 0 rgba(0,20,60,.55), 3px 5px 0 rgba(0,10,40,.5), 5px 8px 4px rgba(0,0,0,.3)',
+            letterSpacing: '2px',
+            textShadow: '-1px -1px 0 rgba(0,0,0,.7), 1px -1px 0 rgba(0,0,0,.7), -1px 1px 0 rgba(0,0,0,.7), 1px 1px 0 rgba(0,0,0,.7), 2px 3px 0 rgba(0,0,0,.8), 4px 6px 0 rgba(0,0,0,.7), 6px 9px 0 rgba(0,0,0,.6), 8px 12px 8px rgba(0,0,0,.5)',
           }}>UR</span>
         </div>
 

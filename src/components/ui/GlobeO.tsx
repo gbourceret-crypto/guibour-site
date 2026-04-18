@@ -323,7 +323,7 @@ export default function GlobeO() {
           width        : '1.20em',
           height       : '1.20em',
           margin       : '0 -0.20em',
-          verticalAlign: '-0.08em',
+          verticalAlign: '0.02em',
           cursor       : 'pointer',
           animation    : disco ? 'discoSpin 2s linear infinite' : undefined,
         }}
