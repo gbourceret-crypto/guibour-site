@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* ===== ANTIQUE OLIVE — Logo font ===== */
+/* ===== ANTON — Logo font ===== */
 @font-face {
-  font-family: 'Antique Olive';
-  src: url('/fonts/AntiqueOlive-Black.ttf') format('truetype');
-  font-weight: 900;
+  font-family: 'Anton';
+  src: url('/fonts/Anton-Regular.ttf') format('truetype');
+  font-weight: 400;
   font-style: normal;
   font-display: swap;
 }

@@ -142,17 +142,21 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           gap: 0,
         }}>
           <span style={{
-            fontFamily: "'Antique Olive', 'Lilita One', sans-serif",
+            fontFamily: "'Anton', sans-serif",
             color: '#FFFFFF',
-            letterSpacing: '2px',
-            textShadow: '-1px -1px 0 rgba(0,0,0,.7), 1px -1px 0 rgba(0,0,0,.7), -1px 1px 0 rgba(0,0,0,.7), 1px 1px 0 rgba(0,0,0,.7), 2px 3px 0 rgba(0,0,0,.8), 4px 6px 0 rgba(0,0,0,.7), 6px 9px 0 rgba(0,0,0,.6), 8px 12px 8px rgba(0,0,0,.5)',
+            letterSpacing: '-2px',
+            WebkitTextStroke: '3px #0047AB',
+            paintOrder: 'stroke fill',
+            textShadow: '-5px 1px 5px rgba(0,0,0,.58)',
           }}>GUIB</span>
           <GlobeO />
           <span style={{
-            fontFamily: "'Antique Olive', 'Lilita One', sans-serif",
+            fontFamily: "'Anton', sans-serif",
             color: '#FFFFFF',
-            letterSpacing: '2px',
-            textShadow: '-1px -1px 0 rgba(0,0,0,.7), 1px -1px 0 rgba(0,0,0,.7), -1px 1px 0 rgba(0,0,0,.7), 1px 1px 0 rgba(0,0,0,.7), 2px 3px 0 rgba(0,0,0,.8), 4px 6px 0 rgba(0,0,0,.7), 6px 9px 0 rgba(0,0,0,.6), 8px 12px 8px rgba(0,0,0,.5)',
+            letterSpacing: '-2px',
+            WebkitTextStroke: '3px #0047AB',
+            paintOrder: 'stroke fill',
+            textShadow: '-5px 1px 5px rgba(0,0,0,.58)',
           }}>UR</span>
         </div>
 
