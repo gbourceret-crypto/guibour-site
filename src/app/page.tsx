@@ -123,7 +123,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
       }}
     >
 
-      {/* ── LOGO GUIBOUR SYSTEM (inchangé) ── */}
+      {/* ── LOGO GUIBOUR SYSTEM with globe behind ── */}
       <h1
         ref={logoRef}
         aria-label="GUIBOUR SYSTEM"
@@ -133,13 +133,23 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           willChange: 'transform',
         }}
       >
+        {/* Globe in background */}
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          zIndex: -1,
+          opacity: 0.35,
+          pointerEvents: 'none',
+        }}>
+          <GlobeO size={280} />
+        </div>
+
         <div style={{
           fontSize: 'clamp(60px, 12vw, 110px)',
           lineHeight: 1,
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center',
-          gap: 0,
+          textAlign: 'center',
         }}>
           <span style={{
             fontFamily: "'Anton', sans-serif",
@@ -148,16 +158,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
             WebkitTextStroke: '4px rgba(255,255,255,.85)',
             paintOrder: 'stroke fill',
             textShadow: '2px 3px 0 rgba(0,0,0,.9), 4px 6px 0 rgba(0,0,0,.8), 6px 9px 0 rgba(0,0,0,.7), 8px 12px 0 rgba(0,0,0,.6), 10px 15px 4px rgba(0,0,0,.5), -5px 1px 8px rgba(0,0,0,.6)',
-          }}>GUIB</span>
-          <GlobeO />
-          <span style={{
-            fontFamily: "'Anton', sans-serif",
-            color: '#FFFFFF',
-            letterSpacing: '-2px',
-            WebkitTextStroke: '4px rgba(255,255,255,.85)',
-            paintOrder: 'stroke fill',
-            textShadow: '2px 3px 0 rgba(0,0,0,.9), 4px 6px 0 rgba(0,0,0,.8), 6px 9px 0 rgba(0,0,0,.7), 8px 12px 0 rgba(0,0,0,.6), 10px 15px 4px rgba(0,0,0,.5), -5px 1px 8px rgba(0,0,0,.6)',
-          }}>UR</span>
+          }}>GUIBOUR</span>
         </div>
 
         <div

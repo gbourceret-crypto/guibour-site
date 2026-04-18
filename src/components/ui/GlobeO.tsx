@@ -123,7 +123,7 @@ function DiscoTextSwap() {
   return null;
 }
 
-export default function GlobeO() {
+export default function GlobeO({ size }: { size?: number } = {}) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animRef  = useRef<number>(0);
   const clickCount = useRef(0);
@@ -318,7 +318,13 @@ export default function GlobeO() {
         width={W}
         height={H}
         onClick={handleClick}
-        style={{
+        style={size ? {
+          display: 'block',
+          width: `${size}px`,
+          height: `${size}px`,
+          cursor: 'pointer',
+          animation: disco ? 'discoSpin 2s linear infinite' : undefined,
+        } : {
           display      : 'inline-block',
           width        : '1.20em',
           height       : '1.20em',
