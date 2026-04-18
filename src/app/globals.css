@@ -1,10 +1,10 @@
 @import "tailwindcss";
 
-/* ===== ABOLITION — Logo font ===== */
+/* ===== ANTIQUE OLIVE — Logo font ===== */
 @font-face {
-  font-family: 'Abolition';
-  src: url('/fonts/Abolition-Regular.otf') format('opentype');
-  font-weight: normal;
+  font-family: 'Antique Olive';
+  src: url('/fonts/AntiqueOlive-Bold.ttf') format('truetype');
+  font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
