@@ -61,7 +61,7 @@ export default function Countdown() {
         left: 0,
         right: 0,
         zIndex: 45,
-        background: 'linear-gradient(90deg, #8B0000, #CC0000, #8B0000)',
+        background: '#1A1A1A',
         padding: '10px 16px',
         display: 'flex',
         alignItems: 'center',
@@ -72,7 +72,7 @@ export default function Countdown() {
         opacity: visible ? 1 : 0,
         animation: visible ? 'concertSlideUp 0.4s ease-out' : undefined,
         transition: 'transform 0.4s ease-out, opacity 0.4s ease-out',
-        boxShadow: '0 -4px 20px rgba(0,0,0,.5)',
+        boxShadow: '0 -2px 10px rgba(0,0,0,.2)',
       }}>
         {/* Close button */}
         <button
@@ -96,25 +96,23 @@ export default function Countdown() {
 
         {/* Concert info */}
         <div style={{
-          fontFamily: "'Orbitron', sans-serif",
+          fontFamily: "'Courier New', monospace",
           fontSize: 'clamp(9px, 1.4vw, 12px)',
           color: '#FFFFFF',
           letterSpacing: '2px',
           fontWeight: 700,
-          textShadow: '0 0 10px rgba(0,0,0,.5)',
           textAlign: 'center',
         }}>
-          🎫 CONCERT LA BOULE NOIRE — 24 JUIN — PLACES LIMITÉES
+          CONCERT LA BOULE NOIRE — 24 JUIN — PLACES LIMITEES
         </div>
 
         {/* Countdown compact */}
         <div style={{
-          fontFamily: "'Orbitron', sans-serif",
+          fontFamily: "'Courier New', monospace",
           fontSize: 'clamp(10px, 1.4vw, 13px)',
-          color: '#FFD700',
+          color: '#FFFFFF',
           letterSpacing: '1px',
           fontWeight: 700,
-          textShadow: '0 0 8px rgba(255,215,0,.5)',
           whiteSpace: 'nowrap',
         }}>
           J-{t.days} {pad(t.hours)}:{pad(t.minutes)}:{pad(t.seconds)}
@@ -126,22 +124,21 @@ export default function Countdown() {
           target="_blank"
           rel="noopener noreferrer"
           style={{
-            fontFamily: "'Lilita One', cursive",
+            fontFamily: "'Courier New', monospace",
             fontSize: 'clamp(10px, 1.3vw, 13px)',
             letterSpacing: '3px',
+            fontWeight: 700,
             color: '#fff',
-            background: '#FF0000',
-            border: '1px solid rgba(255,255,255,.3)',
+            background: 'transparent',
+            border: '2px solid #fff',
             padding: '8px 20px',
-            borderRadius: '3px',
+            borderRadius: '2px',
             textDecoration: 'none',
-            textShadow: '1px 1px 0 rgba(0,0,0,.5)',
-            boxShadow: '0 0 16px rgba(255,0,0,.6), 0 0 32px rgba(255,0,0,.3)',
             transition: 'all 0.2s',
             whiteSpace: 'nowrap',
           }}
         >
-          RÉSERVER
+          RESERVER
         </a>
       </div>
     </>

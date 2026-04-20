@@ -43,9 +43,9 @@ function AnimatedCounter({ target }: { target: number }) {
 
   return (
     <div style={{
-      fontFamily: "'Orbitron', sans-serif",
+      fontFamily: "'Courier New', monospace",
       fontSize: '10px',
-      color: '#5B9BD5',
+      color: '#666',
       letterSpacing: '3px',
       opacity: 0.7,
       marginTop: '24px',
@@ -53,7 +53,7 @@ function AnimatedCounter({ target }: { target: number }) {
       zIndex: 2,
       position: 'relative',
     }}>
-      🏢 {count.toLocaleString('fr-FR')} EMPLOYÉS ONT JOUÉ
+      {count.toLocaleString('fr-FR')} EMPLOYES ONT JOUE
     </div>
   );
 }
@@ -68,9 +68,9 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
 
   const QUOTES = [
     { text: "J'ai perdu 3h de ma vie sur ce jeu.", author: "Jean-Michel D.", role: "Directeur des Synergies" },
-    { text: "J'ai battu le record du bureau. Personne ne m'a félicitée.", author: "Nathalie K.", role: "Cheffe de Projet" },
+    { text: "J'ai battu le record du bureau. Personne ne m'a felicitee.", author: "Nathalie K.", role: "Cheffe de Projet" },
     { text: "Mon boss m'a surprise en train de jouer. Il est toujours dessus.", author: "Isabelle M.", role: "Assistante de Direction" },
-    { text: "La réunion de 14h a été annulée grâce à ce jeu.", author: "François T.", role: "Consultant Senior" },
+    { text: "La reunion de 14h a ete annulee grace a ce jeu.", author: "Francois T.", role: "Consultant Senior" },
   ];
 
   useEffect(() => {
@@ -123,7 +123,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
       }}
     >
 
-      {/* ── LOGO GUIBOUR SYSTEM with globe behind ── */}
+      {/* -- LOGO GUIBOUR SYSTEM with globe behind -- */}
       <h1
         ref={logoRef}
         aria-label="GUIBOUR SYSTEM"
@@ -140,7 +140,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           left: '50%',
           transform: 'translate(-50%, -50%)',
           zIndex: -1,
-          opacity: 0.35,
+          opacity: 0.1,
           pointerEvents: 'none',
         }}>
           <GlobeO size={280} />
@@ -153,25 +153,22 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
         }}>
           <span style={{
             fontFamily: "'Anton', sans-serif",
-            color: '#FFFFFF',
+            color: '#1A1A1A',
             letterSpacing: '-2px',
-            WebkitTextStroke: '4px rgba(255,255,255,.85)',
-            paintOrder: 'stroke fill',
-            textShadow: '2px 3px 0 rgba(0,0,0,.9), 4px 6px 0 rgba(0,0,0,.8), 6px 9px 0 rgba(0,0,0,.7), 8px 12px 0 rgba(0,0,0,.6), 10px 15px 4px rgba(0,0,0,.5), -5px 1px 8px rgba(0,0,0,.6)',
+            textShadow: '2px 2px 0 rgba(0,0,0,.15)',
           }}>GUIBOUR</span>
         </div>
 
         <div
           ref={systemRef}
           style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: 'clamp(12px, 2vw, 18px)',
-            color: '#00FFEE',
+            color: '#1A1A1A',
             letterSpacing: '10px',
             fontWeight: 700,
-            textShadow: theme.neonTextShadow,
             marginTop: '6px',
-            transition: 'transform 0.15s ease-out, text-shadow 2s ease',
+            transition: 'transform 0.15s ease-out',
             willChange: 'transform',
           }}
         >
@@ -179,11 +176,11 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
         </div>
       </h1>
 
-      {/* ── TAGLINE ── */}
+      {/* -- TAGLINE -- */}
       <div style={{
-        fontFamily: "'Orbitron', sans-serif",
+        fontFamily: "'Courier New', monospace",
         fontSize: '11px',
-        color: '#2B5090',
+        color: '#444',
         letterSpacing: '4px',
         marginTop: '20px',
         position: 'relative',
@@ -192,20 +189,19 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
         <Typewriter text="WORK OR WINDOW" speed={60} delay={800} />
       </div>
 
-      {/* ── CTA JOUER ── */}
+      {/* -- CTA JOUER -- */}
       <button
         onClick={() => { playClick(); onPlay(); }}
         style={{
           marginTop: '40px',
-          fontFamily: "'Lilita One', cursive",
+          fontFamily: "'Anton', sans-serif",
           fontSize: 'clamp(20px, 4vw, 28px)',
           letterSpacing: '8px',
           color: '#fff',
-          background: 'linear-gradient(135deg, #0047AB, #007B8A)',
-          border: '2px solid rgba(0,200,190,.4)',
+          background: '#1A1A1A',
+          border: '2px solid #1A1A1A',
           padding: '18px 60px',
           cursor: 'pointer',
-          boxShadow: '0 0 40px rgba(0,71,171,.25), 0 0 80px rgba(0,200,190,.1)',
           position: 'relative',
           overflow: 'hidden',
           zIndex: 2,
@@ -213,63 +209,56 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           borderRadius: '2px',
         }}
         onMouseEnter={e => {
-          e.currentTarget.style.boxShadow = '0 0 60px rgba(0,71,171,.5), 0 0 120px rgba(0,200,190,.2)';
-          e.currentTarget.style.borderColor = 'rgba(0,200,190,.8)';
+          e.currentTarget.style.background = '#333';
         }}
         onMouseLeave={e => {
-          e.currentTarget.style.boxShadow = '0 0 40px rgba(0,71,171,.25), 0 0 80px rgba(0,200,190,.1)';
-          e.currentTarget.style.borderColor = 'rgba(0,200,190,.4)';
+          e.currentTarget.style.background = '#1A1A1A';
         }}
       >
-        <span style={{ position: 'relative', zIndex: 1, textShadow: '2px 3px 0 rgba(0,0,0,.5)' }}>
+        <span style={{ position: 'relative', zIndex: 1 }}>
           JOUER
         </span>
-        <span style={{
-          position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent)',
-          animation: 'shimmer 4s ease-in-out infinite',
-        }} />
       </button>
 
-      {/* ── COMPTEUR JOUEURS ── */}
+      {/* -- COMPTEUR JOUEURS -- */}
       {playerCount !== null && playerCount > 0 && <AnimatedCounter target={playerCount} />}
 
-      {/* ── NOTICE "BIENVENUE DANS LE SYSTEM" ── */}
+      {/* -- NOTICE "BIENVENUE DANS LE SYSTEM" -- */}
       <div style={{
         marginTop: '40px',
         maxWidth: '480px',
         width: '100%',
         padding: '20px 24px',
-        background: 'rgba(0,0,0,.25)',
-        border: '1px solid rgba(0,200,190,.15)',
+        background: '#FFFFFF',
+        border: '1px solid #D4CFC4',
         borderRadius: '4px',
         position: 'relative',
         zIndex: 2,
       }}>
         <div style={{
-          fontFamily: "'Orbitron', sans-serif",
+          fontFamily: "'Courier New', monospace",
           fontSize: '11px',
-          color: '#00C8BE',
+          color: '#1A1A1A',
           letterSpacing: '3px',
           marginBottom: '16px',
-          textShadow: '0 0 8px rgba(0,200,190,.4)',
+          fontWeight: 700,
         }}>
           BIENVENUE DANS LE SYSTEM
         </div>
         {[
-          'Survivez aux 25 étages de l\'open space',
+          'Survivez aux 25 etages de l\'open space',
           'Esquivez les dossiers volants',
           'Grimpez dans le classement mondial',
-          'Gagnez votre liberté',
+          'Gagnez votre liberte',
         ].map((line, i) => (
           <div key={i} style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '11px',
-            color: '#5B9BD5',
+            color: '#444',
             lineHeight: 2,
             paddingLeft: '16px',
           }}>
-            <span style={{ color: '#00C8BE', marginRight: '8px' }}>&gt;</span>
+            <span style={{ color: '#1A1A1A', marginRight: '8px' }}>&gt;</span>
             {line}
           </div>
         ))}
@@ -280,26 +269,26 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           gap: '12px',
           marginTop: '16px',
           paddingTop: '16px',
-          borderTop: '1px solid rgba(0,200,190,.08)',
+          borderTop: '1px solid #D4CFC4',
         }}>
           {[
-            { label: 'ÉCOUTER', href: '/jukebox' },
+            { label: 'ECOUTER', href: '/jukebox' },
             { label: 'CLASSEMENT', href: '/resultats' },
             { label: 'BOUTIQUE', href: '/shopping' },
           ].map(link => (
             <a key={link.href} href={link.href} style={{
-              fontFamily: "'Orbitron', sans-serif",
+              fontFamily: "'Courier New', monospace",
               fontSize: '11px',
-              color: '#2B5090',
+              color: '#1A1A1A',
               letterSpacing: '2px',
               textDecoration: 'none',
               padding: '8px 16px',
-              border: '1px solid rgba(0,200,190,.1)',
+              border: '1px solid #D4CFC4',
               borderRadius: '4px',
               transition: 'all .2s',
             }}
-              onMouseEnter={e => { e.currentTarget.style.borderColor = '#00C8BE'; e.currentTarget.style.color = '#00C8BE'; }}
-              onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(0,200,190,.1)'; e.currentTarget.style.color = '#2B5090'; }}
+              onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; }}
+              onMouseLeave={e => { e.currentTarget.style.borderColor = '#D4CFC4'; }}
             >
               {link.label}
             </a>
@@ -307,7 +296,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
         </div>
       </div>
 
-      {/* ── TESTIMONIAL UNIQUE (petit, discret, rotatif) ── */}
+      {/* -- TESTIMONIAL UNIQUE (petit, discret, rotatif) -- */}
       <div style={{
         marginTop: '32px',
         maxWidth: '400px',
@@ -320,9 +309,9 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           animation: 'fadeIn 0.5s ease-out',
         }}>
           <div style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '11px',
-            color: '#5B9BD5',
+            color: '#666',
             fontStyle: 'italic',
             lineHeight: 1.6,
             opacity: 0.7,
@@ -330,9 +319,9 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
             &laquo; {q.text} &raquo;
           </div>
           <div style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '11px',
-            color: '#2B5090',
+            color: '#444',
             marginTop: '4px',
           }}>
             — {q.author}, {q.role}
@@ -453,7 +442,7 @@ export default function Home() {
     return (
       <div
         className="game-wrapper flex flex-col overflow-hidden"
-        style={{ background: '#1A3F78', height: '100dvh' }}
+        style={{ background: '#1A1A1A', height: '100dvh' }}
       >
         {/* Sidebar hidden on mobile during game via CSS */}
         <div className="sidebar-nav-hide-game">
@@ -471,7 +460,7 @@ export default function Home() {
 
   return (
     <>
-    <div className="min-h-screen" style={{ background: theme.bg, transition: 'background 2s ease' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8', transition: 'background 2s ease' }}>
       <ExcelNav />
       <ExcelChrome
         formulaText='=LAUNCH_GAME("GUIBOUR","SINGLE_2026") → WELCOME_TO_THE_SYSTEM'
@@ -481,13 +470,13 @@ export default function Home() {
       >
         <HeroContent onPlay={handlePlay} theme={theme} />
       </ExcelChrome>
-      {/* Countdown fixed en bas — concert privé */}
+      {/* Countdown fixed en bas — concert prive */}
       <Countdown />
       {/* Indicateur mode jour/nuit discret */}
       <div style={{
         position: 'fixed', bottom: '12px', right: '12px',
-        fontFamily: "'Orbitron', sans-serif",
-        fontSize: '8px', color: '#2B5090', letterSpacing: '2px',
+        fontFamily: "'Courier New', monospace",
+        fontSize: '8px', color: '#999', letterSpacing: '2px',
         zIndex: 10, opacity: 0.6, pointerEvents: 'none',
       }}>
         {theme.accentLabel}

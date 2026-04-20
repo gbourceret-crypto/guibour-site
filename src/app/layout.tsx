@@ -17,7 +17,7 @@ export const viewport: Viewport = {
 
 export const metadata: Metadata = {
   title: 'GUIBOUR SYSTEM — W.O.W 2026',
-  description: 'GUIBOUR SYSTEM — Work Or Window. Le jeu bureaucratique le plus absurde du web. Survivez aux 25 étages de dossiers volants.',
+  description: 'GUIBOUR SYSTEM — Work Or Window. Le jeu le plus absurde du web.',
   metadataBase: new URL('https://guibour.fr'),
   manifest: '/manifest.json',
   appleWebApp: {
@@ -56,7 +56,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link
-          href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Luckiest+Guy&family=Orbitron:wght@400;700;900&display=swap"
+          href="https://fonts.googleapis.com/css2?family=Anton&family=Courier+Prime:wght@400;700&display=swap"
           rel="stylesheet"
         />
       </head>

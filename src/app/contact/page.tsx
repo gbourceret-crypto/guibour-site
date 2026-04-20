@@ -33,66 +33,63 @@ export default function ContactPage() {
       }
       setSent(true);
     } catch (err: unknown) {
-      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. Réessayez.");
+      setError(err instanceof Error ? err.message : "Erreur lors de l'envoi. Reessayez.");
     } finally {
       setSending(false);
     }
   }
 
   return (
-    <div className="min-h-screen" style={{ background: '#0E2660' }}>
+    <div className="min-h-screen" style={{ background: '#F5F0E8' }}>
       <ExcelNav />
       <ExcelChrome formulaText='=CONTACT("GUIBOUR") // W.O.W' breadcrumb="ETAGE 4 > CONTACT">
         <div style={{
           minHeight: 'calc(100vh - 52px)',
-          backgroundImage: 'linear-gradient(rgba(0,255,235,.04) 1px,transparent 1px),linear-gradient(90deg,rgba(0,255,235,.04) 1px,transparent 1px)',
-          backgroundSize: '56px 34px',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           padding: '40px 20px',
         }}>
 
           {sent ? (
-            /* ── Confirmation ── */
+            /* -- Confirmation -- */
             <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '20px' }}>
               <div style={{
                 width: '72px', height: '72px', borderRadius: '50%',
-                border: '2px solid #00FFEE',
-                boxShadow: '0 0 30px rgba(0,255,235,.35)',
+                border: '2px solid #1A1A1A',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                fontSize: '28px', color: '#00FFEE',
+                fontSize: '28px', color: '#1A1A1A',
               }}>✓</div>
-              <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '32px', color: '#fff', letterSpacing: '4px' }}>
-                MESSAGE ENVOYÉ
+              <div style={{ fontFamily: "'Anton', sans-serif", fontSize: '32px', color: '#1A1A1A', letterSpacing: '4px' }}>
+                MESSAGE ENVOYE
               </div>
-              <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#fff', opacity: 0.5, letterSpacing: '3px' }}>
-                LA DIRECTION VOUS RÉPONDRA APRÈS LA PAUSE CAFÉ.
+              <div style={{ fontFamily: "'Courier New', monospace", fontSize: '11px', color: '#666', letterSpacing: '3px' }}>
+                LA DIRECTION VOUS REPONDRA APRES LA PAUSE CAFE.
               </div>
               <button
                 onClick={() => setSent(false)}
                 style={{
                   marginTop: '8px',
-                  fontFamily: "'Lilita One', cursive", fontSize: '14px', letterSpacing: '3px',
-                  color: '#fff', background: 'transparent',
-                  border: '2px solid rgba(255,255,255,.3)', padding: '12px 32px',
+                  fontFamily: "'Courier New', monospace", fontSize: '14px', letterSpacing: '3px',
+                  color: '#1A1A1A', background: 'transparent',
+                  border: '2px solid #D4CFC4', padding: '12px 32px',
                   cursor: 'pointer', transition: 'all .2s',
                 }}
-                onMouseEnter={e => { e.currentTarget.style.borderColor = '#fff'; }}
-                onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,.3)'; }}
+                onMouseEnter={e => { e.currentTarget.style.borderColor = '#1A1A1A'; }}
+                onMouseLeave={e => { e.currentTarget.style.borderColor = '#D4CFC4'; }}
               >NOUVEAU MESSAGE</button>
             </div>
 
           ) : (
-            /* ── Form ── */
+            /* -- Form -- */
             <div style={{ width: '100%', maxWidth: '560px' }}>
 
               {/* Title */}
               <div style={{ marginBottom: '36px' }}>
-                <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#fff', opacity: 0.4, letterSpacing: '5px', marginBottom: '8px' }}>
+                <div style={{ fontFamily: "'Courier New', monospace", fontSize: '11px', color: '#666', letterSpacing: '5px', marginBottom: '8px' }}>
                   04 / CONTACT
                 </div>
                 <div style={{
-                  fontFamily: "'Lilita One', cursive",
-                  fontSize: 'clamp(28px,5vw,42px)', color: '#fff',
+                  fontFamily: "'Anton', sans-serif",
+                  fontSize: 'clamp(28px,5vw,42px)', color: '#1A1A1A',
                   letterSpacing: '4px', lineHeight: 1,
                 }}>
                   NOUS CONTACTER
@@ -127,31 +124,29 @@ export default function ContactPage() {
 
                 {error && (
                   <div style={{
-                    fontFamily: "'Orbitron', sans-serif", fontSize: '11px', color: '#FF4444',
+                    fontFamily: "'Courier New', monospace", fontSize: '11px', color: '#CC0000',
                     letterSpacing: '1px', padding: '12px 16px',
-                    background: 'rgba(255,68,68,.08)', border: '1px solid rgba(255,68,68,.3)',
-                  }}>⚠ {error}</div>
+                    background: 'rgba(200,0,0,.05)', border: '1px solid rgba(200,0,0,.3)',
+                  }}>! {error}</div>
                 )}
 
                 <button
                   type="submit" disabled={sending}
                   style={{
                     marginTop: '8px',
-                    fontFamily: "'Lilita One', cursive", fontSize: '17px', letterSpacing: '4px',
+                    fontFamily: "'Anton', sans-serif", fontSize: '17px', letterSpacing: '4px',
                     color: '#fff',
-                    background: sending ? 'rgba(0,71,171,.4)' : 'linear-gradient(135deg, #0047AB, #007B8A)',
-                    border: '2px solid #5B9BD5',
+                    background: sending ? '#666' : '#1A1A1A',
+                    border: '2px solid #1A1A1A',
                     padding: '15px 0',
                     cursor: sending ? 'not-allowed' : 'pointer',
-                    boxShadow: sending ? 'none' : '0 0 24px rgba(0,71,171,.4)',
                     transition: 'all .25s ease',
                     opacity: sending ? 0.6 : 1,
-                    textShadow: '1px 2px 0 rgba(0,0,0,.4)',
                   }}
-                  onMouseEnter={e => { if (!sending) { e.currentTarget.style.background = 'linear-gradient(135deg,#1B5EBB,#008B9A)'; e.currentTarget.style.boxShadow = '0 0 38px rgba(0,71,171,.6)'; } }}
-                  onMouseLeave={e => { if (!sending) { e.currentTarget.style.background = 'linear-gradient(135deg,#0047AB,#007B8A)'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,71,171,.4)'; } }}
+                  onMouseEnter={e => { if (!sending) { e.currentTarget.style.background = '#333'; } }}
+                  onMouseLeave={e => { if (!sending) { e.currentTarget.style.background = '#1A1A1A'; } }}
                 >
-                  {sending ? 'ENVOI...' : 'ENVOYER →'}
+                  {sending ? 'ENVOI...' : 'ENVOYER'}
                 </button>
 
               </form>
@@ -169,23 +164,22 @@ export default function ContactPage() {
 
 const labelCss: React.CSSProperties = {
   display: 'block',
-  fontFamily: "'Orbitron', sans-serif",
+  fontFamily: "'Courier New', monospace",
   fontSize: '11px',
-  color: '#ffffff',
+  color: '#1A1A1A',
   letterSpacing: '3px',
   marginBottom: '8px',
-  opacity: 0.85,
 };
 
 const inputCss: React.CSSProperties = {
   width: '100%',
   background: '#ffffff',
-  border: '1px solid rgba(255,255,255,.2)',
+  border: '1px solid #D4CFC4',
   padding: '12px 16px',
-  fontFamily: "'Orbitron', sans-serif",
+  fontFamily: "'Courier New', monospace",
   fontSize: '12px',
-  color: '#0E2660',
+  color: '#1A1A1A',
   outline: 'none',
   boxSizing: 'border-box',
-  transition: 'box-shadow .2s',
+  transition: 'border-color .2s',
 };

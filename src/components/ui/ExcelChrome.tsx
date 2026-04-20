@@ -90,8 +90,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
 
   const getFormulaColor = () => {
     if (phase === 'shake') return '#FF3333';
-    if (phase === 'aftermath') return '#00FF88';
-    return '#5B9BD5';
+    if (phase === 'aftermath') return '#228B22';
+    return '#555555';
   };
 
   return (
@@ -99,9 +99,9 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
       position: 'relative',
       minHeight: '100vh',
       paddingLeft: '48px', // leave room for sidebar nav
-      backgroundColor: chromeBg ?? '#0E2660',
+      backgroundColor: chromeBg ?? '#F5F0E8',
       backgroundImage:
-        `linear-gradient(${gridColor ?? 'rgba(60,130,240,.18)'} 1px, transparent 1px), linear-gradient(90deg, ${gridColor ?? 'rgba(60,130,240,.18)'} 1px, transparent 1px)`,
+        `linear-gradient(${gridColor ?? 'rgba(0,0,0,.06)'} 1px, transparent 1px), linear-gradient(90deg, ${gridColor ?? 'rgba(0,0,0,.06)'} 1px, transparent 1px)`,
       backgroundSize: '56px 34px',
       // aligne avec les en-tetes de colonnes (28px header + 24px formula bar = 52px chrome total)
       backgroundPosition: '48px 52px',
@@ -132,8 +132,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         zIndex: 20,
         display: 'flex',
         height: '28px',
-        background: '#0F2562',
-        borderBottom: '1px solid #1E4080',
+        background: '#FFFFFF',
+        borderBottom: '1px solid #D4CFC4',
       }}>
         {COLUMNS.map(col => (
           <div key={col} style={{
@@ -142,10 +142,10 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '9px',
-            color: '#5B9BD5',
-            borderRight: '1px solid rgba(43,80,144,.4)',
+            color: '#777777',
+            borderRight: '1px solid rgba(0,0,0,.08)',
           }}>
             {col}
           </div>
@@ -162,8 +162,8 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
           display: 'flex',
           alignItems: 'center',
           height: '24px',
-          background: phase === 'shake' ? '#2A0000' : '#091D4E',
-          borderBottom: '2px solid #0F2562',
+          background: phase === 'shake' ? '#FFF0F0' : '#FFFFFF',
+          borderBottom: '1px solid #D4CFC4',
           paddingLeft: '8px',
           gap: '12px',
           cursor: phase === 'idle' ? 'text' : 'default',
@@ -171,9 +171,9 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
         }}
       >
         <span style={{
-          fontFamily: "'Orbitron', sans-serif",
+          fontFamily: "'Courier New', monospace",
           fontSize: '11px',
-          color: phase === 'shake' ? '#FF3333' : '#00C8BE',
+          color: phase === 'shake' ? '#FF3333' : '#1A1A1A',
           fontWeight: 700,
           paddingLeft: '8px',
           transition: 'color 0.3s',
@@ -192,16 +192,16 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
               background: 'transparent',
               border: 'none',
               outline: 'none',
-              fontFamily: "'Orbitron', sans-serif",
+              fontFamily: "'Courier New', monospace",
               fontSize: '9px',
-              color: '#FFFFFF',
+              color: '#1A1A1A',
               letterSpacing: '1px',
-              caretColor: '#00C8BE',
+              caretColor: '#1A1A1A',
             }}
           />
         ) : (
           <span style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '9px',
             color: getFormulaColor(),
             letterSpacing: '1px',
@@ -232,29 +232,29 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
             display: 'flex',
             alignItems: 'center',
             height: '24px',
-            background: '#0D2354',
-            borderBottom: '1px solid #0F2562',
+            background: '#FAFAF5',
+            borderBottom: '1px solid #D4CFC4',
             paddingLeft: '16px',
             gap: '0',
           }}
         >
           <Link href="/" style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '8px',
-            color: '#5B9BD5',
+            color: '#555555',
             letterSpacing: '2px',
             textDecoration: 'none',
             transition: 'color 0.15s',
           }}
-            onMouseEnter={e => { e.currentTarget.style.color = '#A8D8FF'; }}
-            onMouseLeave={e => { e.currentTarget.style.color = '#5B9BD5'; }}
+            onMouseEnter={e => { e.currentTarget.style.color = '#1A1A1A'; }}
+            onMouseLeave={e => { e.currentTarget.style.color = '#555555'; }}
           >
             GUIBOUR SYSTEM
           </Link>
           <span style={{
-            fontFamily: "'Orbitron', sans-serif",
+            fontFamily: "'Courier New', monospace",
             fontSize: '8px',
-            color: '#2B5090',
+            color: '#AAAAAA',
             margin: '0 8px',
           }}>&gt;</span>
           {breadcrumb.split(' > ').map((part, i, arr) => {
@@ -262,18 +262,18 @@ export default function ExcelChrome({ formulaText = '=LAUNCH_GAME("GUIBOUR","SIN
             return (
               <span key={i} style={{ display: 'flex', alignItems: 'center' }}>
                 <span style={{
-                  fontFamily: "'Orbitron', sans-serif",
+                  fontFamily: "'Courier New', monospace",
                   fontSize: '8px',
-                  color: isLast ? '#3C5A7A' : '#5B9BD5',
+                  color: isLast ? '#999999' : '#555555',
                   letterSpacing: '2px',
                 }}>
                   {part}
                 </span>
                 {!isLast && (
                   <span style={{
-                    fontFamily: "'Orbitron', sans-serif",
+                    fontFamily: "'Courier New', monospace",
                     fontSize: '8px',
-                    color: '#2B5090',
+                    color: '#AAAAAA',
                     margin: '0 8px',
                   }}>&gt;</span>
                 )}

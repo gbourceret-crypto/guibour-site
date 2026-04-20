@@ -19,34 +19,34 @@
 }
 
 @theme {
-  /* V9 palette — Corporate 90s, bleu royal plus vif */
-  --color-game-bg:   #1A3F78;
-  --color-game-bg2:  #0D1E38;
-  --color-game-card: #183872;
-  --color-game-bdr:  #1E4282;
-  --color-navy:      #0C2A62;
-  --color-navy2:     #1A3E7A;
-  --color-blue:      #0047AB;
-  --color-blue-mid:  #3A78C9;
-  --color-blue-lt:   #5B9BD5;
-  --color-sky:       #A8D8FF;
-  --color-teal:      #007B8A;
-  --color-teal-lt:   #00A89D;
-  --color-cyan:      #00C8BE;
-  --color-bg:        #EEF3F8;
-  --color-bg2:       #F7FAFD;
+  /* V2 — Bloc-note / Sketch style */
+  --color-game-bg:   #F5F0E8;
+  --color-game-bg2:  #EDE8DC;
+  --color-game-card: #FFFFFF;
+  --color-game-bdr:  #D4CFC4;
+  --color-navy:      #2A2A2A;
+  --color-navy2:     #3A3A3A;
+  --color-blue:      #1A1A1A;
+  --color-blue-mid:  #555555;
+  --color-blue-lt:   #777777;
+  --color-sky:       #999999;
+  --color-teal:      #333333;
+  --color-teal-lt:   #444444;
+  --color-cyan:      #1A1A1A;
+  --color-bg:        #F5F0E8;
+  --color-bg2:       #EDE8DC;
   --color-card:      #FFFFFF;
-  --color-gray:      #C8D8E8;
-  --color-gray2:     #8FA5B8;
-  --color-gray3:     #607888;
-  --color-text:      #1A2B40;
-  --color-gold:      #C8960A;
+  --color-gray:      #CCCCCC;
+  --color-gray2:     #999999;
+  --color-gray3:     #666666;
+  --color-text:      #1A1A1A;
+  --color-gold:      #8B7355;
 
-  --font-logo:    'Lilita One', cursive;
-  --font-display: 'Luckiest Guy', cursive;
-  --font-impact:  'Lilita One', cursive;
-  --font-mono:    'Orbitron', sans-serif;
-  --font-body:    'Orbitron', sans-serif;
+  --font-logo:    'Anton', sans-serif;
+  --font-display: 'Anton', sans-serif;
+  --font-impact:  'Anton', sans-serif;
+  --font-mono:    'Courier New', monospace;
+  --font-body:    'Courier New', monospace;
 }
 
 /* ===== DESIGN SYSTEM — Typography Scale ===== */
@@ -166,22 +166,22 @@
 }
 
 html, body {
-  font-family: var(--font-body);
-  background: #0E2660;
-  color: #A8D8FF;
+  font-family: 'Courier New', monospace;
+  background: #F5F0E8;
+  color: #1A1A1A;
   overflow-x: hidden;
   -webkit-font-smoothing: antialiased;
 }
 
 ::selection {
-  background: #0047AB;
-  color: #A8D8FF;
+  background: #1A1A1A;
+  color: #F5F0E8;
 }
 
-::-webkit-scrollbar { width: 6px; }
-::-webkit-scrollbar-track { background: #060E1A; }
-::-webkit-scrollbar-thumb { background: #1B3A6B; border-radius: 4px; }
-::-webkit-scrollbar-thumb:hover { background: #2B5090; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #EDE8DC; }
+::-webkit-scrollbar-thumb { background: #AAAAAA; border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: #777777; }
 
 /* ===== ANIMATIONS ===== */
 @keyframes blink { 0%,49%{opacity:1} 50%,100%{opacity:0} }
@@ -286,12 +286,12 @@ html, body {
   50%{box-shadow:inset -5px -5px 12px rgba(0,0,0,.38),inset 3px 3px 7px rgba(255,255,255,.22),0 0 32px rgba(0,120,210,.55)}
 }
 
-/* ===== EXCEL BLUE GRID ===== */
+/* ===== NOTEBOOK GRID ===== */
 .excel-bg {
-  background-color: #0E2660;
+  background-color: #F5F0E8;
   background-image:
-    linear-gradient(rgba(60,130,240,.18) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(60,130,240,.18) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.06) 1px, transparent 1px);
   background-size: 56px 34px;
 }
 
@@ -316,22 +316,18 @@ html, body {
   z-index: 1;
 }
 
-/* Passe principale */
+/* Passe principale — lignes grises subtiles */
 .grid-shimmer::before {
   content: '';
   position: absolute;
   inset: 0;
-  /* Même grille en cyan pur — screen ne blanchit pas, il fait briller */
   background-image:
-    linear-gradient(rgba(0, 255, 235, 0.9) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 255, 235, 0.9) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
   background-size: 56px 34px;
   background-position: 48px 52px;
-  /* Blur : étale le glow autour des lignes → effet tube néon */
   filter: blur(0.8px);
-  /* Screen : ajoute de la lumière colorée sans blanchir */
-  mix-blend-mode: screen;
-  /* Masque : fenêtre glissante × ellipse centre-atténuée */
+  mix-blend-mode: multiply;
   mask-image:
     linear-gradient(
       90deg,
@@ -354,18 +350,18 @@ html, body {
   animation: maskSlide 16s ease-in-out infinite;
 }
 
-/* Passe secondaire — plus fine, décalée de 8s */
+/* Passe secondaire — lignes grises subtiles, décalée de 8s */
 .grid-shimmer::after {
   content: '';
   position: absolute;
   inset: 0;
   background-image:
-    linear-gradient(rgba(0, 240, 220, 0.75) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(0, 240, 220, 0.75) 1px, transparent 1px);
+    linear-gradient(rgba(0,0,0,.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,.04) 1px, transparent 1px);
   background-size: 56px 34px;
   background-position: 48px 52px;
   filter: blur(1.2px);
-  mix-blend-mode: screen;
+  mix-blend-mode: multiply;
   mask-image:
     linear-gradient(
       90deg,
@@ -388,35 +384,28 @@ html, body {
   animation: maskSlide 16s ease-in-out 8s infinite;
 }
 
-/* ===== NAV ICONS — glow cyan pulsé très léger ===== */
-@keyframes iconGlow {
-  0%, 100% { filter: drop-shadow(0 0 2px rgba(0,255,238,0.25)); }
-  50%       { filter: drop-shadow(0 0 5px rgba(0,255,238,0.55)) drop-shadow(0 0 10px rgba(0,255,238,0.20)); }
-}
-
+/* ===== NAV ICONS — subtle shadow ===== */
 .nav-icon {
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: iconGlow 4s ease-in-out infinite;
+  color: #666666;
 }
 
-/* Onglet actif : glow un peu plus marqué */
+/* Onglet actif */
 .nav-icon--active {
-  animation: iconGlow 2.5s ease-in-out infinite;
-  filter: drop-shadow(0 0 6px rgba(0,255,238,0.6));
+  color: #1A1A1A;
 }
 
-/* ===== FONDUS DE BORD — dégradé vers le fond à droite et en bas ===== */
+/* ===== FONDUS DE BORD — dégradé subtil vers le fond ===== */
 .grid-edge-fades {
   position: absolute;
   inset: 0;
   pointer-events: none;
   z-index: 2;
-  /* Fondu droite vers noir + fondu bas vers noir */
   background:
-    linear-gradient(90deg, transparent 55%, rgba(6,14,31,0.55) 80%, rgba(3,6,16,0.85) 100%),
-    linear-gradient(180deg, transparent 60%, rgba(6,14,31,0.4) 85%, rgba(3,6,16,0.7) 100%);
+    linear-gradient(90deg, transparent 55%, rgba(245,240,232,0.4) 80%, rgba(245,240,232,0.7) 100%),
+    linear-gradient(180deg, transparent 60%, rgba(245,240,232,0.3) 85%, rgba(245,240,232,0.6) 100%);
 }
 
 /* ===== SCANLINES ===== */
@@ -440,13 +429,31 @@ html, body {
   width: 48px;
   overflow: hidden;
   transition: width 0.25s ease;
-  background: #0D2B5E;
-  border-right: 2px solid #1B3A6B;
+  background: #FFFFFF;
+  border-right: 1px solid #D4CFC4;
   display: flex;
   flex-direction: column;
 }
 .sidebar-nav:hover {
   width: 200px;
+}
+
+/* ===== NOTEBOOK PAPER LINES ===== */
+.notebook-bg {
+  background-color: #F5F0E8;
+  background-image:
+    repeating-linear-gradient(
+      transparent, transparent 27px,
+      rgba(0,0,0,.08) 27px, rgba(0,0,0,.08) 28px
+    );
+  background-position: 0 20px;
+}
+
+/* Margin line rouge (style cahier français) */
+.notebook-margin {
+  border-left: 2px solid rgba(200,80,80,.25);
+  margin-left: 60px;
+  padding-left: 20px;
 }
 
 /* ===== GAME WRAPPER — mobile removes left sidebar padding ===== */
@@ -555,10 +562,9 @@ body[data-game-active="true"] .visitor-counter {
   75%      { transform: translateX(2px) rotate(0.3deg); }
 }
 
-/* ===== NAV HOVER — tremblement + glow ===== */
+/* ===== NAV HOVER — tremblement subtil ===== */
 .sidebar-nav a:hover {
   animation: navTremble 0.3s ease;
-  filter: drop-shadow(0 0 8px rgba(0,255,238,.6));
 }
 @keyframes navTremble {
   0%, 100% { transform: translateX(0); }

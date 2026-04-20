@@ -53,35 +53,35 @@ export interface DayNightTheme {
 }
 
 /**
- * Returns CSS variables / theme values for the current mode.
- * Day mode: open space eclaire au neon blanc — lighter, grid more visible
- * Night mode: building la nuit avec les neons allumes — darker, neons brilliant
+ * Bloc-note style: papier le jour, encre la nuit.
+ * Jour : fond papier #F5F0E8, texte noir #1A1A1A
+ * Nuit : fond noir #1A1A1A, texte papier #F5F0E8
  */
 export function getDayNightTheme(mode: TimeMode): DayNightTheme {
   if (mode === 'day') {
     return {
-      bg: '#1A3F78',
-      bg2: '#142E60',
-      gridOpacity: 0.18,
+      bg: '#F5F0E8',
+      bg2: '#EDE8DF',
+      gridOpacity: 0.12,
       neonGlow: 'subtle',
-      accentLabel: '☀ MODE JOURNEE',
-      navBg: '#142E60',
-      navBorder: '#1E4A8C',
-      gridColor: 'rgba(60,130,240,.22)',
-      neonTextShadow: '0 0 8px rgba(0,255,238,.3)',
-      chromeBg: '#142E60',
+      accentLabel: 'MODE JOUR',
+      navBg: '#F5F0E8',
+      navBorder: '#D4CFC4',
+      gridColor: 'rgba(0,0,0,.06)',
+      neonTextShadow: 'none',
+      chromeBg: '#F5F0E8',
     };
   }
   return {
-    bg: '#0E1E38',
-    bg2: '#0A1628',
-    gridOpacity: 0.10,
+    bg: '#1A1A1A',
+    bg2: '#111111',
+    gridOpacity: 0.08,
     neonGlow: 'strong',
-    accentLabel: '🌙 MODE NUIT',
-    navBg: '#0A1628',
-    navBorder: '#1A3060',
-    gridColor: 'rgba(60,130,240,.12)',
-    neonTextShadow: '0 0 20px rgba(0,255,238,.7), 0 0 40px rgba(0,255,238,.3)',
-    chromeBg: '#0C1A30',
+    accentLabel: 'MODE NUIT',
+    navBg: '#1A1A1A',
+    navBorder: '#333333',
+    gridColor: 'rgba(255,255,255,.04)',
+    neonTextShadow: 'none',
+    chromeBg: '#1A1A1A',
   };
 }

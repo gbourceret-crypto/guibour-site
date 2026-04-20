@@ -101,7 +101,7 @@ function ThemeToggle() {
   const tooltip = override === 'auto' ? 'Mode: Automatique' : override === 'day' ? 'Mode: Jour' : 'Mode: Nuit';
 
   return (
-    <div style={{ borderTop: '1px solid #1B3A6B', padding: '8px 0', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+    <div style={{ borderTop: '1px solid #D4CFC4', padding: '8px 0', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
       <button
         onClick={toggleTheme}
         title={tooltip}
@@ -111,8 +111,8 @@ function ThemeToggle() {
           display: 'flex', alignItems: 'center', gap: '10px',
           width: '100%', padding: '8px 16px',
           background: 'transparent', border: 'none', cursor: 'pointer',
-          fontFamily: "'Orbitron', sans-serif", fontSize: '11px', letterSpacing: '2px',
-          color: hovered ? '#7AAFD4' : '#1E3F6E',
+          fontFamily: "'Courier New', monospace", fontSize: '11px', letterSpacing: '2px',
+          color: hovered ? '#1A1A1A' : '#999999',
           transition: 'color 0.15s',
           overflow: 'hidden',
         }}
@@ -147,25 +147,25 @@ export default function ExcelNav() {
         left: 0, top: 0, bottom: 0, zIndex: 50,
         width: '48px', overflow: 'hidden',
         transition: 'width 0.25s ease',
-        background: '#0D2B5E',
-        borderRight: '2px solid #1B3A6B',
+        background: '#FFFFFF',
+        borderRight: '1px solid #D4CFC4',
         display: 'flex', flexDirection: 'column',
-        boxShadow: '2px 0 16px rgba(0,0,0,0.5)',
+        boxShadow: '2px 0 8px rgba(0,0,0,0.05)',
       }}
       onMouseEnter={e => { e.currentTarget.style.width = '200px'; }}
       onMouseLeave={e => { e.currentTarget.style.width = '48px'; }}
     >
       {/* Logo */}
       <a href="/" onClick={(e) => handleNavClick(e, '/')} style={{
-        padding: '12px 0', borderBottom: '1px solid #1B3A6B',
+        padding: '12px 0', borderBottom: '1px solid #D4CFC4',
         display: 'flex', alignItems: 'center', gap: '10px', paddingLeft: '10px',
         flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap',
         textDecoration: 'none', cursor: 'pointer',
       }}>
-        <GlobeIcon size={28} color="#00C8BE" />
+        <GlobeIcon size={28} color="#1A1A1A" />
         <div style={{ overflow: 'hidden' }}>
-          <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '13px', color: '#FFFFFF', letterSpacing: '2px', lineHeight: 1.1, textShadow: '0 0 10px rgba(255,255,255,.5)' }}>GUIBOUR</div>
-          <div style={{ fontFamily: "'Orbitron', sans-serif", fontSize: '11px', fontWeight: 400, color: '#00C8BE', letterSpacing: '3px', marginTop: '-1px' }}>SYSTEM</div>
+          <div style={{ fontFamily: "'Anton', sans-serif", fontSize: '13px', color: '#1A1A1A', letterSpacing: '2px', lineHeight: 1.1 }}>GUIBOUR</div>
+          <div style={{ fontFamily: "'Courier New', monospace", fontSize: '11px', fontWeight: 400, color: '#555555', letterSpacing: '3px', marginTop: '-1px' }}>SYSTEM</div>
         </div>
       </a>
 
@@ -178,16 +178,15 @@ export default function ExcelNav() {
             <Link key={tab.href} href={tab.href} onClick={(e) => handleNavClick(e, tab.href)} style={{
               display: 'flex', alignItems: 'center', gap: '12px',
               padding: '12px 0 12px 12px',
-              fontFamily: "'Lilita One', cursive", fontSize: '13px', letterSpacing: '2px',
-              color: active ? '#A8D8FF' : '#7AAFD4',
+              fontFamily: "'Courier New', monospace", fontSize: '12px', letterSpacing: '1px', fontWeight: active ? 700 : 400,
+              color: active ? '#1A1A1A' : '#666666',
               textDecoration: 'none',
-              borderLeft: active ? '3px solid #0047AB' : '3px solid transparent',
-              background: active ? 'rgba(0,71,171,0.22)' : 'transparent',
+              borderLeft: active ? '3px solid #1A1A1A' : '3px solid transparent',
+              background: active ? 'rgba(0,0,0,0.04)' : 'transparent',
               transition: 'all 0.15s ease', whiteSpace: 'nowrap', overflow: 'hidden',
-              textShadow: '1px 2px 0 rgba(0,0,0,0.55)',
             }}
-            onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#A8D8FF'; e.currentTarget.style.background = 'rgba(0,71,171,0.12)'; } }}
-            onMouseLeave={e => { if (!active) { e.currentTarget.style.color = '#7AAFD4'; e.currentTarget.style.background = 'transparent'; } }}
+            onMouseEnter={e => { if (!active) { e.currentTarget.style.color = '#1A1A1A'; e.currentTarget.style.background = '#F0F0F0'; } }}
+            onMouseLeave={e => { if (!active) { e.currentTarget.style.color = '#666666'; e.currentTarget.style.background = 'transparent'; } }}
             >
               {/* Icône SVG — visible collapsed + expanded */}
               <span className={active ? 'nav-icon nav-icon--active' : 'nav-icon'} style={{ flexShrink: 0 }}>
@@ -196,7 +195,7 @@ export default function ExcelNav() {
               {/* Label — masqué collapsed */}
               <span style={{ overflow: 'hidden' }}>
                 {isWow ? (
-                  <>JOUER À{' '}<span style={{ color: '#00C8BE', textShadow: '1px 2px 0 #003A38' }}>W.O.W</span></>
+                  <>JOUER À{' '}<span style={{ color: '#1A1A1A', fontWeight: 700 }}>W.O.W</span></>
                 ) : tab.label}
               </span>
             </Link>
@@ -205,16 +204,16 @@ export default function ExcelNav() {
       </div>
 
       {/* Legal links — very discreet, icon-only when collapsed */}
-      <div style={{ borderTop: '1px solid #1B3A6B', padding: '8px 0', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
+      <div style={{ borderTop: '1px solid #D4CFC4', padding: '8px 0', flexShrink: 0, overflow: 'hidden', whiteSpace: 'nowrap' }}>
         {legalLinks.map(link => (
           <Link key={link.href} href={link.href} onClick={(e) => handleNavClick(e, link.href)} style={{
             display: 'block', padding: '5px 14px',
-            fontFamily: "'Orbitron', sans-serif", fontSize: '11px', letterSpacing: '2px',
-            color: '#1E3F6E', textDecoration: 'none', overflow: 'hidden',
+            fontFamily: "'Courier New', monospace", fontSize: '11px', letterSpacing: '2px',
+            color: '#999999', textDecoration: 'none', overflow: 'hidden',
             transition: 'color 0.15s',
           }}
-          onMouseEnter={e => { e.currentTarget.style.color = '#7AAFD4'; }}
-          onMouseLeave={e => { e.currentTarget.style.color = '#1E3F6E'; }}
+          onMouseEnter={e => { e.currentTarget.style.color = '#1A1A1A'; }}
+          onMouseLeave={e => { e.currentTarget.style.color = '#999999'; }}
           >
             {link.label}
           </Link>
