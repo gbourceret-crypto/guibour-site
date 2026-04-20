@@ -263,7 +263,7 @@ export default function GuibourChat() {
           display: 'flex',
           alignItems: 'center',
           gap: '8px',
-          background: 'linear-gradient(135deg, #0E2660 0%, #0A3A6E 100%)',
+          background: '#0E2660',
           border: '1px solid rgba(0,150,255,0.35)',
           borderRadius: '24px',
           padding: '12px 24px 12px 16px',
@@ -276,12 +276,12 @@ export default function GuibourChat() {
           transition: 'all 0.2s',
         }}
         onMouseEnter={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #1A3F78 0%, #0D4A8A 100%)';
+          e.currentTarget.style.background = '#1A3F78';
           e.currentTarget.style.boxShadow = '0 4px 24px rgba(0,100,255,0.3)';
           e.currentTarget.style.borderColor = 'rgba(0,180,255,0.5)';
         }}
         onMouseLeave={(e) => {
-          e.currentTarget.style.background = 'linear-gradient(135deg, #0E2660 0%, #0A3A6E 100%)';
+          e.currentTarget.style.background = '#0E2660';
           e.currentTarget.style.boxShadow = '0 4px 20px rgba(0,0,0,0.5), 0 0 12px rgba(0,100,255,0.12)';
           e.currentTarget.style.borderColor = 'rgba(0,150,255,0.35)';
         }}
@@ -318,7 +318,7 @@ export default function GuibourChat() {
         }}>
           {/* Header */}
           <div style={{
-            background: 'linear-gradient(135deg, #0E2660 0%, #0A3A6E 100%)',
+            background: '#0E2660',
             padding: '12px 16px',
             display: 'flex',
             alignItems: 'center',
@@ -399,7 +399,7 @@ export default function GuibourChat() {
                   padding: '9px 13px',
                   borderRadius: msg.role === 'user' ? '12px 12px 3px 12px' : '12px 12px 12px 3px',
                   background: msg.role === 'user'
-                    ? 'linear-gradient(135deg, #0E2660, #0A3A6E)'
+                    ? '#0E2660'
                     : '#0D1F3C',
                   color: msg.role === 'user' ? '#A8D8FF' : '#C8E4FF',
                   fontSize: '12px',
@@ -531,7 +531,7 @@ export default function GuibourChat() {
               style={{
                 background: loading || !input.trim()
                   ? 'rgba(0,80,150,0.2)'
-                  : 'linear-gradient(135deg, #0E2660, #0A3A6E)',
+                  : '#0E2660',
                 border: '1px solid rgba(0,150,255,0.3)',
                 borderRadius: '8px',
                 width: '36px', height: '36px',

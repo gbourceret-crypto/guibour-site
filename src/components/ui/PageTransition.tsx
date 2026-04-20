@@ -42,7 +42,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
               bottom: 0,
               left: 0,
               width: '50%',
-              background: 'linear-gradient(135deg, #0D2B5E 0%, #091D40 50%, #0D2B5E 100%)',
+              background: '#0D2B5E',
               borderRight: '2px solid #00C8BE',
               transform:
                 phase === 'closing'
@@ -86,7 +86,7 @@ export default function PageTransition({ children }: { children: React.ReactNode
               bottom: 0,
               right: 0,
               width: '50%',
-              background: 'linear-gradient(225deg, #0D2B5E 0%, #091D40 50%, #0D2B5E 100%)',
+              background: '#0D2B5E',
               borderLeft: '2px solid #00C8BE',
               transform:
                 phase === 'closing'

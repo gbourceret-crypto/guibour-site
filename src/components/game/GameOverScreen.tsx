@@ -354,7 +354,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
             </div>
             <button onClick={() => { playClick(); onRestart(); }} style={{
               width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '20px', letterSpacing: '4px', color: '#fff',
-              background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px', cursor: 'pointer', borderRadius: '4px',
+              background: '#0047AB', border: '2px solid #00C8BE', padding: '16px', cursor: 'pointer', borderRadius: '4px',
             }}>REJOUER</button>
             <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />
             <ReferralChallenge pseudo={pseudo} />
@@ -476,7 +476,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
                 <button onClick={handleContinue} style={{
                   flex: 2, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '18px',
                   letterSpacing: '3px', color: '#fff',
-                  background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE',
+                  background: '#0047AB', border: '2px solid #00C8BE',
                   cursor: 'pointer', borderRadius: '4px',
                 }}>
                   CONTINUER ▶
@@ -485,7 +485,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
                 <button onClick={() => { playClick(); onRestart(); }} style={{
                   flex: 2, padding: '16px', fontFamily: "'Lilita One', cursive", fontSize: '18px',
                   letterSpacing: '3px', color: '#fff',
-                  background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE',
+                  background: '#0047AB', border: '2px solid #00C8BE',
                   cursor: 'pointer', borderRadius: '4px',
                 }}>
                   REJOUER
@@ -559,7 +559,7 @@ function GameOverScreen({ state, onRestart, onContinueWithRTT, playerIdentity, r
             </div>
             <button onClick={() => { playClick(); onRestart(); }} style={{
               width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '20px', letterSpacing: '4px', color: '#fff',
-              background: 'linear-gradient(135deg,#0047AB,#007B8A)', border: '2px solid #00C8BE', padding: '16px',
+              background: '#0047AB', border: '2px solid #00C8BE', padding: '16px',
               cursor: 'pointer', borderRadius: '4px',
             }}>REJOUER</button>
             <ShareButtons pseudo={pseudo} level={level} score={player.score} shareImageUrl={shareImageUrl} onDiploma={handleDiploma} />

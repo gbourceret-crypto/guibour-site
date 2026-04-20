@@ -68,7 +68,7 @@ function PodiumCard({
           border: `3px solid ${c}`,
           boxShadow: `0 0 20px ${glow}, 0 0 40px ${glow.replace('.6','.2').replace('.5','.2')}`,
           overflow: 'hidden',
-          background: `radial-gradient(circle, rgba(${rank===1?'200,150,10':rank===2?'143,165,184':'139,105,20'},.15) 0%, rgba(14,38,96,.8) 100%)`,
+          background: 'rgba(14,38,96,.8)',
           display: 'flex', alignItems: 'center', justifyContent: 'center',
           cursor: isMe ? 'pointer' : 'default',
           transition: 'box-shadow .3s',
@@ -108,7 +108,7 @@ function PodiumCard({
       {/* Info card */}
       <div style={{
         background: rank === 1
-          ? 'linear-gradient(160deg, rgba(200,150,10,.12) 0%, rgba(14,38,96,.9) 100%)'
+          ? 'rgba(14,38,96,.9)'
           : 'rgba(5,15,45,.85)',
         border: `1px solid ${c}55`,
         padding: '16px 24px', textAlign: 'center',
@@ -160,7 +160,7 @@ function PodiumCard({
       {/* Podium column */}
       <div style={{
         width: '100%', height: `${HEIGHTS[index]}px`,
-        background: `linear-gradient(to bottom, ${c}30, ${c}08)`,
+        background: `${c}1A`,
         border: `1px solid ${c}33`, borderBottom: 'none',
         position: 'relative', overflow: 'hidden',
       }}>
@@ -282,7 +282,7 @@ export default function ResultatsPage() {
 
           {/* ── HEADER ── */}
           <div style={{
-            background: 'linear-gradient(135deg,#06101F 0%,#0B1E4A 60%,#0A2C70 100%)',
+            background: '#0B1E4A',
             padding: '28px 48px 24px',
             borderBottom: '2px solid rgba(0,255,235,.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap',

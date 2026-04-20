@@ -13,7 +13,11 @@ interface ExcelChromeProps {
   breadcrumb?: string;
 }
 
-const COLUMNS = ['A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','W','X'];
+// Excel-style columns: A-Z then AA-AZ (52 columns to fill any screen width)
+const COLUMNS = [
+  ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split(''),
+  ...'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('').map(c => 'A' + c),
+];
 
 // ── Easter egg: DEMISSION ──────────────────────────────────────────────
 type DemissionPhase = 'idle' | 'shake' | 'aftermath';

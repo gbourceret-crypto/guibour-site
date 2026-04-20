@@ -201,7 +201,7 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
           fontSize: 'clamp(20px, 4vw, 28px)',
           letterSpacing: '8px',
           color: '#fff',
-          background: 'linear-gradient(135deg, #0047AB, #007B8A)',
+          background: '#0047AB',
           border: '2px solid rgba(0,200,190,.4)',
           padding: '18px 60px',
           cursor: 'pointer',
@@ -224,11 +224,6 @@ function HeroContent({ onPlay, theme }: { onPlay: () => void; theme: DayNightThe
         <span style={{ position: 'relative', zIndex: 1, textShadow: '2px 3px 0 rgba(0,0,0,.5)' }}>
           JOUER
         </span>
-        <span style={{
-          position: 'absolute', top: 0, left: '-100%', width: '50%', height: '100%',
-          background: 'linear-gradient(90deg, transparent, rgba(255,255,255,.08), transparent)',
-          animation: 'shimmer 4s ease-in-out infinite',
-        }} />
       </button>
 
       {/* ── COMPTEUR JOUEURS ── */}

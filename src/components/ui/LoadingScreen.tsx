@@ -161,7 +161,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
             }}>
               <div style={{
                 height: '100%', width: progress + '%',
-                background: 'linear-gradient(90deg, #0047AB, #00A89D)',
+                background: '#0047AB',
                 borderRadius: '2px',
                 boxShadow: '0 0 12px rgba(0,200,190,.5), 0 0 24px rgba(0,71,171,.3)',
                 transition: 'width 0.1s linear',
@@ -201,7 +201,7 @@ export default function LoadingScreen({ onComplete }: LoadingScreenProps) {
         <div style={{ width: '2px', height: '20px', background: '#0A1530' }} />
         <div style={{
           width: '60px', height: '80px',
-          background: 'linear-gradient(135deg, #fff, #E8EEF4)',
+          background: '#FFFFFF',
           borderRadius: '7px', border: '3px solid #0047AB',
           boxShadow: '0 4px 16px rgba(0,0,0,.5), 0 0 12px rgba(0,71,171,.25)',
           animation: 'swing 3s ease-in-out infinite',

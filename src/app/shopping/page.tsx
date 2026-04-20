@@ -112,7 +112,7 @@ function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) 
       onMouseLeave={() => setHovered(false)}
       style={{
         background: hovered
-          ? 'linear-gradient(160deg, rgba(0,255,238,.07) 0%, rgba(0,30,80,.9) 100%)'
+          ? 'rgba(0,30,80,.9)'
           : 'rgba(5,15,45,.75)',
         border: `1px solid ${hovered ? 'rgba(0,255,238,.55)' : 'rgba(0,255,238,.1)'}`,
         display: 'flex', flexDirection: 'column', position: 'relative',
@@ -160,7 +160,7 @@ function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) 
         height: '140px',
         display: 'flex', alignItems: 'center', justifyContent: 'center',
         background: hovered
-          ? 'radial-gradient(ellipse at center, rgba(0,255,238,.06) 0%, transparent 70%)'
+          ? 'transparent'
           : 'transparent',
         transition: 'background .3s',
       }}>
@@ -200,7 +200,7 @@ function ProductCard({ p, onAdd }: { p: Product; onAdd: (p: Product) => void }) 
               display: 'block', width: '100%', textAlign: 'center',
               fontFamily: "'Orbitron', sans-serif", fontSize: '11px', letterSpacing: '2px',
               color: hovered ? '#fff' : '#FF6666',
-              background: hovered ? 'linear-gradient(135deg, #CC0000, #880000)' : 'rgba(100,0,0,.4)',
+              background: hovered ? '#CC0000' : 'rgba(100,0,0,.4)',
               border: `1px solid ${hovered ? 'rgba(255,68,68,.8)' : 'rgba(255,68,68,.3)'}`,
               padding: '11px 0', cursor: 'pointer',
               boxShadow: hovered ? '0 0 14px rgba(255,68,68,.3)' : 'none',
@@ -310,7 +310,7 @@ function CartPanel({
           <button onClick={onCheckout} style={{
             width: '100%', fontFamily: "'Lilita One', cursive", fontSize: '15px',
             letterSpacing: '3px', color: '#000',
-            background: 'linear-gradient(135deg, #00FFEE, #00C8BE)',
+            background: '#00C8BE',
             border: 'none', padding: '13px', cursor: 'pointer',
             boxShadow: '0 0 22px rgba(0,255,238,.4)',
             transition: 'all .2s',
@@ -413,7 +413,7 @@ export default function ShoppingPage() {
           }}>
             {/* Header */}
             <div style={{
-              background: 'linear-gradient(135deg,#06101F,#0B1E4A,#0A2C70)',
+              background: '#0B1E4A',
               padding: '28px 48px 24px', borderBottom: '2px solid rgba(0,255,235,.15)',
               display: 'flex', alignItems: 'center', gap: '20px',
             }}>
@@ -468,7 +468,7 @@ export default function ShoppingPage() {
                     }}>← RETOUR</button>
                     <button type="submit" style={{
                       flex: 1, fontFamily: "'Lilita One', cursive", fontSize: '16px', letterSpacing: '3px',
-                      color: '#000', background: 'linear-gradient(135deg,#00FFEE,#00C8BE)',
+                      color: '#000', background: '#00C8BE',
                       border: 'none', padding: '13px', cursor: 'pointer',
                       boxShadow: '0 0 22px rgba(0,255,235,.4)',
                     }}>CONFIRMER LA COMMANDE →</button>
@@ -524,7 +524,7 @@ export default function ShoppingPage() {
 
           {/* Header */}
           <ScrollReveal><div style={{
-            background: 'linear-gradient(135deg,#06101F 0%,#0B1E4A 60%,#0A2C70 100%)',
+            background: '#0B1E4A',
             padding: '28px 48px 24px',
             borderBottom: '2px solid rgba(0,255,235,.15)',
             display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '24px', flexWrap: 'wrap',

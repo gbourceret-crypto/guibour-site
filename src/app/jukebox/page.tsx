@@ -76,7 +76,7 @@ export default function JukeboxPage() {
 
         {/* ── HERO HEADER ── */}
         <ScrollReveal><div style={{
-          background: 'linear-gradient(135deg,#06101F 0%,#0B1E4A 60%,#0A2C70 100%)',
+          background: '#0B1E4A',
           padding: '36px 48px 28px',
           borderBottom: '2px solid rgba(0,255,235,.15)',
           display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -225,7 +225,7 @@ export default function JukeboxPage() {
                         fontSize: '11px',
                         letterSpacing: '2px',
                         padding: '8px 16px',
-                        background: saved[activeTrack.id] ? '#1A8A5A' : 'linear-gradient(135deg, #1DB954, #169940)',
+                        background: saved[activeTrack.id] ? '#1A8A5A' : '#1DB954',
                         color: '#fff',
                         border: '1px solid ' + (saved[activeTrack.id] ? '#27C93F' : '#1DB954'),
                         cursor: 'pointer',
@@ -247,7 +247,7 @@ export default function JukeboxPage() {
                         fontSize: '11px',
                         letterSpacing: '2px',
                         padding: '8px 16px',
-                        background: 'linear-gradient(135deg, #FF0000, #CC0000)',
+                        background: '#FF0000',
                         color: '#fff',
                         border: '1px solid #FF4444',
                         textDecoration: 'none',
@@ -379,7 +379,7 @@ export default function JukeboxPage() {
                   {/* Overlay gradient + name */}
                   <div style={{
                     position: 'absolute', bottom: 0, left: 0, right: 0,
-                    background: 'linear-gradient(transparent, rgba(6,16,40,.92))',
+                    background: 'rgba(6,16,40,.92)',
                     padding: '24px 14px 14px',
                   }}>
                     <div style={{ fontFamily: "'Lilita One', cursive", fontSize: '22px', color: '#FFF', letterSpacing: '4px', textShadow: '0 0 14px rgba(0,255,235,.2)' }}>

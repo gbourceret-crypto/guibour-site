@@ -139,7 +139,7 @@ export default function ContactPage() {
                     marginTop: '8px',
                     fontFamily: "'Lilita One', cursive", fontSize: '17px', letterSpacing: '4px',
                     color: '#fff',
-                    background: sending ? 'rgba(0,71,171,.4)' : 'linear-gradient(135deg, #0047AB, #007B8A)',
+                    background: sending ? 'rgba(0,71,171,.4)' : '#0047AB',
                     border: '2px solid #5B9BD5',
                     padding: '15px 0',
                     cursor: sending ? 'not-allowed' : 'pointer',
@@ -148,8 +148,8 @@ export default function ContactPage() {
                     opacity: sending ? 0.6 : 1,
                     textShadow: '1px 2px 0 rgba(0,0,0,.4)',
                   }}
-                  onMouseEnter={e => { if (!sending) { e.currentTarget.style.background = 'linear-gradient(135deg,#1B5EBB,#008B9A)'; e.currentTarget.style.boxShadow = '0 0 38px rgba(0,71,171,.6)'; } }}
-                  onMouseLeave={e => { if (!sending) { e.currentTarget.style.background = 'linear-gradient(135deg,#0047AB,#007B8A)'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,71,171,.4)'; } }}
+                  onMouseEnter={e => { if (!sending) { e.currentTarget.style.background = '#1B5EBB'; e.currentTarget.style.boxShadow = '0 0 38px rgba(0,71,171,.6)'; } }}
+                  onMouseLeave={e => { if (!sending) { e.currentTarget.style.background = '#0047AB'; e.currentTarget.style.boxShadow = '0 0 24px rgba(0,71,171,.4)'; } }}
                 >
                   {sending ? 'ENVOI...' : 'ENVOYER →'}
                 </button>
